@@ -182,3 +182,61 @@ not a normalization of the symbol; it does not touch N1–N4.
 and triple-linked. Necessary but not sufficient (rule 1): it is chaperoned by
 `invariance_*` (senior) and `theorem_redei_reciprocity_s3` before Stage 2 is
 green.
+
+## 8. Phase-2 riders (approved 2026-07-07, mandatory)
+
+Approved after independent re-derivation of N4: **distinct primitive solutions
+differ by a rational factor in ⟨−1, 2, p₁, p₂⟩ mod squares; of these only the
+2-class can change the value, and it changes it by `(2/p₃)`.** Since
+`(−1/p₃)=(p₁/p₃)=(p₂/p₃)=1` (EC2 and `p₃≡1 mod 4`), the ONLY freedom is the
+2-adic square class of β, corrected by `(2/p₃)`.
+
+### R1 — Degeneracy guard: `p₃ ∤ z`
+
+`redei_symbol` is defined only when `p₃ ∤ z`. If `p₃ | z` then `p₃ | N(β)=p₂z²`,
+so `β` is not a unit at `𝔭₃` and the local symbol `(β/𝔭₃)` degenerates (the
+Legendre argument `(x±ys) mod p₃` hits 0). Code: `redei_symbol` skips any conic
+solution with `p₃ | z` and uses / re-solves for one with `p₃ ∤ z`. A test
+(`invariance_redei_solution_choice` or a dedicated `theorem_`) must **exercise**
+this branch with a constructed or discovered `p₃|z` instance and confirm the
+routine re-solves — not merely assert the branch never fired.
+
+### R2 — Mod-8 stratification (the N4 blind spot)
+
+A 2-normalization error is **invisible whenever `p₃ ≡ 1 (mod 8)`** (then
+`(2/p₃)=1`), which includes the anchor in standard orientation (`937 ≡ 1 mod
+8`). Therefore:
+- `invariance_redei_solution_choice` and `theorem_redei_reciprocity_s3` must
+  assert **per-class case counts** with third-slot primes `≡ 5 (mod 8)` present
+  in force (a nonzero, logged count) — these are the triples where `(2/p₃)=−1`
+  and N4 is testable.
+- `theorem_redei_reciprocity_s3` is the **primary N4 detector**: permutations
+  like `[61,937,13]` (third slot `13 ≡ 5 mod 8`) are load-bearing.
+- `invariance_redei_solution_choice` must additionally assert it **actually
+  observed ≥ 2 distinct 2-adic square classes of the raw β** across the
+  solutions it compared — otherwise it passes vacuously (all solutions in one
+  class ⇒ nothing to normalize).
+
+### R3 — The mod-4 square basis (pinned before coding)
+
+The 2-adic square test runs in `O = ℤ[ω]`, `ω = (1+√p₁)/2` (the ring of integers
+of `ℚ(√p₁)`, `p₁≡1 mod 4`), with `ω² = ω + m`, `m = (p₁−1)/4`. Residues are the
+**16 classes `a + bω mod 4`** (`a,b ∈ {0,1,2,3}`). The set of square classes is
+enumerated by squaring all 16 classes via `ω²=ω+m`; this enumerator is
+**twin-tested against brute force** (a second, independent squaring of `O/4O`).
+
+**Pinned N4 algorithm** (`two_adic_class(x,y,p₁) → w ∈ {0,1}`; value correction
+`(2/p₃)^w`):
+1. Coords of `β = x+y√p₁` in `O`: `(A,B) = (x−y, 2y)` (since `√p₁ = 2ω−1`).
+2. Peel factors of 2 (each is a non-square, flips `w`): while `A,B` both even,
+   set `A/=2, B/=2, w ^= 1`. Terminates at a **2-unit** `β' = A+Bω`.
+3. `β'` unramified at 2 ⇔ `β' ≡ □ (mod 4)` in `O` [S22 Prop 7.3 proof]. The
+   unique twist `t∈{±1,±2}` [S22 Prop 7.3(1)]: if `β'≡□` or `−β'≡□ (mod 4)`
+   then `t∈{±1}` and `(t/p₃)=1` (no flip); else `t∈{±2}` and `w ^= 1`.
+4. Return `w`.
+
+Then `redei_symbol = ((x+y·s)/p₃) · (2/p₃)^w`, `s²≡p₁ (mod p₃)`. This value is,
+by the re-derivation above, independent of the primitive solution and of the
+sqrt branch (§5) — which `invariance_*` verifies structurally. Rule 1 unchanged:
+if the anchor disagrees, the fix is a corrected reading here (e.g. the peeling
+step or the `±1` symmetry), never a sign flip.
