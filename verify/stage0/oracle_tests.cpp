@@ -59,8 +59,10 @@ TEST_CASE("oracle_kronecker") {
         CHECK(jacobi(pr.a, pr.n) == oracle_value);
         ++matched;
     }
-    MESSAGE("oracle_kronecker: " << matched
-                                 << " Jacobi values matched PARI/GP kronecker()");
+    MESSAGE("cases: " << matched
+                      << " Jacobi values matched PARI/GP kronecker()");
+    REQUIRE(matched == pairs.size());  // whole batch consumed and compared
+    REQUIRE(pairs.size() == moduli.size() * 25);
 
     // Also referee Legendre directly against kronecker on a batch of primes.
     std::vector<u64> primes = {13, 61, 937, 101, 103, 107, 109, 9973, 10007};
@@ -75,8 +77,13 @@ TEST_CASE("oracle_kronecker") {
     }
     std::string lout = oracle::run_gp(*gp, lscript.str());
     std::istringstream llines(lout);
+    u64 lmatched = 0;
     for (const LPair& pr : lpairs) {
         REQUIRE(std::getline(llines, line));
         CHECK(legendre_euler(pr.a, pr.p) == std::stoi(line));
+        ++lmatched;
     }
+    MESSAGE("cases: " << lmatched
+                      << " Legendre values matched PARI/GP kronecker()");
+    REQUIRE(lmatched == primes.size() * 12);
 }

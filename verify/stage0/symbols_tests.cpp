@@ -40,6 +40,9 @@ int jacobi_via_factorization(u64 a, u64 n) {
 TEST_CASE("twin_legendre_euler_vs_reciprocity") {
     const u64 bound = at::verify::g_extended ? 10'000'000ULL : 1'000'000ULL;
     std::vector<u64> ps = primes_up_to(bound);
+    // Certify the sweep is exhaustive to the bound (exact PARI primepi values).
+    REQUIRE(ps.size() == (at::verify::g_extended ? 664'579ULL /*π(1e7)*/
+                                                 : 78'498ULL /*π(1e6)*/));
     u64 state = 0xDEADBEEFCAFEULL;
     u64 checks = 0;
     for (u64 p : ps) {
@@ -57,23 +60,30 @@ TEST_CASE("twin_legendre_euler_vs_reciprocity") {
         CHECK(legendre_euler(0, p) == 0);
         CHECK(legendre_recip(0, p) == 0);
     }
-    MESSAGE("legendre twin: " << checks << " agreements over " << ps.size()
-                              << " primes");
+    MESSAGE("cases: " << checks << " symbol agreements over all " << ps.size()
+                      << " primes < " << bound << " (exhaustive)");
 }
 
 // twin: jacobi() (binary recursion) vs. product-of-Legendre-over-factors.
 TEST_CASE("twin_jacobi_vs_legendre_factorization") {
     const u64 bound = at::verify::g_extended ? 200'001ULL : 20'001ULL;
     u64 state = 0xABCDEF0123ULL;
+    u64 moduli = 0, checks = 0;
     for (u64 n = 1; n <= bound; n += 2) {  // odd n only
         for (u64 a = 0; a <= std::min<u64>(n, 30); ++a) {
             CHECK(jacobi(a, n) == jacobi_via_factorization(a, n));
+            ++checks;
         }
         for (int k = 0; k < 8; ++k) {
             u64 a = next_sample(state) % (3 * n + 1);  // includes a >= n
             CHECK(jacobi(a, n) == jacobi_via_factorization(a, n));
+            ++checks;
         }
+        ++moduli;
     }
+    MESSAGE("cases: " << checks << " over " << moduli << " odd moduli n ≤ "
+                      << bound);
+    REQUIRE(moduli == (bound + 1) / 2);  // every odd n in range covered
 }
 
 // theorem: quadratic reciprocity for all distinct odd prime pairs below a
@@ -81,6 +91,8 @@ TEST_CASE("twin_jacobi_vs_legendre_factorization") {
 TEST_CASE("theorem_quadratic_reciprocity") {
     const u64 bound = at::verify::g_extended ? 30'000ULL : 3'000ULL;
     std::vector<u64> ps = primes_up_to(bound);
+    REQUIRE(ps.size() == (at::verify::g_extended ? 3'245ULL /*π(30000)*/
+                                                 : 430ULL /*π(3000)*/));
     u64 pairs = 0, linking = 0;
     for (size_t i = 0; i < ps.size(); ++i) {
         u64 p = ps[i];
@@ -97,28 +109,43 @@ TEST_CASE("theorem_quadratic_reciprocity") {
             }
         }
     }
-    MESSAGE("QR: " << pairs << " prime pairs; " << linking
-                   << " both ≡ 1 (mod 4) checked symmetric");
+    MESSAGE("cases: " << pairs << " odd prime pairs; " << linking
+                      << " with both ≡ 1 (mod 4) checked symmetric");
+    // All C(k-1, 2) distinct pairs of odd primes covered (k = ps.size(),
+    // minus the single even prime 2).
+    REQUIRE(pairs == (ps.size() - 1) * (ps.size() - 2) / 2);
 }
 
 // theorem: first supplementary law (-1/p) = (-1)^{(p-1)/2}; +1 iff p ≡ 1 (mod 4).
 TEST_CASE("theorem_supplement_first_minus1") {
     const u64 bound = at::verify::g_extended ? 10'000'000ULL : 1'000'000ULL;
-    for (u64 p : primes_up_to(bound)) {
+    std::vector<u64> ps = primes_up_to(bound);
+    REQUIRE(ps.size() == (at::verify::g_extended ? 664'579ULL : 78'498ULL));
+    u64 cases = 0;
+    for (u64 p : ps) {
         if (p == 2) continue;
         int expected = (p % 4 == 1) ? 1 : -1;
         CHECK(legendre_euler(p - 1, p) == expected);  // (p-1) ≡ -1 (mod p)
+        ++cases;
     }
+    MESSAGE("cases: " << cases << " odd primes < " << bound);
+    REQUIRE(cases == ps.size() - 1);  // every odd prime below the bound
 }
 
 // theorem: second supplementary law (2/p) = (-1)^{(p^2-1)/8}; +1 iff p ≡ ±1 (mod 8).
 TEST_CASE("theorem_supplement_second_two") {
     const u64 bound = at::verify::g_extended ? 10'000'000ULL : 1'000'000ULL;
-    for (u64 p : primes_up_to(bound)) {
+    std::vector<u64> ps = primes_up_to(bound);
+    REQUIRE(ps.size() == (at::verify::g_extended ? 664'579ULL : 78'498ULL));
+    u64 cases = 0;
+    for (u64 p : ps) {
         if (p == 2) continue;
         int expected = (p % 8 == 1 || p % 8 == 7) ? 1 : -1;
         CHECK(legendre_euler(2, p) == expected);
+        ++cases;
     }
+    MESSAGE("cases: " << cases << " odd primes < " << bound);
+    REQUIRE(cases == ps.size() - 1);
 }
 
 // twin/both-paths: Tonelli–Shanks vs. the Legendre symbol. Residues must yield
@@ -127,6 +154,8 @@ TEST_CASE("theorem_supplement_second_two") {
 TEST_CASE("twin_sqrt_mod_vs_legendre") {
     const u64 bound = at::verify::g_extended ? 500'000ULL : 50'000ULL;
     std::vector<u64> ps = primes_up_to(bound);
+    REQUIRE(ps.size() == (at::verify::g_extended ? 41'538ULL /*π(5e5)*/
+                                                 : 5'133ULL /*π(5e4)*/));
     u64 state = 0x5A5A5A5AULL;
     u64 residues = 0, nonresidues = 0;
     for (u64 p : ps) {
@@ -162,8 +191,10 @@ TEST_CASE("twin_sqrt_mod_vs_legendre") {
             }
         }
     }
-    MESSAGE("tonelli–shanks: " << residues << " roots verified, "
-                               << nonresidues << " non-residues detected");
+    MESSAGE("cases: " << (residues + nonresidues) << " over " << ps.size()
+                      << " primes < " << bound << " (" << residues
+                      << " roots verified, " << nonresidues
+                      << " non-residues detected)");
     CHECK(residues > 0);      // both code paths were actually exercised
     CHECK(nonresidues > 0);
 }
