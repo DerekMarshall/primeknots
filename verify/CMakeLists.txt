@@ -136,3 +136,29 @@ set_tests_properties(stage2.oracle_conic_qfsolve PROPERTIES
   LABELS "stage2;oracle"
   SKIP_RETURN_CODE 77
   RESOURCE_LOCK "gp")
+
+# --- Stage 3 (PHASE 1: convention-free forms layer only) -------------------
+add_executable(verify_stage3
+  verify_main.cpp
+  stage3/qform_tests.cpp
+  stage3/oracle_tests.cpp)
+target_include_directories(verify_stage3 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_stage3 PRIVATE at_classgroup at_oracle)
+
+set(STAGE3_CASES
+  twin_classno_cycles_vs_composition
+  theorem_reduce_is_reduced_and_equivalent
+  theorem_compose_group_axioms)
+foreach(case ${STAGE3_CASES})
+  add_test(NAME stage3.${case} COMMAND verify_stage3 --test-case=${case})
+  set_tests_properties(stage3.${case} PROPERTIES LABELS "stage3")
+endforeach()
+
+add_test(NAME stage3.oracle_narrow_class_number
+         COMMAND verify_stage3 --test-case=oracle_narrow_class_number)
+set_tests_properties(stage3.oracle_narrow_class_number PROPERTIES
+  LABELS "stage3;oracle"
+  SKIP_RETURN_CODE 77
+  RESOURCE_LOCK "gp")

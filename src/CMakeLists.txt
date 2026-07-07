@@ -27,6 +27,11 @@ add_library(at_redei STATIC
 target_include_directories(at_redei PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_redei PUBLIC at_symbols)
 
+# Stage 3 — quadratic forms / narrow class group (Phase 1: forms layer only).
+add_library(at_classgroup STATIC classgroup/qform.cpp)
+target_include_directories(at_classgroup PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(at_classgroup PUBLIC at_symbols)
+
 add_library(at_emit STATIC emit/emit_linking.cpp emit/emit_borromean.cpp)
 target_include_directories(at_emit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_emit PUBLIC at_linking at_redei)
