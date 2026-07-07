@@ -1,6 +1,7 @@
 #include "classgroup/class_group.h"
 
 #include <algorithm>
+#include <cmath>
 #include <map>
 #include <tuple>
 #include <vector>
@@ -8,6 +9,30 @@
 namespace at::classgroup {
 
 using at::core::i128;
+
+namespace {
+i128 isqrt_i128(i128 n) {
+    if (n <= 0) return 0;
+    i128 x = static_cast<i128>(std::sqrt(static_cast<double>(n)));
+    while (x > 0 && x * x > n) --x;
+    while ((x + 1) * (x + 1) <= n) ++x;
+    return x;
+}
+}  // namespace
+
+bool negative_pell_solvable(i128 D) {
+    i128 a0 = isqrt_i128(D);
+    if (a0 * a0 == D) return false;  // perfect square (never for our fundamental D)
+    i128 m = 0, d = 1, a = a0;
+    int period = 0;
+    do {
+        m = d * a - m;
+        d = (D - m * m) / d;
+        a = (a0 + m) / d;
+        ++period;
+    } while (a != 2 * a0);
+    return (period % 2) == 1;  // N(ε) = (−1)^period
+}
 
 namespace {
 // Group composition on canonical class reps.

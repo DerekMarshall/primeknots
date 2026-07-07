@@ -167,3 +167,23 @@ foreach(ocase oracle_narrow_class_number oracle_narrow_structure_match)
     SKIP_RETURN_CODE 77
     RESOURCE_LOCK "gp")
 endforeach()
+
+# --- Stage 4 (arithmetic Chern-Simons / DW, Hirano mod-2 route) -------------
+add_executable(verify_stage4
+  verify_main.cpp
+  stage4/invariance_tests.cpp
+  stage4/comparison_tests.cpp)
+target_include_directories(verify_stage4 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_stage4 PRIVATE at_cs at_classgroup)
+
+set(STAGE4_CASES
+  invariance_s_ordering
+  invariance_lhs_character_basis
+  anchor_ckkppy_hirano_examples
+  theorem_ckkppy_partition_identity)
+foreach(case ${STAGE4_CASES})
+  add_test(NAME stage4.${case} COMMAND verify_stage4 --test-case=${case})
+  set_tests_properties(stage4.${case} PROPERTIES LABELS "stage4")
+endforeach()

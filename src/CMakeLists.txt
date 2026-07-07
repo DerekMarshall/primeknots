@@ -35,6 +35,12 @@ add_library(at_classgroup STATIC
 target_include_directories(at_classgroup PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_classgroup PUBLIC at_symbols at_linking)
 
+# Stage 4 — arithmetic Chern-Simons / Dijkgraaf-Witten (Hirano mod-2 route).
+# lhs.cpp (brute character sum) and rhs.cpp (closed form) authored in isolation.
+add_library(at_cs STATIC cs/lhs.cpp cs/rhs.cpp)
+target_include_directories(at_cs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(at_cs PUBLIC at_symbols)
+
 add_library(at_emit STATIC
   emit/emit_linking.cpp
   emit/emit_borromean.cpp

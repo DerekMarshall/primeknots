@@ -23,29 +23,6 @@ namespace {
 constexpr u64 kPoolBound = 200;
 constexpr int kMaxT = 4;
 
-i128 isqrt_i128(i128 n) {
-    if (n <= 0) return 0;
-    i128 x = static_cast<i128>(std::sqrt(static_cast<double>(n)));
-    while (x > 0 && x * x > n) --x;
-    while ((x + 1) * (x + 1) <= n) ++x;
-    return x;
-}
-
-// Negative Pell x²−Dy²=−1 solvable ⇔ N(ε)=−1 ⇔ CF period of √D is odd.
-bool negative_pell(i128 D) {
-    i128 a0 = isqrt_i128(D);
-    if (a0 * a0 == D) return false;  // perfect square (never, for our D)
-    i128 m = 0, d = 1, a = a0;
-    int period = 0;
-    do {
-        m = d * a - m;
-        d = (D - m * m) / d;
-        a = (a0 + m) / d;
-        ++period;
-    } while (a != 2 * a0);
-    return (period % 2) == 1;
-}
-
 struct Member { i128 D; std::vector<u64> primes; };
 void gen(const std::vector<u64>& P, std::size_t start, std::vector<u64>& cur,
          i128 bound, std::vector<Member>& out) {
@@ -90,7 +67,7 @@ void emit_stage3(const std::string& out_dir, i128 disc_bound,
         std::span<const u64> ps(m.primes.data(), m.primes.size());
         std::size_t r4f = cg.rank4();
         std::size_t r4l = at::classgroup::fourrank_from_linking(ps, LM);
-        bool pell = negative_pell(m.D);
+        bool pell = at::classgroup::negative_pell_solvable(m.D);
         i128 h = cg.order();
         rows.push_back({m.D, m.primes.size(), cg.rank2(), r4f, r4l, h,
                         pell ? h : h / 2, pell, cg.invariant_factors()});

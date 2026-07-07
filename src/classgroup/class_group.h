@@ -27,4 +27,9 @@ struct ClassGroup {
     static ClassGroup compute(at::core::i128 D);
 };
 
+// Negative Pell x²−Dy²=−1 solvable ⇔ N(fundamental unit)=−1 ⇔ Cl⁺=Cl, computed
+// from the continued-fraction period parity of √D. (The Stage 3 pell_neg
+// empiric; also the Stage 4 Hirano hypothesis gate.)
+bool negative_pell_solvable(at::core::i128 D);
+
 }  // namespace at::classgroup
