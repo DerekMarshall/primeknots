@@ -23,6 +23,8 @@ endif()
 
 add_compile_options(-Wall -Wextra)
 
+find_package(Threads REQUIRED)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 enable_testing()

@@ -12,3 +12,9 @@ add_library(at_symbols STATIC
   symbols/tonelli_shanks.cpp)
 target_include_directories(at_symbols PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_symbols PUBLIC at_core)
+
+add_library(at_linking STATIC
+  linking/f2matrix.cpp
+  linking/linking_matrix.cpp)
+target_include_directories(at_linking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(at_linking PUBLIC at_symbols Threads::Threads)
