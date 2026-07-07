@@ -41,10 +41,21 @@ add_library(at_cs STATIC cs/lhs.cpp cs/rhs.cpp)
 target_include_directories(at_cs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_cs PUBLIC at_symbols)
 
+# Stage 5 — zeta zeros (Riemann-Siegel + Euler-Maclaurin twin), Turing-certified
+# zero finder, explicit-formula ψ reconstruction, Ruelle-zeta model twin.
+add_library(at_zeta STATIC
+  zeta/riemann_siegel.cpp
+  zeta/zero_finder.cpp
+  zeta/explicit_formula.cpp
+  zeta/ruelle.cpp)
+target_include_directories(at_zeta PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(at_zeta PUBLIC at_core)
+
 add_library(at_emit STATIC
   emit/emit_linking.cpp
   emit/emit_borromean.cpp
   emit/emit_classgroups.cpp
-  emit/emit_cs.cpp)
+  emit/emit_cs.cpp
+  emit/emit_zeta.cpp)
 target_include_directories(at_emit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(at_emit PUBLIC at_linking at_redei at_classgroup at_cs)
+target_link_libraries(at_emit PUBLIC at_linking at_redei at_classgroup at_cs at_zeta)
