@@ -1,0 +1,9 @@
+{
+  "source": "Odlyzko [O], zeros of the Riemann zeta function",
+  "url": "https://www-users.cse.umn.edu/~odlyzko/zeta_tables/zeros1",
+  "fetched": "2026-07-07",
+  "sha256": "3436c916a7878261ac183fd7b9448c9a4736b8bbccf1356874a6ce1788541632",
+  "n_zeros": 100000,
+  "precision_dp": 9,
+  "format": "one imaginary part gamma_n per line, ascending, n=1..N"
+}
