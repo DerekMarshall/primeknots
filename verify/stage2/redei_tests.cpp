@@ -141,22 +141,30 @@ TEST_CASE("anchor_redei_13_61_937_is_minus_1") {
 TEST_CASE("theorem_redei_reciprocity_s3") {
     auto triples = valid_triples(twin_bound());
     REQUIRE(triples.size() > 0);
-    u64 triples_checked = 0, perms_with_5mod8_third = 0;
+    static const int PERMS[6][3] = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2},
+                                    {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
+    u64 triples_checked = 0, perms_5mod8_third = 0, sum_k = 0;
     for (auto& t : triples) {
-        u64 a = t[0], b = t[1], c = t[2];
-        int base = redei_symbol(a, b, c);
-        // all 6 permutations must agree (Rédei reciprocity / full symmetry)
-        CHECK(redei_symbol(a, c, b) == base);
-        CHECK(redei_symbol(b, a, c) == base);
-        CHECK(redei_symbol(b, c, a) == base);
-        CHECK(redei_symbol(c, a, b) == base);
-        CHECK(redei_symbol(c, b, a) == base);
-        for (u64 third : {a, b, c})
-            if (third % 8 == 5) ++perms_with_5mod8_third;
+        u64 e[3] = {t[0], t[1], t[2]};
+        int base = redei_symbol(e[0], e[1], e[2]);
+        for (auto& p : PERMS) {
+            CHECK(redei_symbol(e[p[0]], e[p[1]], e[p[2]]) == base);  // full S3 symmetry
+            if (e[p[2]] % 8 == 5) ++perms_5mod8_third;  // N4-sensitive: ≡5 mod 8 third
+        }
+        u64 k = 0;  // ≡5 mod 8 elements in this triple
+        for (int i = 0; i < 3; ++i)
+            if (e[i] % 8 == 5) ++k;
+        sum_k += k;
         ++triples_checked;
     }
-    MESSAGE("cases: " << triples_checked << " valid triples × 6 permutations; "
-                      << perms_with_5mod8_third
-                      << " permutations with a ≡5 (mod 8) third argument (N4)");
-    REQUIRE(perms_with_5mod8_third > 0);  // R2: N4-sensitive perms in force
+    MESSAGE("cases: " << triples_checked << " valid triples × 6 permutations = "
+                      << (triples_checked * 6) << " symbol evaluations; "
+                      << perms_5mod8_third
+                      << " permutations with a ≡5 (mod 8) third argument (N4-sensitive)");
+    // Certify the N4 coverage against 2·Σ k_t computed independently: each of a
+    // triple's k_t elements ≡5 mod 8 lands in the third slot in exactly 2 of the
+    // 6 permutations. (This is a genuine cross-check of the PERMS enumeration.)
+    REQUIRE(perms_5mod8_third == 2 * sum_k);
+    REQUIRE(perms_5mod8_third % 2 == 0);  // even, by the 2-per-element argument
+    REQUIRE(perms_5mod8_third > 0);       // R2: N4-sensitive permutations in force
 }

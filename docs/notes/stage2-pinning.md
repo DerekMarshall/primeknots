@@ -191,15 +191,22 @@ differ by a rational factor in ⟨−1, 2, p₁, p₂⟩ mod squares; of these o
 `(−1/p₃)=(p₁/p₃)=(p₂/p₃)=1` (EC2 and `p₃≡1 mod 4`), the ONLY freedom is the
 2-adic square class of β, corrected by `(2/p₃)`.
 
-### R1 — Degeneracy guard: `p₃ ∤ z`
+### R1 — Degeneracy guard: `p₃ ∤ z` (computational boundary, not a definedness condition)
 
-`redei_symbol` is defined only when `p₃ ∤ z`. If `p₃ | z` then `p₃ | N(β)=p₂z²`,
-so `β` is not a unit at `𝔭₃` and the local symbol `(β/𝔭₃)` degenerates (the
-Legendre argument `(x±ys) mod p₃` hits 0). Code: `redei_symbol` skips any conic
-solution with `p₃ | z` and uses / re-solves for one with `p₃ ∤ z`. A test
-(`invariance_redei_solution_choice` or a dedicated `theorem_`) must **exercise**
-this branch with a constructed or discovered `p₃|z` instance and confirm the
-routine re-solves — not merely assert the branch never fired.
+**Reclassified in the §9 amendment pass (external referee catch, confirmed from
+local CFT / [S22 (47)–(48)]).** The symbol `[p₁,p₂,p₃]` is well-defined even when
+a *particular* solution has `p₃ | z`: the local factor is the Hilbert symbol
+`(β, π_𝔭₃)_𝔭₃ ∈ {±1}` [S22 (48)], which is ±1 for any nonzero `β`, unit or not.
+What degenerates is only our **fast path**: the Legendre-symbol shortcut
+`(β/𝔭₃) = ((x+y·s)/p₃)` [S22 (47)] is valid when `β` is a `𝔭₃`-**unit**; if
+`p₃ | z` then `p₃ | N(β)=p₂z²` and the Legendre argument hits 0. So R1 is the
+computational boundary of the Legendre fast path, not a condition on when the
+symbol exists.
+
+Code (unchanged): `redei_symbol` skips any conic solution with `p₃ | z` and
+re-solves for one with `p₃ ∤ z` (where the fast path applies and, by §5, both
+branches agree). A test must **exercise** this branch with a discovered `p₃|z`
+instance and confirm the routine re-solves — not merely assert it never fired.
 
 ### R2 — Mod-8 stratification (the N4 blind spot)
 
@@ -240,3 +247,89 @@ by the re-derivation above, independent of the primitive solution and of the
 sqrt branch (§5) — which `invariance_*` verifies structurally. Rule 1 unchanged:
 if the anchor disagrees, the fix is a corrected reading here (e.g. the peeling
 step or the `±1` symmetry), never a sign flip.
+
+## 9. Amendment pass — source verification (2026-07-07)
+
+Verification of specific loci against the committed PDFs, with verbatim quotes,
+per external-referee request. Recorded VERIFIED / DISCREPANT per locus.
+
+### 9.1 — 1(a): C07 Lemma 5.1.2 relative discriminant  — **DISCREPANT**
+
+Verbatim, Lemma 5.1.2 states: *"κ₁₂|_{G_{K₁,S}} corresponds by Kummer theory to
+an element α₂ such that `N_{K₁/Q}(α₂) = a₂  mod Q^{×2}`. Furthermore, κ₁₂ can be
+chosen such that F₄/F is totally ramified at the primes in S(a₁)∩S(a₂) and
+unramified at all other finite primes."*
+
+It does **not** state a relative-discriminant equality `D_{L/K₁}=(a₂)` for
+`L=K₁(√α₂)`. It states (i) the **norm** `N_{K₁/Q}(α₂)=a₂ mod Q^{×2}`, and (ii) an
+**F₄/F ramification** clause. Clause (ii) plus the proof's explicit p=2 handling
+(*"α₂ can be chosen so that 2 is unramified in F₄/F"*, pp. 47–48) **do** mandate
+the 2-unramified normalization implicitly — but via ramification of F₄/F, not a
+relative-discriminant statement.
+
+### 9.2 — 1(b): S22 Cor 8.2 well-definedness  — **VERIFIED**
+
+Verbatim, Cor 8.2 states: *"The value of the symbol [a,b,c] in (44) is the same
+for all K⊂F_{a,b} that are minimally ramified over Q(√a,√b)."* Proof (Lemma
+7.7): *"two F's that are minimally ramified … differ by a twist t∈T_{a,b}, and
+twisting … changes the value of [a,b,c] by χ_t(c), which equals 0 for t∈T_{a,b}
+by the conditions (1) and (2)."*
+
+This is well-definedness across **minimally-ramified** extensions — exactly the
+minimally-ramified F's that primitive solutions produce (after the N4 twist,
+[S22 Cor 7.4]). It confirms the N4 twist is a **precondition** of
+well-definedness, not optional: the value is invariant only across
+*minimally-ramified* F.
+
+### 9.3 — Consequence for N4 (per protocol: 1(a) discrepant ⇒ original stands)
+
+Because 1(a) does **not** verify, the "two readings" reconciliation in §4/N4
+**stands unchanged** (not struck through). It is, however, bolstered rather than
+weakened: 9.2 (VERIFIED) plus C07 Lemma 5.1.2 clause (ii)+proof show **both
+sources mandate the 2-adic twist** — [S22] explicitly (Prop 7.3, Cor 8.2), [C07]
+implicitly (norm + F₄/F ramification + p=2 proof). The apparent "tension" was
+never a genuine conflict; the sources agree the twist is required. What is *not*
+supported by the literal text is the specific route `D_{L/K₁}=(a₂)`.
+
+### 9.4 — N3 primitivity↔discriminant equivalence: **OMITTED**
+
+The equivalence note requested in point 4 was contingent on 1(a) verifying. Since
+1(a) is DISCREPANT, it is **not** added: Lemma 5.1.2 gives the norm + F₄/F
+ramification, not a `K₁(√α₂)/K₁` relative discriminant, so "primitivity ⇔ relative
+discriminant (a₂)" is not a claim the committed text supports as written.
+
+### 9.5 — Role of the invariance tests (point 5)
+
+With the twist now confirmed mandated by both sources, the `invariance_*` tests'
+role is **confirmation of the twist implementation**, not adjudication between
+competing readings. The test *content* is unchanged; only this stated purpose
+changes. (`invariance_redei_solution_choice` remains the structural check that
+the `(2/p₃)^w` implementation is correct across solutions.)
+
+### 9.6 — Stratification-counter correction (point 6)
+
+The `theorem_redei_reciprocity_s3` counter previously printed **14773** labelled
+"permutations with a ≡5 (mod 8) third argument". That label was **wrong**: the
+loop summed `k_t` (the count of ≡5-mod-8 elements) once per triple, i.e. it
+computed **Σ_triples k_t = 14773** (≡5-mod-8 *element incidences*), not
+permutations. Sanity checks correctly flagged this: 14773 is **odd** (a genuine
+permutation count must be even), and it is ~half the ~50% Chebotarev magnitude.
+
+The true count of permutations with a ≡5-mod-8 third slot is **2·Σ_triples k_t**
+(each such element lands third in exactly 2 of the 6 permutations). The test now
+enumerates all 6 permutations directly, counts third-slot ≡5-mod-8 among them,
+and certifies the result equals `2·Σ k_t` with a `REQUIRE` (plus a parity
+`REQUIRE`). **Plainly: actual N4 coverage was HIGHER than the mislabelled number
+(≈2× — the real permutation count ≈ 29546), not below it.** The reciprocity
+sweep result (all 6 permutations of every valid triple agree) was correct and
+stands unchanged; only the coverage record is corrected.
+
+### 9.7 — Setting-restriction of the (2/p₃)^w implementation (point 7)
+
+The `(2/p₃)^w` correction factor is equivalent to evaluating the fully
+2-normalized `β_min` **only because `(−1/p₃)=1` for `p₃≡1 (mod 4)`**: the
+minimally-ramified twist `t∈{±1,±2}` (S22 Prop 7.3) could carry a `−1`, but
+`(−1/p₃)=1` makes it invisible, leaving only the factor-of-2 part `(2/p₃)^w`.
+This equivalence is **setting-restricted**; if the domain ever widens to
+`p₃≡3 (mod 4)` (where `(−1/p₃)=−1`), the `−1` twist becomes value-changing and
+the correction must be revisited.
