@@ -12,7 +12,9 @@ namespace at::emit {
 //   linking_graph.json   — nodes/edges for the force layout (capped at
 //                          graph_nodes leading primes, a "thresholded range")
 // Both files carry the {schema, generated_by, params} envelope (ARCHITECTURE §5).
+// generated_by is supplied by the caller (the CLI resolves it at emit time), so
+// this stays pure and invokes no external tools.
 void emit_stage1(const std::string& out_dir, at::core::u64 prime_bound,
-                 std::size_t graph_nodes);
+                 std::size_t graph_nodes, const std::string& generated_by);
 
 }  // namespace at::emit

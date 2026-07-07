@@ -25,6 +25,17 @@ add_compile_options(-Wall -Wextra)
 
 find_package(Threads REQUIRED)
 
+# Configure-time git describe, used only as the *fallback* for emitted-JSON
+# provenance. The `at` CLI resolves generated_by at emit time (runtime git) and
+# falls back to this when run outside a checkout. Refreshed on re-configure.
+execute_process(
+  COMMAND git -C ${CMAKE_SOURCE_DIR} describe --always --dirty --tags
+  OUTPUT_VARIABLE AT_GIT_DESCRIBE OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET RESULT_VARIABLE AT_GIT_RC)
+if(NOT AT_GIT_RC EQUAL 0)
+  set(AT_GIT_DESCRIBE "unknown")
+endif()
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 enable_testing()

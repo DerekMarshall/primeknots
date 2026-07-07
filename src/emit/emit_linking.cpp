@@ -10,10 +10,6 @@
 #include "emit/json.h"
 #include "linking/linking_matrix.h"
 
-#ifndef AT_GENERATED_BY
-#define AT_GENERATED_BY "unknown"
-#endif
-
 namespace at::emit {
 
 using at::core::u64;
@@ -44,7 +40,7 @@ std::ofstream open_out(const std::string& out_dir, const char* name) {
 }  // namespace
 
 void emit_stage1(const std::string& out_dir, u64 prime_bound,
-                 std::size_t graph_nodes) {
+                 std::size_t graph_nodes, const std::string& generated_by) {
     LinkingMatrix M = LinkingMatrix::build(prime_bound);
     const std::size_t n = M.primes.size();
 
@@ -53,7 +49,7 @@ void emit_stage1(const std::string& out_dir, u64 prime_bound,
         std::ofstream f = open_out(out_dir, "linking_matrix.json");
         f << "{\n";
         f << "  \"schema\": \"linking_matrix/1\",\n";
-        f << "  \"generated_by\": \"" << json_escape(AT_GENERATED_BY) << "\",\n";
+        f << "  \"generated_by\": \"" << json_escape(generated_by) << "\",\n";
         f << "  \"params\": {\"prime_bound\": " << prime_bound
           << ", \"n_primes\": " << n << ", \"residue_class\": \"1 mod 4\"},\n";
         f << "  \"n\": " << n << ",\n";
@@ -96,7 +92,7 @@ void emit_stage1(const std::string& out_dir, u64 prime_bound,
         std::ofstream f = open_out(out_dir, "linking_graph.json");
         f << "{\n";
         f << "  \"schema\": \"linking_graph/1\",\n";
-        f << "  \"generated_by\": \"" << json_escape(AT_GENERATED_BY) << "\",\n";
+        f << "  \"generated_by\": \"" << json_escape(generated_by) << "\",\n";
         f << "  \"params\": {\"prime_bound\": " << prime_bound
           << ", \"n_primes\": " << n << ", \"graph_nodes\": " << g
           << ", \"edge_rule\": \"linked pairs: (p_i/p_j) = -1\"},\n";

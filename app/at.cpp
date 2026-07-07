@@ -12,7 +12,25 @@
 
 #include "emit/emit_linking.h"
 
+#ifndef AT_GIT_FALLBACK
+#define AT_GIT_FALLBACK "unknown"
+#endif
+
 namespace {
+// Provenance resolved at emit time: current `git describe`, so generated_by
+// reflects the working state when the JSON was produced (not configure time).
+// Falls back to the configure-time value when run outside a git checkout.
+std::string resolve_generated_by() {
+    std::string out;
+    if (FILE* p = ::popen("git describe --always --dirty --tags 2>/dev/null", "r")) {
+        char buf[256];
+        while (std::fgets(buf, sizeof buf, p)) out += buf;
+        ::pclose(p);
+        while (!out.empty() && (out.back() == '\n' || out.back() == '\r')) out.pop_back();
+    }
+    return out.empty() ? std::string(AT_GIT_FALLBACK) : out;
+}
+
 void print_usage(std::FILE* out) {
     std::fprintf(out,
         "at — arithmetic-topology toolkit\n"
@@ -46,7 +64,8 @@ int main(int argc, char** argv) {
         unsigned long long gnodes = std::strtoull(opt(argc, argv, "--graph-nodes", "40"), nullptr, 10);
 
         if (stage == "1") {
-            at::emit::emit_stage1(out, bound, static_cast<std::size_t>(gnodes));
+            at::emit::emit_stage1(out, bound, static_cast<std::size_t>(gnodes),
+                                  resolve_generated_by());
             std::fprintf(stderr,
                 "at emit: stage 1 -> %s/linking_matrix.json, %s/linking_graph.json "
                 "(prime_bound=%llu, graph_nodes=%llu)\n",
