@@ -22,3 +22,8 @@ target_link_libraries(at_linking PUBLIC at_symbols Threads::Threads)
 add_library(at_emit STATIC emit/emit_linking.cpp)
 target_include_directories(at_emit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_emit PUBLIC at_linking)
+
+# Stage 2 — convention-free conic solving only (no redei_symbol yet; PHASE 1).
+add_library(at_redei STATIC redei/conic.cpp)
+target_include_directories(at_redei PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(at_redei PUBLIC at_symbols)

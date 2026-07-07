@@ -98,3 +98,28 @@ if(AT_VALIDATE_PY)
     LABELS "stage1;validate-json"
     SKIP_RETURN_CODE 77)
 endif()
+
+# --- Stage 2 (PHASE 1: convention-free conic solver only) ------------------
+add_executable(verify_stage2
+  verify_main.cpp
+  stage2/conic_tests.cpp
+  stage2/oracle_tests.cpp)
+target_include_directories(verify_stage2 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_stage2 PRIVATE at_redei at_oracle)
+
+set(STAGE2_CASES
+  twin_conic_fast_vs_holzer
+  theorem_conic_multiple_distinct_solutions
+  anchor_conic_13_61_has_primitive_solution)
+foreach(case ${STAGE2_CASES})
+  add_test(NAME stage2.${case} COMMAND verify_stage2 --test-case=${case})
+  set_tests_properties(stage2.${case} PROPERTIES LABELS "stage2")
+endforeach()
+
+add_test(NAME stage2.oracle_conic_qfsolve
+         COMMAND verify_stage2 --test-case=oracle_conic_qfsolve)
+set_tests_properties(stage2.oracle_conic_qfsolve PROPERTIES
+  LABELS "stage2;oracle"
+  SKIP_RETURN_CODE 77)
