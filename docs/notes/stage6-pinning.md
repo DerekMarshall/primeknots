@@ -138,21 +138,22 @@ A₃ = ⟨(123)⟩, or all of S₃. Counting homs by image:
   field↔character 2:1 cancel — no leftover multiplicity).
   *Independent data source:* our own cyclic-cubic conductor count (H5), or PARI.
 
-- **Image S₃ — count 2·c.** A surjection π ↠ S₃ corresponds to a Galois S₃-extension
-  M/ℚ (unramified outside S) with a chosen isomorphism Gal(M/ℚ) ≅ S₃; there are
-  |Aut(S₃)| = 6 such isomorphisms per M, so #surjections = 6·#{S₃-fields M}. Each
-  S₃-field M has exactly **3** conjugate non-Galois cubic subfields (fixed fields of
-  the three C₂ ⊂ S₃), so #{non-Galois cubic fields} c = 3·#{S₃-fields}. Therefore
-    #{φ : im φ = S₃} = 6·#{S₃-fields} = 6·(c/3) = 2·c.
+- **Image S₃ — count 6·c** (corrected in Phase 2, rider R1 — see §Phase-2
+  corrections; the Phase-1 draft wrongly wrote 2·c). A surjection π ↠ S₃ has kernel
+  N with π/N ≅ S₃; #surjections with that kernel = |Aut(S₃)| = 6. Kernels ↔ Galois
+  S₃-closures M ↔ **isomorphism classes** of non-Galois cubic fields (the three
+  conjugate cubic subfields of one M are pairwise isomorphic, hence a *single* iso
+  class — LMFDB counts iso classes, H6). So with c = #{cubic iso classes,
+  rad(disc) ⊆ S}: #{φ : im φ = S₃} = 6·#{closures} = **6c**.
   *Independent data source (the only externally refereed term):* LMFDB cubic tables
-  **and** PARI enumeration, twinned (Phase 2).
+  **and** PARI enumeration, twinned (Phase 2, R4).
 
 **The point of the decomposition.** Three of the four terms (1, C₂, C₃) are built
 from our own machinery and closed forms; only the S₃ term is the referee-supplied
 unknown c. So if the assembled |Hom| disagrees with an independent total, the term
 structure localizes the bug.
 
-    Z_DW(Spec ℤ[1/S]) = [ 1 + 3(2^a − 1) + (3^k − 1) + 2c ] / 6.
+    Z_DW(Spec ℤ[1/S]) = [ 1 + 3(2^a − 1) + (3^k − 1) + 6c ] / 6.   (6c per R1)
 
 *Sanity check S = ∅:* a=k=0, c=0 ⇒ |Hom| = 1, Z_DW = 1/6 (only the trivial map;
 π₁ᵉᵗ(Spec ℤ) is trivial by Minkowski). ✓
@@ -255,9 +256,10 @@ schema until the Phase 2 extract is run):
 
 ## Summary of what Phase 2 will assemble and require
 
-    Z_DW(Spec ℤ[1/S]) = [ 1 + 3(2^t − 1) + (3^k − 1) + 2c ] / 6
+    Z_DW(Spec ℤ[1/S]) = [ 1 + 3(2^t − 1) + (3^k − 1) + 6c ] / 6            (6c per R1)
+                      = 1/6 + (2^t − 1)/2 + (3^k − 1)/6 + c                 (mass formula, R2)
       t = |S| (all p ≡ 1 mod 4);  k = #{p ∈ S : p ≡ 1 mod 12};
-      c = #{non-Galois cubic fields, rad(disc) ⊆ S, both signatures}  (referee: LMFDB ∥ PARI)
+      c = #{cubic iso classes, rad(disc) ⊆ S}  (all totally real by R3; referee: LMFDB ∥ PARI, R4)
 
 Pre-registered Phase 2 tests (per authorization): `twin_cubic_count_lmfdb_vs_pari`
 (c two ways, agreeing before assembly); `invariance_s_ordering`; anchors with ≥ 1
@@ -268,8 +270,62 @@ where the data has them); emit `dw_s3.json` + viewer panel; empiric: the N_{S₃
 distribution vs t. Rule 1 (a count mismatch is a witnessed deliverable, not a
 reconciled bug) and the boundary-action rule are unchanged.
 
-**Open items explicitly left for the hand-referee before Phase 2:**
-1. The **H2/H4 ×3 multiplicity** on the C₂ term (does the assembled |Hom| carry
-   3·(2^t−1) or 2^t−1? — the derivation says 3·(2^t−1) for a hom count).
-2. Confirm **Convention A** (both signatures) is the intended reading of
-   π₁ᵉᵗ(Spec ℤ[1/S]); if Convention B is wanted, the H6 query filters to disc > 0.
+**Open items left for the hand-referee — both now RESOLVED in Phase 2 (below):**
+1. The C₂ ×3 multiplicity — **resolved:** |Hom| carries **3·(2^t−1)**; H4's 2^t−1 is
+   the character/surjection count (R1/R2).
+2. Convention A vs B — **resolved as moot for this pool:** by R3 every in-scope cubic
+   is totally real, so Conventions A and B return the *same* set. Convention A stays
+   the pinned reading (its query is a superset that R3 proves has no extra elements).
+
+---
+
+## Phase 2 corrections (refereed by the user, 2026-07-07)
+
+The user refereed the multiplicities by hand and authorized Phase 2 with four
+riders. They are normative and supersede the Phase-1 draft where they conflict.
+
+**R1 — the S₃ term is 6c, c = iso-class count (LMFDB semantics).** LMFDB counts
+number fields up to isomorphism. The three conjugate cubic subfields of one S₃
+sextic closure M are Galois-conjugate, hence *isomorphic as abstract fields* — a
+**single** iso class. So iso classes ↔ closures, and #surj(π ↠ S₃) = 6 per closure
+(|Aut(S₃)| = 6, S₃ complete) = **6c**. The Phase-1 "2c" used *embedded-subfield*
+semantics (3 distinct subfields per closure, c_sub = 3·c_iso, 2·c_sub = 6·c_iso —
+same total), which is **rejected** so that c matches the LMFDB/PARI iso-class count
+the referees return. H2 corrected above.
+
+**R2 — mass formula, exact rational.** `theorem_dw_mass_formula` REQUIREs, on every
+instance and in exact rational arithmetic (no floating point):
+
+    |Hom|/6  ==  1/6 + (2^t − 1)/2 + (3^k − 1)/6 + c,
+
+equivalently |Hom| = 1 + 3(2^t−1) + (3^k−1) + 6c (integer). Computed two ways
+(reduce(|Hom|/6) vs the sum of the four rationals) and compared as reduced
+fractions. |Hom| is generally not divisible by 6 (groupoid cardinality), so Z_DW is
+a genuine element of (1/6)ℤ.
+
+**R3 — signature: negative-disc set empty, by theorem (supersedes "mix present").**
+Keep the both-signs LMFDB/PARI query, but REQUIRE the **negative-discriminant result
+set is empty**. Proof: for K with rad(disc K) ⊆ S ⊆ {p ≡ 1 mod 4} (2, 3 ∉ S, all
+tame), |disc K| = ∏ pᵢ^{aᵢ} with every pᵢ ≡ 1 (mod 4), so |disc K| ≡ 1 (mod 4).
+Hence disc K ≡ +1 or −1 ≡ 3 (mod 4). **Stickelberger's theorem** (disc of a number
+field ≡ 0 or 1 mod 4) forbids ≡ 3, so disc K ≢ −1, i.e. disc K > 0 — K is totally
+real. The complex (1,1) stratum is therefore empty as a **theorem**, not an empirical
+observation. My earlier "signature mix must be present" rider is **falsified by this
+theorem and withdrawn** — a theorem beats a hoped-for empirical mix. Consequence
+(noted at H1): Conventions A and B coincide on this pool, so the ∞-convention
+ambiguity does not affect any Stage-6 count.
+
+**R4 — PARI twin completeness + LMFDB cache.** The PARI referee for c enumerates all
+S₃ cubic fields with |disc| ≤ **D_max = ∏_{p∈S} p²** and filters rad(disc) ⊆ S. The
+bound is a completeness certificate: at a tame prime p ≥ 5 the discriminant exponent
+vₚ(disc K) ≤ 2 (vₚ = 1 for inertia C₂, the 𝔭²𝔮 type; vₚ = 2 for inertia C₃, totally
+ramified 𝔭³), so any K with rad(disc) ⊆ S has |disc K| ≤ ∏_{p∈S} p². The bound is
+stated in the emitted JSON and the test. The LMFDB extract is cached under `data/`
+with recorded query string, date, and SHA-256 (ARCHITECTURE §4 precedent); the two
+counts are twinned (`twin_cubic_count_lmfdb_vs_pari`) before c enters the assembly.
+
+**Test order (per authorization):** twin_cubic_count_lmfdb_vs_pari → invariance_
+s_ordering → anchors (one S with c = 0 and one with c ≥ 2, both REQUIRED present) →
+theorem_dw_s3_decomposition + theorem_dw_mass_formula sweep with per-stratum
+REQUIREs (t; 3 ∈ S = false in scope; negative-disc empty per R3) → emit dw_s3.json +
+viewer. Rule 1 and the boundary-action rule unchanged.
