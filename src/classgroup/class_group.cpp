@@ -10,9 +10,6 @@ namespace at::classgroup {
 using at::core::i128;
 
 namespace {
-using Key = std::tuple<i128, i128, i128>;
-Key key(const QForm& f) { return {f.a, f.b, f.c}; }
-
 // Group composition on canonical class reps.
 QForm mul(const QForm& x, const QForm& y) { return canonical_form(compose(x, y)); }
 
