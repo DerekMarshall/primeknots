@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "classgroups/1",
+  "title": "classgroups",
+  "description": "Stage 3: per-discriminant narrow class group (invariants, 2-rank, 4-rank both ways), the Rédei-Reichardt match flag, and the negative-Pell empiric.",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "aggregate", "discriminants"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "classgroups/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["prime_pool_bound", "disc_bound", "max_t", "residue_class", "n_discriminants"],
+      "properties": {
+        "prime_pool_bound": {"type": "integer", "minimum": 0},
+        "disc_bound": {"type": "integer", "minimum": 0},
+        "max_t": {"type": "integer", "minimum": 1},
+        "residue_class": {"type": "string"},
+        "n_discriminants": {"type": "integer", "minimum": 0}
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "required": ["all_4rank_match", "strata", "negative_pell_count", "negative_pell_fraction"],
+      "properties": {
+        "all_4rank_match": {"type": "boolean"},
+        "strata": {
+          "type": "object",
+          "required": ["r4_0", "r4_1", "r4_ge2"],
+          "properties": {
+            "r4_0": {"type": "integer", "minimum": 0},
+            "r4_1": {"type": "integer", "minimum": 0},
+            "r4_ge2": {"type": "integer", "minimum": 0}
+          }
+        },
+        "negative_pell_count": {"type": "integer", "minimum": 0},
+        "negative_pell_fraction": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "discriminants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["D", "t", "h_narrow", "h_ordinary", "rank2", "rank4_form", "rank4_link", "match", "pell_neg", "invariants"],
+        "additionalProperties": false,
+        "properties": {
+          "D": {"type": "integer", "minimum": 2},
+          "t": {"type": "integer", "minimum": 1},
+          "h_narrow": {"type": "integer", "minimum": 1},
+          "h_ordinary": {"type": "integer", "minimum": 1},
+          "rank2": {"type": "integer", "minimum": 0},
+          "rank4_form": {"type": "integer", "minimum": 0},
+          "rank4_link": {"type": "integer", "minimum": 0},
+          "match": {"type": "boolean"},
+          "pell_neg": {"type": "boolean"},
+          "invariants": {"type": "array", "items": {"type": "integer", "minimum": 2}}
+        }
+      }
+    }
+  }
+}

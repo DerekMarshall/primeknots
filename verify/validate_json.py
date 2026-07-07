@@ -16,6 +16,7 @@ FILE_SCHEMAS = {
     "linking_matrix.json": "linking_matrix.schema.json",
     "linking_graph.json": "linking_graph.schema.json",
     "borromean.json": "borromean.schema.json",
+    "classgroups.json": "classgroups.schema.json",
 }
 
 
@@ -36,9 +37,11 @@ def main() -> int:
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    for stage in ("1", "2"):
+    for stage in ("1", "2", "3"):
+        # keep validation fast: small bounds (schema-shape check, not full sweeps)
+        b = "5000" if stage == "3" else args.bound
         r = subprocess.run([args.at, "emit", "--stage", stage, "--out", str(out),
-                            "--bound", args.bound], capture_output=True, text=True)
+                            "--bound", b], capture_output=True, text=True)
         if r.returncode != 0:
             print(f"FAIL: `at emit --stage {stage}` exited", r.returncode, "\n", r.stderr)
             return 1

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Class groups &amp; the 4-rank — Stage 3</title>
+  <link rel="stylesheet" href="common.css" />
+  <style>
+    .cell text { font: 11px ui-monospace, Menlo, monospace; fill: #fff; text-anchor: middle; dominant-baseline: central; }
+    .axis text { font: 11px ui-monospace, Menlo, monospace; fill: var(--muted); }
+    .diag { stroke: #0f9d58; stroke-width: 2; stroke-dasharray: 6 4; opacity: 0.7; }
+    .stat { font-family: ui-monospace, Menlo, monospace; font-size: 13px; margin: 3px 0; }
+    .stat b { color: var(--accent); }
+    .ok { color: #0f9d58; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Class groups and the Rédei–Reichardt 4-rank</h1>
+    <p class="subtitle">Stage 3 — narrow class group Cl⁺(D) computed two independent ways. The scatter must be a perfect diagonal. Renders emitted JSON only.</p>
+  </header>
+  <div id="err" class="error" hidden></div>
+  <main>
+    <section class="panel">
+      <h2>4-rank: form composition vs. linking matrix</h2>
+      <div id="scatter"></div>
+      <div class="legend"><span>each cell = # discriminants with (linking corank t−1−rank R, form-side 4-rank); off-diagonal (red) = a Rédei–Reichardt disagreement</span></div>
+    </section>
+    <section class="panel">
+      <h2>Aggregate</h2>
+      <div id="stats"></div>
+      <div class="params" id="params"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script>
+    const fail = (m) => { const e=document.getElementById("err"); e.hidden=false;
+      e.textContent="Could not load data: "+m+"  —  ./build/bin/at emit --stage 3 --out viz/data && python3 -m http.server -d viz"; };
+
+    fetch("data/classgroups.json").then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
+      const ds = d.discriminants;
+      let maxr = 0;
+      ds.forEach(r => { maxr = Math.max(maxr, r.rank4_form, r.rank4_link); });
+      const n = maxr + 1;
+      // count grid[link][form]
+      const grid = Array.from({length:n}, () => new Array(n).fill(0));
+      ds.forEach(r => grid[r.rank4_link][r.rank4_form]++);
+
+      const S = 64, pad = 46, W = pad + n*S + 20, H = pad + n*S + 20;
+      const svg = d3.select("#scatter").append("svg").attr("width", W).attr("height", H);
+      const X = i => pad + i*S + S/2;              // linking corank on x
+      const Y = j => pad + (n-1-j)*S + S/2;        // form 4-rank on y (flip)
+      // diagonal
+      svg.append("line").attr("class","diag")
+        .attr("x1", X(0)).attr("y1", Y(0)).attr("x2", X(n-1)).attr("y2", Y(n-1));
+      // axis labels
+      for (let i=0;i<n;i++){
+        svg.append("text").attr("class","axis").attr("x", X(i)).attr("y", pad+n*S+8).attr("text-anchor","middle").text(i);
+        svg.append("text").attr("class","axis").attr("x", pad-12).attr("y", Y(i)).attr("text-anchor","end").text(i);
+      }
+      svg.append("text").attr("class","axis").attr("x", pad+n*S/2).attr("y", H-2).attr("text-anchor","middle").text("linking-side 4-rank  (t−1 − rank R)");
+      svg.append("text").attr("class","axis").attr("transform",`translate(12,${pad+n*S/2}) rotate(-90)`).attr("text-anchor","middle").text("form-side 4-rank");
+      // bubbles
+      const maxc = d3.max(grid.flat()) || 1;
+      const rad = d3.scaleSqrt().domain([0,maxc]).range([0, S*0.42]);
+      for (let li=0; li<n; li++) for (let fj=0; fj<n; fj++){
+        const c = grid[li][fj]; if (!c) continue;
+        const g = svg.append("g").attr("class","cell");
+        g.append("circle").attr("cx", X(li)).attr("cy", Y(fj)).attr("r", rad(c))
+          .attr("fill", li===fj ? "#2b6ee6" : "#dc2626");
+        g.append("text").attr("x", X(li)).attr("y", Y(fj)).text(c);
+      }
+
+      const a = d.aggregate, p = d.params;
+      document.getElementById("stats").innerHTML =
+        `<div class="stat">Rédei–Reichardt over <b>${p.n_discriminants}</b> discriminants (primes ≡ 1 mod 4, t ≤ ${p.max_t}, D ≤ ${p.disc_bound}):</div>` +
+        `<div class="stat">form-side 4-rank == linking-side 4-rank: <span class="ok">${a.all_4rank_match ? "ALL MATCH ✓" : "MISMATCH — see red cells"}</span></div>` +
+        `<div class="stat">4-rank strata: r4=0: <b>${a.strata.r4_0}</b>&nbsp; r4=1: <b>${a.strata.r4_1}</b>&nbsp; r4≥2: <b>${a.strata.r4_ge2}</b></div>` +
+        `<div class="stat">negative Pell solvable (N(ε)=−1): <b>${a.negative_pell_count}</b>/${p.n_discriminants} = <b>${a.negative_pell_fraction.toFixed(4)}</b></div>` +
+        `<div class="stat" style="color:var(--muted)">(empiric only; cf. Stevenhagen's density conjecture ≈ 0.5806 and Koymans–Pagano — not asserted)</div>`;
+      document.getElementById("params").textContent =
+        `schema: ${d.schema}\ngenerated_by: ${d.generated_by}\nparams: ${JSON.stringify(p)}`;
+    }).catch(e => fail(e.message));
+  </script>
+</body>
+</html>
