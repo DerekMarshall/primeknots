@@ -187,3 +187,43 @@ foreach(case ${STAGE4_CASES})
   add_test(NAME stage4.${case} COMMAND verify_stage4 --test-case=${case})
   set_tests_properties(stage4.${case} PROPERTIES LABELS "stage4")
 endforeach()
+
+# --- Stage 5 (zeta zeros, explicit formula, Ruelle-zeta model twin) ---------
+add_executable(verify_stage5
+  verify_main.cpp
+  stage5/rs_zero_tests.cpp
+  stage5/explicit_formula_tests.cpp
+  stage5/ruelle_tests.cpp)
+target_include_directories(verify_stage5 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_stage5 PRIVATE at_zeta)
+# The Odlyzko table is read by the oracle test only; its absence ⇒ clean SKIP.
+target_compile_definitions(verify_stage5 PRIVATE
+  AT_ODLYZKO_PATH="${CMAKE_SOURCE_DIR}/data/odlyzko/zeros1")
+
+set(STAGE5_CASES
+  twin_theta_asymptotic_vs_lgamma
+  twin_z_riemann_siegel_vs_euler_maclaurin
+  twin_ruelle_orbit_vs_determinant
+  theorem_zero_count_turing_complete
+  theorem_explicit_formula_convergence
+  theorem_bowen_lanford_orbit_counts
+  anchor_first_zeros_published_values
+  anchor_N_main_term_turing_necessity
+  anchor_lehmer_pair_7005
+  anchor_psi_midpoint_at_prime_power
+  anchor_golden_mean_pole
+  invariance_zero_bracket_independence)
+foreach(case ${STAGE5_CASES})
+  add_test(NAME stage5.${case} COMMAND verify_stage5 --test-case=${case})
+  set_tests_properties(stage5.${case} PROPERTIES LABELS "stage5")
+endforeach()
+
+# Odlyzko oracle: reads only the local cached table (no subprocess), SKIPs (77)
+# with a visible message when the table is absent. No gp ⇒ no RESOURCE_LOCK.
+add_test(NAME stage5.anchor_zeros_match_odlyzko
+         COMMAND verify_stage5 --test-case=anchor_zeros_match_odlyzko)
+set_tests_properties(stage5.anchor_zeros_match_odlyzko PROPERTIES
+  LABELS "stage5;oracle"
+  SKIP_RETURN_CODE 77)
