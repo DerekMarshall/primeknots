@@ -170,3 +170,45 @@ Target: Hirano route, over the `pᵢ ≡ 1 mod 4`, `N(ε_K)=−1` (pell_neg) fam
   of the ordering of `S = {p₁,…,p_r}`, before any LHS/RHS comparison.
 - **Case counts certified** per precedent (number of valid `pell_neg` r-tuples,
   independently counted). Anchors: `Z_c(5·29·37)=0`, `Z_c(5·13·73)=4`.
+
+---
+
+## Phase-2 riders (R1 resolved at pinning time; R2/R3 pre-registered)
+
+### R1 — RHS closed form: "all row sums EVEN" (resolved, witness recorded)
+
+Two candidate closed forms both vanish-check on the sum-zero space, so they must
+be distinguished:
+- **all-even:** `w = Σ_{i<j} lk₂(pᵢ,pⱼ)·e⁺_{ij} = 0` in the **subspace**
+  `T₊ = {x : Σxᵢ = 0}` ⟺ every row-sum `Σ_{j≠i} lk₂(pᵢ,pⱼ)` is even.
+- **equal-parity:** `w = 0` in the **quotient** `(ℤ/2)^r/⟨(1,…,1)⟩` ⟺ all
+  row-sums have equal parity (all even OR all odd).
+
+**Decision: all-even.** Two independent grounds:
+1. **Source (verbatim, [Hir §4.2]):** `T₊ = {(x₁,…,x_r) ∈ (ℤ/2ℤ)^r | Σᵢ xᵢ = 0}`
+   — the **subspace**. `CS_c(ρ)=ρ(w)` with `w∈T₊`, so `Z_c=2^{r−1}` iff `w=0`
+   in the subspace = all row-sums even. (The "all-ones functional vanishes on
+   T₊" fact is about functionals *on* T₊, not the element `w`; it creates no
+   ambiguity for `w=0` in a subspace. So there is **no tension** with the
+   linearity structure — the even-only condition IS the linearity consequence —
+   and this does not go to open-questions.md.)
+2. **Brute-force witness, K=ℚ(√65)** (`r=2`, `p={5,13}`, `lk₂(5,13)=1`,
+   `N(ε)=−1` in-hypothesis): LHS `Z_c = 0`. all-even predicts `0` ✓;
+   equal-parity predicts `2` ✗ (row-sums `(1,1)` are equal-parity but odd). The
+   r=3 anchors are **blind** here (both candidates give the Ex 4.2.5 values
+   0 and 4) — the r=2 witness is what separates them. **RHS is `Z_c = 2^{r−1}·[all
+   row-sums even]`.** (Recorded before the RHS TU is written; legal per R1.)
+
+### R2 — Sweep stratification (pre-registered)
+
+The r=3 anchors are blind to the all-odd branch. The Phase-2 sweep must REQUIRE
+nonzero counts in each nonempty cell of
+`{r even, r odd} × {all-even, all-odd, mixed row-parities}`, and must ASSERT the
+emptiness of **all-odd × odd-r** (parity: `Σ row-sums = 0`, so an odd number of
+odd row-sums is impossible; all-odd needs `r` even).
+
+### R3 — pell_neg gating (pre-registered)
+
+`N(ε_K)=−1` is checked per instance from the Stage 3 `pell_neg` emission
+(negative-Pell CF-parity). The sweep records how many candidate r-tuples were
+excluded because `pell_neg=false` (an empiric in `cs_partition.json`).
