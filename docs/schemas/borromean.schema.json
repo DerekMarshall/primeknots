@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "borromean/1",
+  "title": "borromean",
+  "description": "Stage 2 Rédei-symbol scan: pairwise-unlinked prime triples ≡ 1 (mod 4) with their symbol value; Borromean triples are those with s = -1.",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "provenance", "primes", "triples"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "borromean/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["prime_bound", "residue_class", "n_primes", "n_valid_triples", "n_borromean"],
+      "properties": {
+        "prime_bound": {"type": "integer", "minimum": 0},
+        "residue_class": {"type": "string"},
+        "n_primes": {"type": "integer", "minimum": 0},
+        "n_valid_triples": {"type": "integer", "minimum": 0},
+        "n_borromean": {"type": "integer", "minimum": 0}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["symbol", "verified_by"],
+      "properties": {
+        "symbol": {"type": "string"},
+        "verified_by": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "primes": {"type": "array", "items": {"type": "integer", "minimum": 2}},
+    "triples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["p", "s"],
+        "additionalProperties": false,
+        "properties": {
+          "p": {"type": "array", "items": {"type": "integer", "minimum": 2}, "minItems": 3, "maxItems": 3},
+          "s": {"type": "integer", "enum": [-1, 1]}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Borromean prime triples — Stage 2</title>
+  <link rel="stylesheet" href="common.css" />
+  <style>
+    .hyperedge { fill: none; stroke: var(--accent); stroke-opacity: 0.12; stroke-width: 1; }
+    .hyperedge.hi { stroke: #c026d3; stroke-opacity: 0.95; stroke-width: 2.5; }
+    .pnode circle { fill: #2b2d6e; }
+    .pnode text { font-size: 9px; fill: var(--muted); }
+    table { border-collapse: collapse; font-size: 12px; font-family: ui-monospace, Menlo, monospace; }
+    th, td { padding: 2px 8px; text-align: right; }
+    thead th { border-bottom: 1px solid var(--border); color: var(--muted); }
+    .tablewrap { max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+    tr.sel { background: #fbe8ff; }
+    .rings text { font: 12px ui-monospace, Menlo, monospace; fill: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Borromean prime triples</h1>
+    <p class="subtitle">Stage 2 — pairwise-unlinked triples of primes ≡ 1 (mod 4) with Rédei symbol −1 (triple-linked). Renders emitted JSON only.</p>
+  </header>
+  <div id="err" class="error" hidden></div>
+  <main>
+    <section class="panel">
+      <h2>3-uniform hypergraph</h2>
+      <div id="hyper"></div>
+      <div class="legend"><span>each triangle = a Borromean triple over its 3 primes (pairwise unlinked, [·,·,·] = −1)</span></div>
+      <div class="params" id="params"></div>
+    </section>
+    <section class="panel">
+      <h2>Borromean rings <span id="ringlabel" style="color:var(--muted);font-weight:normal"></span></h2>
+      <div id="rings"></div>
+      <h2 style="margin-top:16px">Verified table</h2>
+      <div class="tablewrap"><table id="tbl"><thead><tr><th>#</th><th>p₁</th><th>p₂</th><th>p₃</th><th>[p₁,p₂,p₃]</th></tr></thead><tbody></tbody></table></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script>
+    const fail = (m) => { const e = document.getElementById("err"); e.hidden = false;
+      e.textContent = "Could not load data: " + m + "  —  ./build/bin/at emit --stage 2 --out viz/data && python3 -m http.server -d viz"; };
+
+    // Classic Borromean rings: three congruent circles at 120°, woven so that
+    // removing any one frees the other two (alternating over/under at crossings).
+    function drawRings(container, a, b, c) {
+      const W = 260, H = 240, cx = W/2, cy = 118, r = 62, off = 40;
+      const cols = ["#2b6ee6", "#c026d3", "#0f9d58"];
+      const centers = [[cx, cy-off], [cx-off*0.87, cy+off*0.5], [cx+off*0.87, cy+off*0.5]];
+      const svg = d3.select(container).html("").append("svg").attr("class","rings")
+        .attr("width", W).attr("height", H);
+      // draw each ring; then white "gap" arcs simulate the weave (alternating).
+      centers.forEach((ctr, i) => svg.append("circle").attr("cx", ctr[0]).attr("cy", ctr[1])
+        .attr("r", r).attr("fill","none").attr("stroke", cols[i]).attr("stroke-width", 6));
+      // gap segments at the 6 pairwise crossings, alternating which ring is "under"
+      const gaps = [[0,1],[1,2],[2,0]];
+      gaps.forEach(([i,j], k) => {
+        // midpoints between ring centers → approximate crossing zone; mask the
+        // "under" ring with a short white stroke so the "over" ring reads on top.
+        const under = svg.append("circle").attr("cx", centers[k%3][0]).attr("cy", centers[k%3][1])
+          .attr("r", r).attr("fill","none").attr("stroke","var(--panel)").attr("stroke-width", 8);
+        const A = Math.atan2(centers[j][1]-centers[i][1], centers[j][0]-centers[i][0]);
+        under.attr("stroke-dasharray", `10 ${2*Math.PI*r}`).attr("stroke-dashoffset", -(A+2.6)*r);
+      });
+      // labels
+      const labels = [[centers[0][0], centers[0][1]-r-6, a],
+                      [centers[1][0]-r-4, centers[1][1]+r+2, b],
+                      [centers[2][0]+r+4, centers[2][1]+r+2, c]];
+      labels.forEach(([x,y,t]) => svg.append("text").attr("x",x).attr("y",y).attr("text-anchor","middle").text(t));
+    }
+
+    fetch("data/borromean.json").then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(d => {
+        const primes = d.primes;
+        const borro = d.triples.filter(t => t.s === -1);
+        const idx = new Map(primes.map((p,i) => [p,i]));
+
+        // circle layout of primes
+        const size = 520, R = size/2 - 30, cx = size/2, cy = size/2;
+        const pos = primes.map((p,i) => {
+          const a = -Math.PI/2 + 2*Math.PI*i/primes.length;
+          return {p, x: cx + R*Math.cos(a), y: cy + R*Math.sin(a)};
+        });
+        const svg = d3.select("#hyper").append("svg").attr("width", size).attr("height", size);
+        const eg = svg.append("g");
+        const edges = eg.selectAll("polygon").data(borro).enter().append("polygon")
+          .attr("class","hyperedge")
+          .attr("points", t => t.p.map(q => { const n = pos[idx.get(q)]; return `${n.x},${n.y}`; }).join(" "));
+        const ng = svg.append("g");
+        const nodes = ng.selectAll("g").data(pos).enter().append("g").attr("class","pnode")
+          .attr("transform", n => `translate(${n.x},${n.y})`);
+        nodes.append("circle").attr("r", 3.5);
+        nodes.append("text").attr("dy", n => n.y < cy ? -6 : 12).attr("text-anchor","middle").text(n => n.p);
+
+        // table + hover wiring
+        const tb = d3.select("#tbl tbody");
+        const rows = tb.selectAll("tr").data(borro).enter().append("tr");
+        rows.html((t,i) => `<td>${i+1}</td><td>${t.p[0]}</td><td>${t.p[1]}</td><td>${t.p[2]}</td><td>−1</td>`);
+        const select = (t, i) => {
+          edges.classed("hi", (e) => e === t);
+          rows.classed("sel", (e) => e === t);
+          drawRings("#rings", t.p[0], t.p[1], t.p[2]);
+          d3.select("#ringlabel").text(`[${t.p[0]}, ${t.p[1]}, ${t.p[2]}] = −1`);
+        };
+        edges.on("mouseover", (ev,t) => select(t, borro.indexOf(t)));
+        rows.on("mouseover", (ev,t) => select(t, borro.indexOf(t)));
+        if (borro.length) select(borro[0], 0);
+
+        const pr = d.params;
+        document.getElementById("params").textContent =
+          `schema: ${d.schema}\ngenerated_by: ${d.generated_by}\nparams: ${JSON.stringify(pr)}\n` +
+          `provenance: verified by ${d.provenance.verified_by.join(", ")}`;
+      }).catch(e => fail(e.message));
+  </script>
+</body>
+</html>

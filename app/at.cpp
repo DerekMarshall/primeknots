@@ -10,6 +10,7 @@
 #include <cstring>
 #include <string>
 
+#include "emit/emit_borromean.h"
 #include "emit/emit_linking.h"
 
 #ifndef AT_GIT_FALLBACK
@@ -72,8 +73,15 @@ int main(int argc, char** argv) {
                 out.c_str(), out.c_str(), bound, gnodes);
             return 0;
         }
+        if (stage == "2") {
+            at::emit::emit_stage2(out, bound, resolve_generated_by());
+            std::fprintf(stderr,
+                "at emit: stage 2 -> %s/borromean.json (prime_bound=%llu)\n",
+                out.c_str(), bound);
+            return 0;
+        }
         std::fprintf(stderr,
-            "at emit: no emitter for stage '%s' (only stage 1 is built)\n",
+            "at emit: no emitter for stage '%s' (stages 1, 2 are built)\n",
             stage.c_str());
         return 2;
     }
