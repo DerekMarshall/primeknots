@@ -23,7 +23,10 @@ add_library(at_emit STATIC emit/emit_linking.cpp)
 target_include_directories(at_emit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_emit PUBLIC at_linking)
 
-# Stage 2 — convention-free conic solving only (no redei_symbol yet; PHASE 1).
-add_library(at_redei STATIC redei/conic.cpp)
+# Stage 2 — conic solving (Phase 1) + Rédei symbol (Phase 2).
+add_library(at_redei STATIC
+  redei/conic.cpp
+  redei/omega_mod4.cpp
+  redei/redei_symbol.cpp)
 target_include_directories(at_redei PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_redei PUBLIC at_symbols)

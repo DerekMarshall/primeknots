@@ -103,6 +103,8 @@ endif()
 add_executable(verify_stage2
   verify_main.cpp
   stage2/conic_tests.cpp
+  stage2/omega_tests.cpp
+  stage2/redei_tests.cpp
   stage2/oracle_tests.cpp)
 target_include_directories(verify_stage2 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
@@ -112,7 +114,13 @@ target_link_libraries(verify_stage2 PRIVATE at_redei at_oracle)
 set(STAGE2_CASES
   twin_conic_fast_vs_holzer
   theorem_conic_multiple_distinct_solutions
-  anchor_conic_13_61_has_primitive_solution)
+  anchor_conic_13_61_has_primitive_solution
+  twin_omega_square_classes_mod4
+  invariance_redei_solution_choice
+  invariance_sqrt_branch
+  theorem_redei_degenerate_resolve
+  anchor_redei_13_61_937_is_minus_1
+  theorem_redei_reciprocity_s3)
 foreach(case ${STAGE2_CASES})
   add_test(NAME stage2.${case} COMMAND verify_stage2 --test-case=${case})
   set_tests_properties(stage2.${case} PROPERTIES LABELS "stage2")
