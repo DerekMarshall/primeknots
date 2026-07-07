@@ -49,3 +49,32 @@ add_test(NAME stage0.oracle_clean_skip_when_gp_absent
            -P ${CMAKE_CURRENT_SOURCE_DIR}/oracle_skip_check.cmake)
 set_tests_properties(stage0.oracle_clean_skip_when_gp_absent PROPERTIES
   LABELS "stage0;oracle")
+
+# --- Stage 1 ---------------------------------------------------------------
+add_executable(verify_stage1
+  verify_main.cpp
+  stage1/linking_tests.cpp
+  stage1/f2matrix_tests.cpp
+  stage1/oracle_tests.cpp)
+target_include_directories(verify_stage1 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party   # doctest/doctest.h
+  ${CMAKE_CURRENT_SOURCE_DIR})      # harness.h, stage1/fixture.h
+target_link_libraries(verify_stage1 PRIVATE at_linking at_oracle)
+
+set(STAGE1_CASES
+  theorem_linking_vertex_set
+  theorem_quadratic_reciprocity_at_scale
+  twin_linking_euler_vs_reciprocity
+  invariance_build_parallel_vs_serial
+  twin_f2rank_packed_vs_naive
+  twin_submatrix_vs_direct_lookup)
+foreach(case ${STAGE1_CASES})
+  add_test(NAME stage1.${case} COMMAND verify_stage1 --test-case=${case})
+  set_tests_properties(stage1.${case} PROPERTIES LABELS "stage1")
+endforeach()
+
+add_test(NAME stage1.oracle_kronecker_linking
+         COMMAND verify_stage1 --test-case=oracle_kronecker_linking)
+set_tests_properties(stage1.oracle_kronecker_linking PROPERTIES
+  LABELS "stage1;oracle"
+  SKIP_RETURN_CODE 77)
