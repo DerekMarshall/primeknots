@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The explicit formula & the Deninger gap — Stage 5</title>
+  <link rel="stylesheet" href="common.css" />
+  <style>
+    .axis text { font: 10px ui-monospace, Menlo, monospace; fill: var(--muted); }
+    .axis line, .axis path { stroke: var(--border); }
+    .stat { font-family: ui-monospace, Menlo, monospace; font-size: 13px; margin: 3px 0; }
+    .stat b { color: var(--accent); } .ok { color: #0f9d58; font-weight: bold; }
+    .controls { display: flex; align-items: center; gap: 12px; margin: 8px 0; flex-wrap: wrap; }
+    .controls button { font: 13px ui-monospace, monospace; padding: 4px 12px; cursor: pointer; }
+    .controls input[type=range] { flex: 1; min-width: 200px; }
+    .gap { background: color-mix(in srgb, var(--accent) 8%, transparent);
+           border-left: 3px solid var(--accent); padding: 8px 12px; margin: 8px 0;
+           font-size: 13px; border-radius: 3px; }
+    .swatch { display:inline-block; width:11px; height:11px; border-radius:2px; vertical-align:middle; margin-right:5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>The explicit formula, and the Deninger gap made visible</h1>
+    <p class="subtitle">Stage 5 — primes ⇄ zeta zeros (Weil/von Mangoldt explicit formula), beside a fully-constructed dynamical system where the same identity is geometry. Renders emitted JSON only.</p>
+  </header>
+  <div id="err" class="error" hidden></div>
+  <main>
+    <section class="panel">
+      <h2>ψ₀(x) reconstructed from ζ zeros — the spectral side building the prime staircase</h2>
+      <div class="controls">
+        <button id="play">▶ play</button>
+        <input type="range" id="slider" min="0" value="0" />
+        <span class="stat" id="frameinfo"></span>
+      </div>
+      <div id="psi"></div>
+      <div class="legend">
+        <span><span class="swatch" style="background:#888"></span>ψ₀ reference (midpoint-normalized staircase)</span>
+        <span><span class="swatch" style="background:#2563eb"></span>Σ over first m zeros</span>
+        <span><span class="swatch" style="background:#e8710a"></span>prime-power jumps</span>
+      </div>
+      <div class="stat" id="psinote" style="color:var(--muted)"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Model system: Ruelle zeta of a subshift — Euler product = determinant</h2>
+      <div id="dyn"></div>
+      <div class="legend">
+        <span><span class="swatch" style="background:#0f9d58"></span>1/det(I−L_s) (determinant side)</span>
+        <span><span class="swatch" style="background:#c026d3"></span>Π orbits (1−e^{−sℓ})⁻¹ (orbit side)</span>
+      </div>
+      <div class="gap" id="gap"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Zeros & certification</h2>
+      <div id="zstats"></div>
+      <div class="params" id="params"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script>
+    const fail = (m) => { const e=document.getElementById("err"); e.hidden=false;
+      e.textContent="Could not load data: "+m+"  —  ./build/bin/at emit --stage 5 --out viz/data && python3 -m http.server -d viz"; };
+
+    Promise.all([
+      fetch("data/psi_reconstruction.json").then(r=>{if(!r.ok)throw new Error("psi "+r.status);return r.json();}),
+      fetch("data/dyn_zeta.json").then(r=>{if(!r.ok)throw new Error("dyn "+r.status);return r.json();}),
+      fetch("data/zeros.json").then(r=>{if(!r.ok)throw new Error("zeros "+r.status);return r.json();}),
+    ]).then(([psi, dyn, zeros]) => {
+      drawPsi(psi); drawDyn(dyn); drawStats(psi, dyn, zeros);
+    }).catch(e=>fail(e.message));
+
+    function drawPsi(d) {
+      const W=760,H=380,ml=48,mb=34,mt=10,mr=14;
+      const xs=d.x, ref=d.reference, frames=d.frames;
+      const x=d3.scaleLinear().domain([xs[0], xs[xs.length-1]]).range([ml,W-mr]);
+      const yLo=d3.min(ref)-1, yHi=d3.max(frames[frames.length-1].values.concat(ref))+1;
+      const y=d3.scaleLinear().domain([yLo, yHi]).range([H-mb,mt]);
+      const svg=d3.select("#psi").append("svg").attr("width",W).attr("height",H)
+        .attr("viewBox",`0 0 ${W} ${H}`).style("max-width","100%").style("height","auto");
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-mb})`).call(d3.axisBottom(x));
+      svg.append("g").attr("class","axis").attr("transform",`translate(${ml},0)`).call(d3.axisLeft(y).ticks(6));
+      svg.append("text").attr("class","axis").attr("x",(ml+W)/2).attr("y",H-4).attr("text-anchor","middle").text("x");
+      // prime-power jump markers
+      svg.append("g").selectAll("line").data(d.prime_powers).join("line")
+        .attr("x1",p=>x(p.x)).attr("x2",p=>x(p.x)).attr("y1",mt).attr("y2",H-mb)
+        .attr("stroke","#e8710a").attr("stroke-opacity",0.25).attr("stroke-dasharray","2,3");
+      const line=d3.line().x((_,i)=>x(xs[i])).y(v=>y(v));
+      svg.append("path").datum(ref).attr("fill","none").attr("stroke","#888")
+        .attr("stroke-width",1.5).attr("d",line);
+      const recon=svg.append("path").attr("fill","none").attr("stroke","#2563eb").attr("stroke-width",1.8);
+
+      const slider=document.getElementById("slider"), info=document.getElementById("frameinfo");
+      slider.max=frames.length-1;
+      const show=(fi)=>{ const f=frames[fi]; recon.attr("d",line(f.values));
+        info.innerHTML=`m = <b>${f.m}</b> zeros &nbsp; max err (away from jumps) = <b>${f.max_err_smooth.toExponential(2)}</b>`;
+        slider.value=fi; };
+      slider.oninput=()=>show(+slider.value);
+      let playing=false, timer=null;
+      const btn=document.getElementById("play");
+      btn.onclick=()=>{ playing=!playing; btn.textContent=playing?"⏸ pause":"▶ play";
+        if(playing){ let fi=+slider.value; timer=setInterval(()=>{ fi=(fi+1)%frames.length; show(fi);
+          if(fi===frames.length-1){/*stay*/} },700); } else clearInterval(timer); };
+      show(0);
+      document.getElementById("psinote").textContent =
+        `The series converges to ψ₀ = ½(ψ(x⁻)+ψ(x⁺)); at a prime power that is the jump midpoint ψ(x)−Λ(x)/2, not ψ(x). Overshoot at the jumps is Gibbs — it is why "max err" away from jumps is the convergence metric.`;
+    }
+
+    function drawDyn(d) {
+      const W=760,H=320,ml=48,mb=34,mt=10,mr=14;
+      const all=d.models.flatMap(m=>m.s.map((s,i)=>({s, v:m.determinant[i]})));
+      const smax=d3.max(d.models,m=>d3.max(m.s)), smin=d3.min(d.models,m=>d3.min(m.s));
+      const vmax=Math.min(8, d3.max(all,a=>a.v??0));
+      const x=d3.scaleLinear().domain([smin,smax]).range([ml,W-mr]);
+      const y=d3.scaleLinear().domain([0,vmax]).range([H-mb,mt]);
+      const svg=d3.select("#dyn").append("svg").attr("width",W).attr("height",H)
+        .attr("viewBox",`0 0 ${W} ${H}`).style("max-width","100%").style("height","auto");
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-mb})`).call(d3.axisBottom(x));
+      svg.append("g").attr("class","axis").attr("transform",`translate(${ml},0)`).call(d3.axisLeft(y).ticks(6));
+      svg.append("text").attr("class","axis").attr("x",(ml+W)/2).attr("y",H-4).attr("text-anchor","middle").text("s");
+      svg.append("text").attr("class","axis").attr("transform",`translate(12,${H/2}) rotate(-90)`).attr("text-anchor","middle").text("ζ_flow(s)");
+      const dash=["","6,4"];
+      d.models.forEach((m,mi)=>{
+        const line=d3.line().x((_,i)=>x(m.s[i])).y(v=>y(Math.min(v,vmax))).defined(v=>v!=null&&v<=vmax);
+        svg.append("path").datum(m.determinant).attr("fill","none").attr("stroke","#0f9d58")
+          .attr("stroke-width",2).attr("stroke-dasharray",dash[mi]).attr("d",line);
+        // orbit side as sparse dots
+        svg.append("g").selectAll("circle").data(m.orbit.map((v,i)=>({v,s:m.s[i]})).filter((_,i)=>i%4===0))
+          .join("circle").attr("cx",o=>x(o.s)).attr("cy",o=>y(Math.min(o.v,vmax)))
+          .attr("r",2.2).attr("fill","#c026d3").attr("fill-opacity",v=>v.v<=vmax?0.8:0)
+          .append("title").text(o=>`${m.name} s=${o.s.toFixed(3)} orbit=${o.v.toFixed(6)}`);
+        // abscissa marker
+        svg.append("line").attr("x1",x(m.abscissa)).attr("x2",x(m.abscissa)).attr("y1",mt).attr("y2",H-mb)
+          .attr("stroke","#888").attr("stroke-dasharray","2,3").attr("stroke-opacity",0.5);
+      });
+      document.getElementById("gap").innerHTML = "<b>The construction gap.</b> " + d.construction_gap;
+    }
+
+    function drawStats(psi, dyn, zeros) {
+      const a=zeros.aggregate;
+      let s = `<div class="stat">Zeros located to t_top = <b>${a.t_top.toFixed(3)}</b>: found <b>${a.n_found}</b>, Turing-certified N = <b>${a.n_expected}</b> — completeness <span class="ok">${a.complete?"CERTIFIED ✓":"INCOMPLETE"}</span></div>`;
+      if (a.max_odlyzko_dev!=null)
+        s += `<div class="stat">max |our γ − Odlyzko| over ${a.n_found} zeros = <b>${a.max_odlyzko_dev.toExponential(2)}</b> (≥ 8 dp; residual is the table's own floor)</div>`;
+      s += `<div class="stat">good Gram points ${a.n_good_gram} · Gram-law exceptions ${a.n_gram_law_exceptions} · close pairs ${a.n_close_pairs} · blocks refined for close pairs ${a.n_refined_blocks}</div>`;
+      const dd = dyn.models.map(m=>`${m.name}: orbit vs det agree to ${m.max_orbit_det_diff.toExponential(2)}`).join(" · ");
+      s += `<div class="stat">model twins — ${dd}</div>`;
+      document.getElementById("zstats").innerHTML = s;
+      document.getElementById("params").textContent =
+        `zeros: ${zeros.schema} ${JSON.stringify(zeros.params)}\n`+
+        `psi:   ${psi.schema} ${JSON.stringify(psi.params)}\n`+
+        `dyn:   ${dyn.schema} orbit_truncation_N=${dyn.orbit_truncation_N}\n`+
+        `generated_by: ${zeros.generated_by}`;
+    }
+  </script>
+</body>
+</html>

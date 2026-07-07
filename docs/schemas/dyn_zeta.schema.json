@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dyn_zeta/1",
+  "title": "dyn_zeta",
+  "description": "Stage 5 model system: the Ruelle/dynamical zeta of a suspension flow over a subshift of finite type, computed as an Euler product over closed orbits (orbit side) and as 1/det(I-L_s) (determinant side), twinned over a grid of s. The construction_gap label contrasts this fully-constructed system with Deninger's conjectural arithmetic flow.",
+  "type": "object",
+  "required": ["schema", "generated_by", "construction_gap", "orbit_truncation_N", "models"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "dyn_zeta/1"},
+    "generated_by": {"type": "string"},
+    "construction_gap": {"type": "string"},
+    "orbit_truncation_N": {"type": "integer"},
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "abscissa", "roof", "s", "determinant", "orbit", "max_orbit_det_diff"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string"},
+          "abscissa": {"type": "number"},
+          "roof": {"type": "array", "items": {"type": "number"}},
+          "s": {"type": "array", "items": {"type": "number"}},
+          "determinant": {"type": "array", "items": {"type": ["number", "null"]}},
+          "orbit": {"type": "array", "items": {"type": ["number", "null"]}},
+          "closed_form": {"type": "array", "items": {"type": ["number", "null"]}},
+          "max_orbit_det_diff": {"type": "number"}
+        }
+      }
+    }
+  }
+}

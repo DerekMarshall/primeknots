@@ -14,6 +14,7 @@
 #include "emit/emit_classgroups.h"
 #include "emit/emit_cs.h"
 #include "emit/emit_linking.h"
+#include "emit/emit_zeta.h"
 
 #ifndef AT_GIT_FALLBACK
 #define AT_GIT_FALLBACK "unknown"
@@ -63,8 +64,10 @@ int main(int argc, char** argv) {
     if (std::strcmp(argv[1], "emit") == 0) {
         std::string stage = opt(argc, argv, "--stage", "");
         std::string out = opt(argc, argv, "--out", "viz/data");
-        // stage-appropriate default bound (stages 3,4 sweep larger discriminants).
-        const char* bound_default = (stage == "3" || stage == "4") ? "2000000" : "1000";
+        // stage-appropriate default bound (stages 3,4 sweep larger discriminants;
+        // stage 5's "bound" is the zero-search height t_max).
+        const char* bound_default = (stage == "3" || stage == "4") ? "2000000"
+                                    : (stage == "5") ? "500" : "1000";
         unsigned long long bound = std::strtoull(opt(argc, argv, "--bound", bound_default), nullptr, 10);
         unsigned long long gnodes = std::strtoull(opt(argc, argv, "--graph-nodes", "40"), nullptr, 10);
 
@@ -99,8 +102,18 @@ int main(int argc, char** argv) {
                 out.c_str(), bound);
             return 0;
         }
+        if (stage == "5") {
+            // --bound here is the zero-search height t_max (default 500).
+            double t_max = static_cast<double>(bound);
+            const char* odl = opt(argc, argv, "--odlyzko", "data/odlyzko/zeros1");
+            at::emit::emit_stage5(out, t_max, odl, resolve_generated_by());
+            std::fprintf(stderr,
+                "at emit: stage 5 -> %s/{zeros,psi_reconstruction,dyn_zeta}.json "
+                "(t_max=%.0f)\n", out.c_str(), t_max);
+            return 0;
+        }
         std::fprintf(stderr,
-            "at emit: no emitter for stage '%s' (stages 1-4 are built)\n",
+            "at emit: no emitter for stage '%s' (stages 1-5 are built)\n",
             stage.c_str());
         return 2;
     }

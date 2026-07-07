@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "zeros/1",
+  "title": "zeros",
+  "description": "Stage 5: nontrivial zeta zeros located by Riemann-Siegel scan + Euler-Maclaurin refinement, with the Turing/Rosser-block completeness certificate and (when the Odlyzko oracle is present) the per-zero deviation.",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "aggregate", "zeros"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "zeros/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["t_max", "engine", "oracle"],
+      "properties": {
+        "t_max": {"type": "number"},
+        "engine": {"type": "string"},
+        "oracle": {"type": "string"}
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "required": ["complete", "n_expected", "n_found", "t_top", "n_good_gram",
+                   "n_gram_law_exceptions", "n_close_pairs", "n_refined_blocks",
+                   "max_odlyzko_dev"],
+      "properties": {
+        "complete": {"type": "boolean"},
+        "n_expected": {"type": "integer"},
+        "n_found": {"type": "integer"},
+        "t_top": {"type": "number"},
+        "n_good_gram": {"type": "integer"},
+        "n_gram_law_exceptions": {"type": "integer"},
+        "n_close_pairs": {"type": "integer"},
+        "n_refined_blocks": {"type": "integer"},
+        "max_odlyzko_dev": {"type": ["number", "null"]}
+      }
+    },
+    "zeros": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["n", "gamma"],
+        "additionalProperties": false,
+        "properties": {
+          "n": {"type": "integer", "minimum": 1},
+          "gamma": {"type": "number"},
+          "delta": {"type": "number"}
+        }
+      }
+    }
+  }
+}

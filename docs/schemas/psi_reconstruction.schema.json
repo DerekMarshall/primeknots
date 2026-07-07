@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "psi_reconstruction/1",
+  "title": "psi_reconstruction",
+  "description": "Stage 5: the von Mangoldt explicit formula, animated. The midpoint-normalized reference psi_0 staircase, plus per-zero-count reconstruction frames (waves summed over zeta zeros) converging onto it, with per-frame max error. At prime powers the target is the jump midpoint psi(x)-Lambda(x)/2.",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "x", "reference", "prime_powers", "frames"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "psi_reconstruction/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["x_min", "x_max", "n_x", "n_zeros_available"],
+      "properties": {
+        "x_min": {"type": "number"},
+        "x_max": {"type": "number"},
+        "n_x": {"type": "integer"},
+        "n_zeros_available": {"type": "integer"},
+        "note": {"type": "string"}
+      }
+    },
+    "x": {"type": "array", "items": {"type": "number"}},
+    "reference": {"type": "array", "items": {"type": "number"}},
+    "prime_powers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["x", "lambda"],
+        "additionalProperties": false,
+        "properties": {"x": {"type": "integer"}, "lambda": {"type": "number"}}
+      }
+    },
+    "frames": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["m", "max_err", "max_err_smooth", "values"],
+        "additionalProperties": false,
+        "properties": {
+          "m": {"type": "integer", "minimum": 1},
+          "max_err": {"type": "number"},
+          "max_err_smooth": {"type": "number"},
+          "values": {"type": "array", "items": {"type": "number"}}
+        }
+      }
+    }
+  }
+}

@@ -18,6 +18,9 @@ FILE_SCHEMAS = {
     "borromean.json": "borromean.schema.json",
     "classgroups.json": "classgroups.schema.json",
     "cs_partition.json": "cs_partition.schema.json",
+    "zeros.json": "zeros.schema.json",
+    "psi_reconstruction.json": "psi_reconstruction.schema.json",
+    "dyn_zeta.json": "dyn_zeta.schema.json",
 }
 
 
@@ -38,9 +41,10 @@ def main() -> int:
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    for stage in ("1", "2", "3", "4"):
-        # keep validation fast: small bounds (schema-shape check, not full sweeps)
-        b = "5000" if stage in ("3", "4") else args.bound
+    for stage in ("1", "2", "3", "4", "5"):
+        # keep validation fast: small bounds (schema-shape check, not full sweeps).
+        # Stage 5's bound is the zero-search height t_max — keep it small here.
+        b = {"3": "5000", "4": "5000", "5": "120"}.get(stage, args.bound)
         r = subprocess.run([args.at, "emit", "--stage", stage, "--out", str(out),
                             "--bound", b], capture_output=True, text=True)
         if r.returncode != 0:
