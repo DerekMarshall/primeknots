@@ -141,6 +141,7 @@ set_tests_properties(stage2.oracle_conic_qfsolve PROPERTIES
 add_executable(verify_stage3
   verify_main.cpp
   stage3/qform_tests.cpp
+  stage3/redei_reichardt_tests.cpp
   stage3/oracle_tests.cpp)
 target_include_directories(verify_stage3 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
@@ -150,15 +151,19 @@ target_link_libraries(verify_stage3 PRIVATE at_classgroup at_oracle)
 set(STAGE3_CASES
   twin_classno_cycles_vs_composition
   theorem_reduce_is_reduced_and_equivalent
-  theorem_compose_group_axioms)
+  theorem_compose_group_axioms
+  theorem_genus_2rank
+  theorem_redei_matrix_rows_sum_zero
+  theorem_redei_reichardt_4rank)
 foreach(case ${STAGE3_CASES})
   add_test(NAME stage3.${case} COMMAND verify_stage3 --test-case=${case})
   set_tests_properties(stage3.${case} PROPERTIES LABELS "stage3")
 endforeach()
 
-add_test(NAME stage3.oracle_narrow_class_number
-         COMMAND verify_stage3 --test-case=oracle_narrow_class_number)
-set_tests_properties(stage3.oracle_narrow_class_number PROPERTIES
-  LABELS "stage3;oracle"
-  SKIP_RETURN_CODE 77
-  RESOURCE_LOCK "gp")
+foreach(ocase oracle_narrow_class_number oracle_narrow_structure_match)
+  add_test(NAME stage3.${ocase} COMMAND verify_stage3 --test-case=${ocase})
+  set_tests_properties(stage3.${ocase} PROPERTIES
+    LABELS "stage3;oracle"
+    SKIP_RETURN_CODE 77
+    RESOURCE_LOCK "gp")
+endforeach()
