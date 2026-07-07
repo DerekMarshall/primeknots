@@ -10,6 +10,9 @@
 /.spyc-context-*.json
 .DS_Store
 
+# Python venv for the JSON-schema validator (verify/validate_json.py)
+/.venv/
+
 # Common C/C++ artifacts (out-of-tree builds should keep these empty, but just in case)
 *.o
 *.obj

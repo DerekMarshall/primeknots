@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "linking_graph/1",
+  "title": "linking_graph",
+  "description": "Stage 1 force-layout graph over a thresholded prime range: nodes are primes ≡ 1 (mod 4), edges are linked pairs (Legendre symbol -1).",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "nodes", "edges"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "linking_graph/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["prime_bound", "n_primes", "graph_nodes", "edge_rule"],
+      "properties": {
+        "prime_bound": {"type": "integer", "minimum": 0},
+        "n_primes": {"type": "integer", "minimum": 0},
+        "graph_nodes": {"type": "integer", "minimum": 0},
+        "edge_rule": {"type": "string"}
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "prime", "degree"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "integer", "minimum": 0},
+          "prime": {"type": "integer", "minimum": 2},
+          "degree": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "target"],
+        "additionalProperties": false,
+        "properties": {
+          "source": {"type": "integer", "minimum": 0},
+          "target": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  }
+}

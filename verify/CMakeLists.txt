@@ -78,3 +78,22 @@ add_test(NAME stage1.oracle_kronecker_linking
 set_tests_properties(stage1.oracle_kronecker_linking PROPERTIES
   LABELS "stage1;oracle"
   SKIP_RETURN_CODE 77)
+
+# validate-json: emit Stage 1 JSON and validate every file against its schema.
+# Prefers the project .venv interpreter (which has jsonschema); otherwise falls
+# back to system python3 and SKIPs (77) if jsonschema is unavailable.
+if(EXISTS ${CMAKE_SOURCE_DIR}/.venv/bin/python3)
+  set(AT_VALIDATE_PY ${CMAKE_SOURCE_DIR}/.venv/bin/python3)
+else()
+  find_program(AT_VALIDATE_PY NAMES python3 python)
+endif()
+if(AT_VALIDATE_PY)
+  add_test(NAME stage1.validate_json
+           COMMAND ${AT_VALIDATE_PY} ${CMAKE_CURRENT_SOURCE_DIR}/validate_json.py
+             --at $<TARGET_FILE:at>
+             --schema-dir ${CMAKE_SOURCE_DIR}/docs/schemas
+             --out ${CMAKE_CURRENT_BINARY_DIR}/emit_check)
+  set_tests_properties(stage1.validate_json PROPERTIES
+    LABELS "stage1;validate-json"
+    SKIP_RETURN_CODE 77)
+endif()

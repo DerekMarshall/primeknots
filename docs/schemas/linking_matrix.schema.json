@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "linking_matrix/1",
+  "title": "linking_matrix",
+  "description": "Stage 1 mod-2 linking matrix of primes ≡ 1 (mod 4): prime labels, base64 bit-rows, and empirical density/degree statistics.",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "n", "row_bytes", "primes", "rows_base64", "stats"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "linking_matrix/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["prime_bound", "n_primes", "residue_class"],
+      "properties": {
+        "prime_bound": {"type": "integer", "minimum": 0},
+        "n_primes": {"type": "integer", "minimum": 0},
+        "residue_class": {"type": "string"}
+      }
+    },
+    "n": {"type": "integer", "minimum": 0},
+    "row_bytes": {"type": "integer", "minimum": 0},
+    "primes": {"type": "array", "items": {"type": "integer", "minimum": 2}},
+    "rows_base64": {"type": "array", "items": {"type": "string"}},
+    "stats": {
+      "type": "object",
+      "required": ["off_diagonal_ones", "off_diagonal_total", "density", "row_degree_min", "row_degree_max", "row_degree_mean"],
+      "properties": {
+        "off_diagonal_ones": {"type": "integer", "minimum": 0},
+        "off_diagonal_total": {"type": "integer", "minimum": 0},
+        "density": {"type": "number", "minimum": 0, "maximum": 1},
+        "row_degree_min": {"type": "integer", "minimum": 0},
+        "row_degree_max": {"type": "integer", "minimum": 0},
+        "row_degree_mean": {"type": "number", "minimum": 0}
+      }
+    }
+  }
+}
