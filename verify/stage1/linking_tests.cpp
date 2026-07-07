@@ -53,6 +53,36 @@ TEST_CASE("theorem_quadratic_reciprocity_at_scale") {
     REQUIRE(pairs == n * (n - 1) / 2);
 }
 
+// Structural symmetry of the as-built matrix: compare it word-for-word against
+// its own transpose over the WHOLE matrix (no sampling). Unlike the pairwise
+// reciprocity check above, this compares the bit-packed storage directly via
+// operator==, so it also catches any stray bit in a row's padding words.
+TEST_CASE("theorem_matrix_symmetry_bitrows") {
+    const LinkingMatrix& m = shared();
+    const std::size_t n = m.primes.size();
+    REQUIRE(n == expected_primes());
+
+    at::linking::F2Matrix t(n, n);
+    for (std::size_t i = 0; i < n; ++i)
+        for (std::size_t j = 0; j < n; ++j)
+            if (m.lk.get(j, i)) t.set(i, j, true);
+    REQUIRE(m.lk == t);  // M == Mᵀ, full bit-packed comparison
+
+    // Degree symmetry as an independent structural witness: row i popcount ==
+    // column i popcount, every row.
+    std::size_t rows_checked = 0;
+    for (std::size_t i = 0; i < n; ++i) {
+        std::size_t col = 0;
+        for (std::size_t k = 0; k < n; ++k)
+            if (m.lk.get(k, i)) ++col;
+        CHECK(m.lk.row_popcount(i) == col);
+        ++rows_checked;
+    }
+    MESSAGE("cases: " << rows_checked << " bit-rows vs columns; M == Mᵀ over "
+                      << n << "×" << n << " (" << n * n << " bits, no sampling)");
+    REQUIRE(rows_checked == n);
+}
+
 // twin: the matrix was filled with the fast Legendre twin (legendre_euler, via
 // modpow). Recompute a documented sample with the reciprocity twin
 // (legendre_recip, via jacobi — no modpow) and require agreement. Sampling

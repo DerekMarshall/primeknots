@@ -64,6 +64,7 @@ target_link_libraries(verify_stage1 PRIVATE at_linking at_oracle)
 set(STAGE1_CASES
   theorem_linking_vertex_set
   theorem_quadratic_reciprocity_at_scale
+  theorem_matrix_symmetry_bitrows
   twin_linking_euler_vs_reciprocity
   invariance_build_parallel_vs_serial
   twin_f2rank_packed_vs_naive
