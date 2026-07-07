@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "core/modpow.h"
 #include "oracle/pari.h"
 #include "symbols/jacobi.h"
 #include "symbols/legendre.h"
@@ -86,4 +87,59 @@ TEST_CASE("oracle_kronecker") {
     MESSAGE("cases: " << lmatched
                       << " Legendre values matched PARI/GP kronecker()");
     REQUIRE(lmatched == primes.size() * 12);
+}
+
+// oracle: core::modpow refereed by PARI/GP's Mod(a,m)^e, a fully independent
+// modular-exponentiation implementation. This closes the shared-ladder caveat
+// in docs/notes/twin-independence.md: modpow and modpow_naive share the
+// square-and-multiply skeleton, so gp is the outside witness that the ladder
+// itself is correct. Exercises both the odd (Montgomery) and even (direct)
+// modulus paths, with large exponents to stress the ladder.
+TEST_CASE("oracle_modpow") {
+    std::optional<std::string> gp = oracle::find_gp();
+    if (!gp) {
+        MESSAGE("[SKIP] oracle_modpow: PARI/GP `gp` not found on PATH.");
+        at::verify::g_oracle_skipped = true;
+        return;
+    }
+
+    struct T { u64 a, m, e; };
+    std::vector<u64> mods = {13ULL,    61ULL,     937ULL,   65'537ULL,
+                             9'973ULL, 1'000'000'007ULL,           // odd primes
+                             15ULL,    100ULL,    1'000ULL,        // odd/even composites
+                             4'294'967'296ULL,                     // 2^32, even -> direct path
+                             1'000'000ULL};
+    std::vector<u64> exps = {0ULL,     1ULL,      2ULL,     3ULL,   7ULL,
+                             63ULL,    64ULL,     1'000ULL, 1'000'000ULL,
+                             4'294'967'295ULL, 1'000'000'000'000ULL};  // stress the ladder
+    std::vector<T> ts;
+    u64 state = 0x9E3779B97F4A7C15ULL;
+    for (u64 m : mods) {
+        for (u64 e : exps) {
+            for (int k = 0; k < 3; ++k) {
+                state = state * 6364136223846793005ULL + 1442695040888963407ULL;
+                ts.push_back({(state >> 1) % m, m, e});
+            }
+        }
+    }
+
+    std::ostringstream script;
+    for (const T& t : ts) {
+        script << "print(lift(Mod(" << t.a << ", " << t.m << ")^" << t.e
+               << "))\n";
+    }
+    std::string out = oracle::run_gp(*gp, script.str());
+
+    std::istringstream lines(out);
+    std::string line;
+    u64 matched = 0;
+    for (const T& t : ts) {
+        REQUIRE(std::getline(lines, line));
+        CHECK(modpow(t.a, t.e, t.m) == std::stoull(line));
+        ++matched;
+    }
+    MESSAGE("cases: " << matched
+                      << " modpow values matched PARI/GP Mod(a,m)^e");
+    REQUIRE(matched == ts.size());
+    REQUIRE(matched == mods.size() * exps.size() * 3);
 }

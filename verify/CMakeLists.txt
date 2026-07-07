@@ -30,12 +30,14 @@ foreach(case ${STAGE0_CASES})
   set_tests_properties(stage0.${case} PROPERTIES LABELS "stage0")
 endforeach()
 
-# Oracle referee: reports SKIP (exit 77) when gp is absent, PASS/FAIL otherwise.
-add_test(NAME stage0.oracle_kronecker
-         COMMAND verify_stage0 --test-case=oracle_kronecker)
-set_tests_properties(stage0.oracle_kronecker PROPERTIES
-  LABELS "stage0;oracle"
-  SKIP_RETURN_CODE 77)
+# Oracle referees: report SKIP (exit 77) when gp is absent, PASS/FAIL otherwise.
+foreach(ocase oracle_kronecker oracle_modpow)
+  add_test(NAME stage0.${ocase}
+           COMMAND verify_stage0 --test-case=${ocase})
+  set_tests_properties(stage0.${ocase} PROPERTIES
+    LABELS "stage0;oracle"
+    SKIP_RETURN_CODE 77)
+endforeach()
 
 # Clean-SKIP contract test: run the oracle suite with gp scrubbed from PATH and
 # assert a *visible* SKIP (exit 77 + "[SKIP]" line), never a silent pass or a

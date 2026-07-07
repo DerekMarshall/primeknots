@@ -38,6 +38,12 @@ done.
   ladder is not where bugs hide; the reduction is, and there the two are fully
   independent. **Independent for the purpose that matters** (noted explicitly
   because, unlike the pairs above, the exponentiation skeleton *is* shared).
+- **Shared-ladder caveat CLOSED (2026-07-07):** `oracle_modpow`
+  (verify/stage0/oracle_tests.cpp) referees `core::modpow` against PARI/GP's
+  `Mod(a,m)^e` over 363 samples spanning odd (Montgomery) and even (direct)
+  moduli with large exponents. gp's powering shares no code with ours, so a bug
+  in the common ladder cannot survive it. Added at the start of the Stage 1
+  session, before any Stage 1 code, per the reviewer's instruction.
 
 ### jacobi vs product-of-Legendre-over-factors  (reviewed 2026-07-07)
 
