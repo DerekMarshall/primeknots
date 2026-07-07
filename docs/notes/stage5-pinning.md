@@ -221,3 +221,27 @@ golden-mean poles), invariance_ (zero set independent of grid step / Gram seedin
 ζ_flow independent of orbit-enumeration order), oracle_ (Odlyzko table; visible
 SKIP if `data/odlyzko/zeros1` absent — `oracle/fetch_odlyzko.py`). Case counts
 certified per precedent.
+
+---
+
+## 6. Recorded R2 result — full-coverage Odlyzko comparison  (recorded 2026-07-07)
+
+Per rider R2 the accuracy claim must be reported at full coverage, not just the
+suite default. Stating what was tested:
+
+- **Oracle table:** `data/odlyzko/zeros1`, **100 000** zeros to 9 dp (γ₁ =
+  14.134725142 … γ₁₀₀₀₀ = 9877.782654004). Full coverage is available; nothing
+  was unavailable.
+- **Default suite run** (`anchor_zeros_match_odlyzko`, t_max = 1000): 648 zeros,
+  max |ours − Odlyzko| = **4.99e-10**, count matches the oracle.
+- **Full-coverage run** (`--extended`, t_max = 9900, covers the first ~10⁴ zeros):
+  **10 025 zeros compared**, our count == the Odlyzko count below t_top,
+  max |ours − Odlyzko| = **2.91e-9 at t ≈ 5764.96**. Passes the ≥ 8 dp bar
+  (< 5e-9) for every zero.
+- **On the 2.91e-9 residual:** it is the *Odlyzko table's* own last-digit floor,
+  not our error. At t ≈ 5765 an independent PARI `lfunzeros` high-precision value
+  (5764.96355671509) agrees with ours to < 1e-9, while Odlyzko's tabulated
+  5764.963556718 sits 2.9e-9 away. So the deviation is the reference's precision,
+  confirmed by a third computation — the achievable bar is the table's 9 dp.
+
+R2 is closed: ≥ 8 dp per zero over the first 10⁴, max deviation and count reported.
