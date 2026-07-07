@@ -70,6 +70,28 @@ observes, so:
   other. This test itself always PASSES (it verifies the mechanism); it is not
   itself skipped.
 
+### R6 — Explicit formula converges to the jump MIDPOINT, not ψ(x)  (resolved 2026-07-07)
+
+**Discrepancy (erratum against RESEARCH.md §7.2).** RESEARCH.md §7.2 writes the
+von Mangoldt explicit formula and says the partial sums over zeros are "converging
+onto ψ(x)", with "Quantitative verification: max-error of the partial reconstruction
+vs. directly computed ψ(x)." That is correct only where ψ is continuous. The series
+x − Σ_ρ x^ρ/ρ − log 2π − ½ log(1−x⁻²) converges to the **normalized** ψ₀(x) =
+½(ψ(x⁻)+ψ(x⁺)). At a prime power x=p^k, ψ (right-continuous, ψ(x)=Σ_{n≤x}Λ(n)) jumps
+by Λ(x)=log p, so ψ₀(x) = ψ(x) − Λ(x)/2 ≠ ψ(x).
+
+**Witness (PARI, x=8=2³).** ψ(8⁻)=6.04025471, ψ(8⁺)=6.73340189, jump=log2=0.69314718;
+midpoint ½(ψ(8⁻)+ψ(8⁺)) = 6.38682830 = ψ(8⁺)−log2/2. The reconstruction targets
+6.38682830, not 6.73340189.
+
+**Resolution (rider R3).** The reference function for the error metric is ψ₀. At
+non-prime-power x, ψ₀(x)=ψ(x) and the RESEARCH.md wording is fine. At prime powers
+the test asserts convergence to the **midpoint** ψ(x)−Λ(x)/2; asserting convergence
+to ψ(x) there would be a spec bug. Full pinning in `docs/notes/stage5-pinning.md` §3.
+Truncated sums also show Gibbs overshoot at jumps — the midpoint is the N→∞ limit of
+the symmetric partial sum, so the prime-power convergence test uses a slack tolerance
+that tightens with zero count, not a fixed bound.
+
 ### R5 — `anchor_` and `invariance_` categories at Stage 0  (noted 2026-07-07)
 
 Not a discrepancy — recorded so their absence isn't read as an omission. Of the
