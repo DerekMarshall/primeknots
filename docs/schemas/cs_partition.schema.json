@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cs_partition/1",
+  "title": "cs_partition",
+  "description": "Stage 4: mod-2 arithmetic Dijkgraaf-Witten partition function (Hirano route) per prime set, computed both ways (LHS brute character sum, RHS closed form) with the match flag and row-parity phase class.",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "aggregate", "instances"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "cs_partition/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["prime_pool_bound", "disc_bound", "max_r", "residue_class", "route", "n_included", "n_excluded_pell"],
+      "properties": {
+        "prime_pool_bound": {"type": "integer", "minimum": 0},
+        "disc_bound": {"type": "integer", "minimum": 0},
+        "max_r": {"type": "integer", "minimum": 1},
+        "residue_class": {"type": "string"},
+        "route": {"type": "string"},
+        "n_included": {"type": "integer", "minimum": 0},
+        "n_excluded_pell": {"type": "integer", "minimum": 0}
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "required": ["all_match", "strata"],
+      "properties": {
+        "all_match": {"type": "boolean"},
+        "strata": {"type": "object"}
+      }
+    },
+    "instances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["primes", "r", "z_lhs", "z_rhs", "match", "phase_class"],
+        "additionalProperties": false,
+        "properties": {
+          "primes": {"type": "array", "items": {"type": "integer", "minimum": 2}},
+          "r": {"type": "integer", "minimum": 2},
+          "z_lhs": {"type": "integer"},
+          "z_rhs": {"type": "integer"},
+          "match": {"type": "boolean"},
+          "phase_class": {"type": "string", "enum": ["all_even", "all_odd", "mixed"]}
+        }
+      }
+    }
+  }
+}

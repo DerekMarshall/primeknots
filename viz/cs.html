@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arithmetic Chern–Simons partition function — Stage 4</title>
+  <link rel="stylesheet" href="common.css" />
+  <style>
+    .axis text { font: 11px ui-monospace, Menlo, monospace; fill: var(--muted); }
+    .axis line, .axis path { stroke: var(--border); }
+    .stat { font-family: ui-monospace, Menlo, monospace; font-size: 13px; margin: 3px 0; }
+    .stat b { color: var(--accent); } .ok { color: #0f9d58; font-weight: bold; }
+    .swatch { display:inline-block; width:11px; height:11px; border-radius:50%; vertical-align:middle; margin-right:5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>The arithmetic Chern–Simons partition function</h1>
+    <p class="subtitle">Stage 4 — mod-2 Dijkgraaf–Witten Z_c(X̄) for K=ℚ(√(p₁···p_r)), pᵢ≡1 mod 4 (Hirano route). LHS (brute character sum) vs RHS (closed form). Renders emitted JSON only.</p>
+  </header>
+  <div id="err" class="error" hidden></div>
+  <main>
+    <section class="panel">
+      <h2>Z_c by number of ramified primes and phase class</h2>
+      <div id="scatter"></div>
+      <div class="legend">
+        <span><span class="swatch" style="background:#0f9d58"></span>all-even row parity → Z_c = 2^{r−1}</span>
+        <span><span class="swatch" style="background:#e8710a"></span>all-odd → 0</span>
+        <span><span class="swatch" style="background:#c026d3"></span>mixed → 0</span>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Aggregate</h2>
+      <div id="stats"></div>
+      <div class="params" id="params"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script>
+    const fail = (m) => { const e=document.getElementById("err"); e.hidden=false;
+      e.textContent="Could not load data: "+m+"  —  ./build/bin/at emit --stage 4 --out viz/data && python3 -m http.server -d viz"; };
+    const COL = { all_even:"#0f9d58", all_odd:"#e8710a", mixed:"#c026d3" };
+
+    fetch("data/cs_partition.json").then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
+      const ins = d.instances;
+      const W=560,H=420,ml=54,mb=44,mt=12,mr=12;
+      const rMin=d3.min(ins,i=>i.r), rMax=d3.max(ins,i=>i.r);
+      const zMax=d3.max(ins,i=>Math.max(i.z_lhs,i.z_rhs));
+      const x=d3.scaleLinear().domain([rMin-0.5,rMax+0.5]).range([ml,W-mr]);
+      const y=d3.scaleLinear().domain([-0.5,zMax+0.5]).range([H-mb,mt]);
+      const svg=d3.select("#scatter").append("svg").attr("width",W).attr("height",H);
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-mb})`)
+        .call(d3.axisBottom(x).ticks(rMax-rMin).tickFormat(d3.format("d")));
+      svg.append("g").attr("class","axis").attr("transform",`translate(${ml},0)`)
+        .call(d3.axisLeft(y).tickValues(d3.range(0,zMax+1)).tickFormat(d3.format("d")));
+      svg.append("text").attr("class","axis").attr("x",(ml+W)/2).attr("y",H-6).attr("text-anchor","middle").text("r = number of ramified primes");
+      svg.append("text").attr("class","axis").attr("transform",`translate(14,${(H)/2}) rotate(-90)`).attr("text-anchor","middle").text("Z_c(X̄)  (= LHS = RHS)");
+      // deterministic jitter by index; RHS==LHS so plot one point per instance (assert match by ring if not)
+      ins.forEach((it,idx)=>{
+        const jx=((idx*2654435761)%1000/1000-0.5)*0.7;
+        const jy=((idx*40503)%1000/1000-0.5)*0.35;
+        svg.append("circle").attr("cx",x(it.r+jx)).attr("cy",y(it.z_rhs+jy)).attr("r",2.6)
+          .attr("fill",COL[it.phase_class]).attr("fill-opacity",0.6)
+          .attr("stroke", it.match?"none":"#dc2626").attr("stroke-width",it.match?0:2)
+          .append("title").text(`{${it.primes.join(",")}}  Z_lhs=${it.z_lhs} Z_rhs=${it.z_rhs} ${it.phase_class}`);
+      });
+
+      const a=d.aggregate,p=d.params,s=a.strata;
+      document.getElementById("stats").innerHTML =
+        `<div class="stat">DW partition function over <b>${p.n_included}</b> prime sets (pℓ≡1 mod4, N(ε)=−1, r≤${p.max_r}):</div>`+
+        `<div class="stat">LHS (brute character sum) == RHS (closed form): <span class="ok">${a.all_match?"ALL MATCH ✓":"MISMATCH (red rings)"}</span></div>`+
+        `<div class="stat">excluded by N(ε)=−1 gate (pell_neg): <b>${p.n_excluded_pell}</b></div>`+
+        `<div class="stat">strata even[ae ${s.even_all_even}, ao ${s.even_all_odd}, mx ${s.even_mixed}]  odd[ae ${s.odd_all_even}, ao ${s.odd_all_odd}, mx ${s.odd_mixed}]</div>`+
+        `<div class="stat" style="color:var(--muted)">Z_c = 2^{r−1} iff every linking-matrix row-sum is even, else 0 — the partition function is a function of the linking matrix.</div>`;
+      document.getElementById("params").textContent =
+        `schema: ${d.schema}\ngenerated_by: ${d.generated_by}\nparams: ${JSON.stringify(p)}`;
+    }).catch(e=>fail(e.message));
+  </script>
+</body>
+</html>

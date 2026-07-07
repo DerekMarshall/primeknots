@@ -12,6 +12,7 @@
 
 #include "emit/emit_borromean.h"
 #include "emit/emit_classgroups.h"
+#include "emit/emit_cs.h"
 #include "emit/emit_linking.h"
 
 #ifndef AT_GIT_FALLBACK
@@ -62,8 +63,8 @@ int main(int argc, char** argv) {
     if (std::strcmp(argv[1], "emit") == 0) {
         std::string stage = opt(argc, argv, "--stage", "");
         std::string out = opt(argc, argv, "--out", "viz/data");
-        // stage-appropriate default bound (stage 3 sweeps larger discriminants).
-        const char* bound_default = (stage == "3") ? "2000000" : "1000";
+        // stage-appropriate default bound (stages 3,4 sweep larger discriminants).
+        const char* bound_default = (stage == "3" || stage == "4") ? "2000000" : "1000";
         unsigned long long bound = std::strtoull(opt(argc, argv, "--bound", bound_default), nullptr, 10);
         unsigned long long gnodes = std::strtoull(opt(argc, argv, "--graph-nodes", "40"), nullptr, 10);
 
@@ -91,8 +92,15 @@ int main(int argc, char** argv) {
                 out.c_str(), bound);
             return 0;
         }
+        if (stage == "4") {
+            at::emit::emit_stage4(out, bound, resolve_generated_by());
+            std::fprintf(stderr,
+                "at emit: stage 4 -> %s/cs_partition.json (disc_bound=%llu)\n",
+                out.c_str(), bound);
+            return 0;
+        }
         std::fprintf(stderr,
-            "at emit: no emitter for stage '%s' (stages 1, 2, 3 are built)\n",
+            "at emit: no emitter for stage '%s' (stages 1-4 are built)\n",
             stage.c_str());
         return 2;
     }
