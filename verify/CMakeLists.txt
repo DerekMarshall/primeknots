@@ -31,12 +31,15 @@ foreach(case ${STAGE0_CASES})
 endforeach()
 
 # Oracle referees: report SKIP (exit 77) when gp is absent, PASS/FAIL otherwise.
+# RESOURCE_LOCK "gp" serializes gp-spawning tests so a burst of simultaneous gp
+# process launches under `ctest -j` can't contend (an observed startup flake).
 foreach(ocase oracle_kronecker oracle_modpow)
   add_test(NAME stage0.${ocase}
            COMMAND verify_stage0 --test-case=${ocase})
   set_tests_properties(stage0.${ocase} PROPERTIES
     LABELS "stage0;oracle"
-    SKIP_RETURN_CODE 77)
+    SKIP_RETURN_CODE 77
+    RESOURCE_LOCK "gp")
 endforeach()
 
 # Clean-SKIP contract test: run the oracle suite with gp scrubbed from PATH and
@@ -78,7 +81,8 @@ add_test(NAME stage1.oracle_kronecker_linking
          COMMAND verify_stage1 --test-case=oracle_kronecker_linking)
 set_tests_properties(stage1.oracle_kronecker_linking PROPERTIES
   LABELS "stage1;oracle"
-  SKIP_RETURN_CODE 77)
+  SKIP_RETURN_CODE 77
+  RESOURCE_LOCK "gp")
 
 # validate-json: emit Stage 1 JSON and validate every file against its schema.
 # Prefers the project .venv interpreter (which has jsonschema); otherwise falls
@@ -130,4 +134,5 @@ add_test(NAME stage2.oracle_conic_qfsolve
          COMMAND verify_stage2 --test-case=oracle_conic_qfsolve)
 set_tests_properties(stage2.oracle_conic_qfsolve PROPERTIES
   LABELS "stage2;oracle"
-  SKIP_RETURN_CODE 77)
+  SKIP_RETURN_CODE 77
+  RESOURCE_LOCK "gp")
