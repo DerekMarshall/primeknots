@@ -23,11 +23,19 @@ QForm rho(const QForm& f);                   // Cohen §5.6 reduction step
 QForm reduce_indefinite(const QForm& f);     // apply rho to a reduced form
 std::vector<QForm> cycle(const QForm& reduced_form);  // the proper-equiv class
 
+// Canonical class representative: the lexicographically-minimal form in the
+// cycle. Two forms are properly equivalent iff they share a canonical_form.
+QForm canonical_form(const QForm& f);
+
 // Principal (identity) reduced form of discriminant D>0.
 QForm principal_form(at::core::i128 D);
 
 // Gauss composition (Cohen §5.4), reduced result. Same disc, primitive.
 QForm compose(const QForm& f, const QForm& g);
+
+// All narrow-class-group elements as canonical reps (BFS closure under
+// composition from prime-form generators). Size = h⁺(D).
+std::vector<QForm> class_group_elements(at::core::i128 D);
 
 // Narrow class number h⁺(D), two independent ways (Phase 1B twin):
 //  (A) enumerate reduced forms, count cycles;
