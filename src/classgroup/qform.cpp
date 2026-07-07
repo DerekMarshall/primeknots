@@ -131,22 +131,23 @@ QForm compose(const QForm& f, const QForm& g) {
     i128 D = f.disc();
     i128 a1 = f.a, b1 = f.b, a2 = g.a, b2 = g.b;
     i128 s = (b1 + b2) / 2;
-    i128 e = gcd_i128(gcd_i128(a1, a2), s);
-    i128 A = (a1 / e) * (a2 / e);          // = a1 a2 / e²
-    // B ≡ b1 (mod 2a1/e), B ≡ b2 (mod 2a2/e), then pick the lift with B²≡D (4A).
-    Crt cr = crt2(b1, 2 * (a1 / e), b2, 2 * (a2 / e));
+    i128 e = gcd_i128(gcd_i128(a1, a2), s);   // e >= 0 (gcd_i128 takes |·|)
+    i128 A = (a1 / e) * (a2 / e);             // = a1 a2 / e², SIGNED (indefinite)
+    // Congruences use the moduli's magnitudes (indefinite forms can have a<0):
+    //   B ≡ b1 (mod 2|a1|/e), B ≡ b2 (mod 2|a2|/e); lift so 4A | (B²−D).
+    i128 m1 = 2 * iabs(a1) / e, m2 = 2 * iabs(a2) / e;
+    Crt cr = crt2(((b1 % m1) + m1) % m1, m1, ((b2 % m2) + m2) % m2, m2);
     i128 B = cr.x, L = cr.lcm;
-    i128 twoA = 2 * A;
-    // candidates B + jL < 2A; choose the one making C=(B²−D)/(4A) integral.
-    for (i128 cand = B; cand < B + twoA; cand += L) {
-        i128 bb = ((cand % twoA) + twoA) % twoA;
-        if ((bb * bb - D) % (4 * A) == 0) {
-            return reduce_indefinite(QForm{A, bb, (bb * bb - D) / (4 * A)});
+    i128 modA = 2 * iabs(A);
+    i128 fourA = 4 * A;  // signed; divisibility/quotient are sign-agnostic
+    for (i128 cand = B; cand < B + modA; cand += L) {
+        i128 bb = ((cand % modA) + modA) % modA;
+        if ((bb * bb - D) % fourA == 0) {
+            return reduce_indefinite(QForm{A, bb, (bb * bb - D) / fourA});
         }
     }
-    // Fallback (should not happen): reduce with the raw CRT value.
-    i128 bb = ((B % twoA) + twoA) % twoA;
-    return reduce_indefinite(QForm{A, bb, (bb * bb - D) / (4 * A)});
+    i128 bb = ((B % modA) + modA) % modA;  // fallback
+    return reduce_indefinite(QForm{A, bb, (bb * bb - D) / fourA});
 }
 
 i128 narrow_class_number_by_cycles(i128 D) {

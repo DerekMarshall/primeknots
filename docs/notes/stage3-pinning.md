@@ -84,6 +84,46 @@ Genus check as internal confirmation: `r₂(Cl⁺)=t−1` holds for the narrow
 structures above (e.g. D=8845 narrow [4,2] has 2-rank 2 = t−1; ordinary would
 mislead on the 4-rank, e.g. D=221 narrow [4] has 4-rank 1 vs ordinary [2] 4-rank 0).
 
+### 1.3.1 Verbatim gp transcripts (R1)
+
+PARI's `D>0` semantics are a known confusion point, so the log carries the raw
+evidence, not a summary:
+
+```
+? D=221; qfbclassno(D)
+%  = 2
+? quadclassunit(D).no        \\ .cyc = [2]
+%  = 2
+? bnfnarrow(bnfinit(x^2-D))
+%  = [4, [4], [[275, 220; 0, 1]]]      \\ narrow h+ = 4, cyclic C4
+? norm(quadunit(D))
+%  = 1
+
+? D=8845; qfbclassno(D)
+%  = 4
+? quadclassunit(D).no        \\ .cyc = [2, 2]
+%  = 4
+? bnfnarrow(bnfinit(x^2-D))
+%  = [8, [4, 2], [[2211, 0; 0, 3], [21, 10; 0, 1]]]   \\ narrow h+ = 8, C4 x C2
+? norm(quadunit(D))
+%  = 1
+```
+
+Both: `qfbclassno == quadclassunit.no` (ordinary), and `bnfnarrow.no = 2 ×`
+that (narrow), since `N(ε)=+1`. D=221 is itself a Rédei–Reichardt instance:
+zero Rédei matrix ⇒ `r₄ = t−1 = 1` ⇒ `4 | h⁺`, matching `bnfnarrow` `[4]`.
+
+### 1.5 Negative-Pell empiric (R2)
+
+`N(ε) = −1 ⟺ h⁺ = h ⟺ x² − D y² = −1 is solvable`. Emitted per-discriminant as
+`pell_neg = (h⁺ == h)` (from our narrow vs the gp-ordinary cross-reference) and
+as an aggregate fraction in `classgroups.json`, **as an unasserted empiric**
+(no test asserts a density). This is the object of [S22]'s negative-Pell
+conjecture (Conj 3.2 there: density `1−α ≈ 0.5806`) and the Koymans–Pagano
+proof [KP22]; recorded for the record, not claimed. The ordinary `h` from
+`qfbclassno` is kept as a **labelled "ordinary" cross-reference** alongside the
+narrow `h⁺` for exactly this purpose (R2).
+
 ### 1.4 Algorithm verification (Cohen not committed)
 
 `reduce`/`ρ` pinned to [Coh93 §5.6]; `compose` to [Coh93 §5.4] (Gauss/Dirichlet).
