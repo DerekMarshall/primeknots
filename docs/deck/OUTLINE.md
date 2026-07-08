@@ -29,10 +29,10 @@ any `[data:ID]` in the built HTML lacks one.
 
 ## Act I — THE FAILURE MODE (4)
 
-- `S1` — **Title.** primeknots: named theorems of number theory, verified from scratch, where the process makes fitting impossible.
+- `S1` — **Title.** primeknots: named theorems of number theory, verified from scratch, where the process is designed to catch fitting.
 - `S2` — **A survey that read as mathematics.** A roadmap mixed real arithmetic topology with a fabricated "chaotic operator O_x"; the fiction was indistinguishable in prose.
 - `S3` — **Why it survived five revisions.** Each critique was absorbed as camouflage — the text got more plausible, not more true; agreement with a reviewer is not evidence.
-- `S4` — **The moral → Rule 1.** Agreement with expectation is evidence *only* when the process makes fitting impossible; hence: never fit conventions to expected answers.
+- `S4` — **The moral → Rule 1.** Agreement with expectation is evidence *only* when the process makes fitting detectable and costly; hence: never fit conventions to expected answers.
 
 ## Act II — THE DICTIONARY AND THE LADDER (bulk, one cluster per stage)
 
@@ -61,8 +61,8 @@ any `[data:ID]` in the built HTML lacks one.
 
 - `S22` — **The gallery.** Four pictures, each rendered from emitted JSON: linking heatmap, Borromean hypergraph, 4-rank diagonal, ψ beside the model flow.
 - `S23` — **What was verified.** The full ladder, green; N-case counts pulled from emitted JSON / test output (never retyped). `[data:suite-total]`
-- `S24` — **Honest scope.** Numerically verified over N cases ≠ proved; Deninger's system is not constructed; the mod-2 CS case is degenerate. What we did *not* claim.
-- `S25` — **Horizons.** CKKPPY odd-p over totally imaginary fields as future infrastructure; murmurations as the field's live frontier. References from RESEARCH.md §10 only.
+- `S24` — **Honest scope.** No new mathematics (every theorem is known, Gauss 1801–Stevenhagen 2022); numerically verified over N cases ≠ proved; Deninger's system is not constructed; the mod-2 CS case is degenerate. What we did *not* claim.
+- `S25` — **Horizons.** CKKPPY odd-p over totally imaginary fields as future infrastructure; murmurations as an active area (2022). References from RESEARCH.md §10 only.
 
 ---
 

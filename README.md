@@ -3,7 +3,7 @@
 [![CI](https://github.com/DerekMarshall/primeknots/actions/workflows/ci.yml/badge.svg)](https://github.com/DerekMarshall/primeknots/actions/workflows/ci.yml)
 &nbsp;·&nbsp; from-scratch C++20 &nbsp;·&nbsp; 63 verification tests, 0 failing &nbsp;·&nbsp; [MIT](LICENSE)
 
-**▶ [Explainer deck (live, with embedded viewers)](https://derekmarshall.github.io/primeknots/docs/deck/index.html)** · [PDF](docs/deck/deck.pdf) · [the epistemic ledger](docs/ERRATA.md)
+**▶ [Explainer deck (live, with embedded viewers)](https://derekmarshall.github.io/primeknots/docs/deck/index.html)** · [PDF](docs/deck/deck.pdf) · [the error ledger](docs/ERRATA.md)
 
 **Arithmetic topology, executable.** A from-scratch, dependency-free C++ suite that
 *verifies* — not just states — the theorem chain running from quadratic reciprocity
@@ -14,6 +14,9 @@ the Weil explicit formula (the orbit/spectrum duality), and non-abelian S₃
 Dijkgraaf–Witten counting (gauge theory as cubic-field tabulation). Every result is
 computed two independent ways or refereed by an external oracle; visualizations are
 emitted as JSON and rendered by static D3 viewers.
+
+No new mathematics: every theorem here is known (Gauss 1801 through Stevenhagen
+2022). The output is the verification, the tables, and the method.
 
 ## Gallery
 
@@ -40,7 +43,7 @@ emit --stage N`; sources in `viz/`).
 
 All green; stage gates are strict — nothing builds on a stage whose suite isn't.
 
-## Method — why you can believe the numbers
+## Method — how the numbers are checked
 
 The discipline is in [`CLAUDE.md`](CLAUDE.md). The load-bearing rules:
 
@@ -56,13 +59,14 @@ The discipline is in [`CLAUDE.md`](CLAUDE.md). The load-bearing rules:
 4. **Flag, don't smooth.** Ambiguities and source discrepancies are recorded, not
    quietly resolved to whatever makes tests pass.
 
-That this actually happened — that every party was caught being wrong, and every
-catch was a *computation or a citation* rather than an argument from authority — is
-documented in **[`docs/ERRATA.md`](docs/ERRATA.md)**, the project's epistemic ledger.
-It is the honest centerpiece: the roadmap generator, an LLM assistant, the spec
-author, the human reviewer, the coding agent, and the external referees were each
-caught at least once, by a witness value, an exhaustive sweep, an algebraic
-identity, a parity argument, an oracle cross-check, or a verbatim quote.
+Every party that touched the project — roadmap generator, LLM assistant, spec
+author, human reviewer, coding agent, external referees — was caught in at least one
+error, each by a witness value, an exhaustive sweep, an algebraic identity, a parity
+argument, an oracle cross-check, or a verbatim quote, never by an argument from
+authority. The record is **[`docs/ERRATA.md`](docs/ERRATA.md)**.
+
+This is n=1 — one project, one problem class, one operator: an existence proof that
+the discipline can be applied, not evidence that it generalizes.
 
 ## Build, test, run
 
@@ -85,5 +89,5 @@ absent, e.g. in CI.
 - [`docs/RESEARCH.md`](docs/RESEARCH.md) — the mathematics, stage by stage, with normative sources.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — modules, types, the JSON/viewer contract, acceptance criteria.
 - [`docs/notes/`](docs/notes/) — per-stage pinning logs and resolved discrepancies.
-- [`docs/ERRATA.md`](docs/ERRATA.md) — the epistemic ledger.
+- [`docs/ERRATA.md`](docs/ERRATA.md) — the error ledger.
 - `src/` core → symbols → linking → redei → classgroup → cs → zeta → dw; `verify/` the point of the repo; `oracle/` referees; `viz/` viewers.

@@ -48,7 +48,7 @@
 <section class="slide act">
   <div class="kicker">arithmetic topology, executable</div>
   <h1>primeknots</h1>
-  <p class="sub big">Named theorems of number theory, verified from scratch in C++ — where the <span class="em">process makes fitting the answer impossible</span>.</p>
+  <p class="sub big">Named theorems of number theory, verified from scratch in C++ — where the <span class="em">process is designed to catch fitting the answer</span>.</p>
   <p class="foot mono">github.com/DerekMarshall/primeknots · 63 tests, 0 failing · MIT</p>
 </section>
 
@@ -77,9 +77,9 @@
 <section class="slide">
   <div class="kicker">Act I — the moral</div>
   <h2>Rule 1</h2>
-  <p class="big">Agreement with expectation is evidence <span class="em">only</span> when the process makes fitting impossible.</p>
+  <p class="big">Agreement with expectation is evidence <span class="em">only</span> when the process makes fitting <span class="em">detectable and costly</span>.</p>
   <div class="panel big"><b>Never fit conventions to expected answers.</b> If a published anchor comes out wrong, the bug is in the code or in our <em>reading of the source</em> — go fix the reading. Flipping a sign until the known number appears is falsification of the experiment.</div>
-  <p class="sub">Everything after this slide is the machine that enforces Rule 1.</p>
+  <p class="sub">Everything after this slide is the machinery built to enforce Rule 1.</p>
 </section>
 
 <!-- ============ ACT II — DICTIONARY & LADDER ============ -->
@@ -261,10 +261,11 @@
     <li><b>Pre-registration:</b> Stage 4's LHS and RHS were built in separate translation units, in disjoint sessions, each seeing only its own spec. A mismatch would have been a <em>deliverable</em>, not a bug to reconcile.</li>
     <li><b>Stratify the sweep — and sometimes prove the stratum void:</b> mod-8 third slot, corank cells, all-odd×odd-r (empty by parity), and the signature stratum <em>void by Stickelberger</em>.</li>
   </ul>
+  <div class="panel"><b>Scope:</b> this is n=1 — one project, one problem class, one operator. It is an existence proof that the discipline can be applied here, not evidence that it generalizes.</div>
 </section>
 
 <section class="slide">
-  <div class="kicker">Act III — the centerpiece</div>
+  <div class="kicker">Act III — the ledger</div>
   <h2>ERRATA — everyone was caught</h2>
   <p class="big">Every party that touched this project was caught in at least one error. Every catch was a <span class="em">computation or a citation</span> — never an argument from authority.</p>
   <div class="panel mono" style="font-size:.9em">
@@ -299,6 +300,7 @@
   <div class="kicker">Act IV — honesty</div>
   <h2>What is NOT claimed</h2>
   <ul class="big">
+    <li><span class="warn">No new mathematics.</span> Every theorem verified here is known (Gauss 1801 through Stevenhagen 2022); the outputs are the verification, the tables, and the method.</li>
     <li>Verified numerically over N cases <span class="warn">≠ proved</span>. No slide asserts anything the suite doesn't test.</li>
     <li>Deninger's dynamical system is <span class="warn">not constructed</span> — the gap is the program, not a result.</li>
     <li>The mod-2 Chern–Simons case is <span class="warn">degenerate</span> (F₂-linear); the odd-p Gauss sum is future work.</li>
@@ -310,7 +312,7 @@
   <h2>Where it goes</h2>
   <ul class="big">
     <li><b>Odd-p arithmetic Chern–Simons</b> over totally imaginary fields (CKKPPY in-hypothesis) — the non-degenerate case, as future infrastructure.</li>
-    <li><b>Murmurations</b> — the field's live frontier: statistical structure in arithmetic data that this kind of harness is built to probe honestly.</li>
+    <li><b>Murmurations</b> — an active area (2022): statistical structure in arithmetic data that this kind of harness is built to probe.</li>
   </ul>
   <p class="foot">References: RESEARCH.md §10. The pictures on these slides are the repo's own viewers, rendering the same emitted JSON the tests consume.</p>
 </section>

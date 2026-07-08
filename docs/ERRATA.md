@@ -1,22 +1,11 @@
-# ERRATA — the epistemic ledger
+# ERRATA — the error ledger
 
-Every error the harness caught, across the whole project, with its origin and the
-mechanism that caught it. This table is the project's actual thesis:
-
-> **Every party that touched this project — the roadmap generator, the spec
-> author, the human reviewer, the external (LLM) referee, and the coding agent —
-> was caught in at least one error. And every single catch was a *computation* or
-> a *citation check*: a witness value, an exhaustive sweep, an algebraic identity,
-> a parity argument, an oracle cross-check, a theorem, a reachability enumeration,
-> a second compiler, or a verbatim quote. Not one error was caught, or fixed, by
-> an argument from authority.**
-
-"A result computed one way is a rumor" (CLAUDE.md #2); a normalization defended by
-whose-idea-it-was is a rumor too. The rule that did the work every time was **Rule
-1** — a disagreement is a deliverable with a full witness, never reconciled by
-flipping a sign or trusting the source. It is unflattering to everyone, evenly —
-including the referee that made a good catch and fabricated a citation in the same
-review, and the agent whose own catches sit beside its own bugs.
+Every error the harness caught across the project, with its origin and what caught
+it. Every party — roadmap generator, spec author, human reviewer, external (LLM)
+referee, coding agent — appears at least once. Every catch was a computation or a
+citation check (a witness value, a sweep, an identity, a parity argument, an oracle
+cross-check, a theorem, a reachability enumeration, a second compiler, a verbatim
+quote), not an argument from authority.
 
 ## The ledger
 
@@ -61,23 +50,21 @@ enumeration (1) · twin disagreement (1) · second-compiler build (1) · externa
 referee review + citation trace (2) · CI freshness guard (1). **Arguments from
 authority: 0.**
 
-The last three (#16, #17, #18) are the ledger folding in on itself: the deck that
-*presents* this thesis had a coverage conflation and an attribution-by-vibe of
-its own (caught by the referee, one of them exactly where the machine checker is
-blind), and the published-data snapshot embedded an oracle dependency it couldn't
-reproduce (caught by the freshness guard on its first CI run — a *second
-environment*, the same mechanism as #15). The harness keeps catching the harness.
+Entries #16–#18 are catches of this project's own artifacts: two deck defects (a
+coverage conflation and a mis-attribution, both caught by the referee — one exactly
+where the machine checker is blind) and a published-data snapshot that embedded an
+oracle dependency it could not reproduce (caught by the freshness guard on its first
+CI run, a second environment — the same mechanism as #15).
 
 ## The senior rule
 
 Where an `anchor_` (a published value) and an `invariance_` (independence from an
 arbitrary choice) disagreed, `invariance_` won — a passing anchor with a failing
 invariance means the convention is still wrong (memory: *invariance is senior to
-anchor*). #9 and #12 are exactly the cases where the tempting move was to keep the
-value that reproduced a known number; the rule that the *computation across
-choices* is senior to the *matched constant* is what kept the experiment honest.
+anchor*). #9 and #12 are the cases where the tempting move was to keep the value
+that reproduced a known number; the computation across choices, not the matched
+constant, decided each one.
 
-Two of these (#11, #14) are the strongest form of the thesis: a rider was not
-merely unmet but **proven impossible** (the signature stratum is void, by
-Stickelberger), and a referee **caught its own** implementation bug (Belabas vs
-PARI). "Stratify the sweep — and sometimes prove the stratum void."
+In #11 and #14 the catch was definitive: the signature stratum is void by
+Stickelberger's theorem (not merely absent from the sweep), and a referee caught
+its own implementation bug (Belabas vs PARI).
