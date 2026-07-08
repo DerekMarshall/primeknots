@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>S₃ Dijkgraaf–Witten counting — Stage 6</title>
+  <link rel="stylesheet" href="common.css" />
+  <style>
+    .axis text { font: 10px ui-monospace, Menlo, monospace; fill: var(--muted); }
+    .axis line, .axis path { stroke: var(--border); }
+    .stat { font-family: ui-monospace, Menlo, monospace; font-size: 13px; margin: 3px 0; }
+    .stat b { color: var(--accent); } .ok { color: #0f9d58; font-weight: bold; }
+    .row-label { font: 10px ui-monospace, Menlo, monospace; fill: var(--fg); }
+    .swatch { display:inline-block; width:11px; height:11px; border-radius:2px; vertical-align:middle; margin-right:5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>The S₃ Dijkgraaf–Witten invariant of Spec ℤ[1/S]</h1>
+    <p class="subtitle">Stage 6 — Z_DW = |Hom(π₁ᵉᵗ, S₃)|/6, decomposed by image: 1 + 3(2ᵗ−1) + (3ᵏ−1) + 6c. The trivial/C₂/C₃ terms are our own machinery; the S₃ term 6c is refereed by cubic-field enumeration. Renders emitted JSON only.</p>
+  </header>
+  <div id="err" class="error" hidden></div>
+  <main>
+    <section class="panel">
+      <h2>|Hom(π₁, S₃)| decomposed by image, per prime set S</h2>
+      <div id="bars"></div>
+      <div class="legend">
+        <span><span class="swatch" style="background:#9ca3af"></span>trivial (1)</span>
+        <span><span class="swatch" style="background:#2563eb"></span>image C₂ — 3(2ᵗ−1) quadratic</span>
+        <span><span class="swatch" style="background:#0f9d58"></span>image C₃ — 3ᵏ−1 cyclic cubic</span>
+        <span><span class="swatch" style="background:#c026d3"></span>image S₃ — 6c non-Galois cubic</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>N_S₃ (= c, cubic iso classes) vs number of ramified primes t</h2>
+      <div id="scatter"></div>
+      <div class="stat" style="color:var(--muted)">Each point is one prime set S; c is the count of non-Galois cubic fields with rad(disc) ⊆ S — all totally real (R3).</div>
+    </section>
+
+    <section class="panel">
+      <h2>Aggregate</h2>
+      <div id="stats"></div>
+      <div class="params" id="params"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script>
+    const fail = (m) => { const e=document.getElementById("err"); e.hidden=false;
+      e.textContent="Could not load data: "+m+"  —  ./build/bin/at emit --stage 6 --out viz/data && python3 -m http.server -d viz"; };
+    const COL = {trivial:"#9ca3af", c2:"#2563eb", c3:"#0f9d58", s3:"#c026d3"};
+
+    fetch("data/dw_s3.json").then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
+      const ins = d.instances.slice().sort((a,b)=>a.hom_count-b.hom_count);
+      drawBars(ins); drawScatter(d.instances); drawStats(d);
+    }).catch(e=>fail(e.message));
+
+    function label(S){ return "{"+S.join(",")+"}"; }
+
+    function drawBars(ins) {
+      const ml=120, mr=180, mt=8, mb=28, rh=22, H=mt+mb+ins.length*rh, W=860;
+      const maxH = d3.max(ins, i=>i.hom_count);
+      const x = d3.scaleLinear().domain([0,maxH]).range([ml, W-mr]);
+      const svg = d3.select("#bars").append("svg").attr("width",W).attr("height",H)
+        .attr("viewBox",`0 0 ${W} ${H}`).style("max-width","100%").style("height","auto");
+      const keys = ["trivial","c2","c3","s3"];
+      ins.forEach((it,idx)=>{
+        const y = mt + idx*rh;
+        let acc = 0;
+        keys.forEach(k=>{
+          const v = it.terms[k];
+          if (v>0) {
+            svg.append("rect").attr("x",x(acc)).attr("y",y+2).attr("height",rh-6)
+              .attr("width",x(acc+v)-x(acc)).attr("fill",COL[k])
+              .append("title").text(`${label(it.primes)}  ${k}=${v}`);
+            acc += v;
+          }
+        });
+        svg.append("text").attr("class","row-label").attr("x",ml-6).attr("y",y+rh/2+1)
+          .attr("text-anchor","end").text(label(it.primes));
+        svg.append("text").attr("class","row-label").attr("x",x(it.hom_count)+4).attr("y",y+rh/2+1)
+          .text(`|Hom|=${it.hom_count}, Z=${it.z_dw.num}${it.z_dw.den==1?"":"/"+it.z_dw.den}`);
+      });
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-mb})`)
+        .call(d3.axisBottom(x).ticks(8));
+    }
+
+    function drawScatter(ins) {
+      const W=560,H=300,ml=44,mb=36,mt=10,mr=14;
+      const tMax=d3.max(ins,i=>i.t), cMax=d3.max(ins,i=>i.c);
+      const x=d3.scaleLinear().domain([0.5,tMax+0.5]).range([ml,W-mr]);
+      const y=d3.scaleLinear().domain([-0.5,cMax+0.5]).range([H-mb,mt]);
+      const svg=d3.select("#scatter").append("svg").attr("width",W).attr("height",H)
+        .attr("viewBox",`0 0 ${W} ${H}`).style("max-width","100%").style("height","auto");
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-mb})`)
+        .call(d3.axisBottom(x).ticks(tMax).tickFormat(d3.format("d")));
+      svg.append("g").attr("class","axis").attr("transform",`translate(${ml},0)`)
+        .call(d3.axisLeft(y).ticks(cMax+1).tickFormat(d3.format("d")));
+      svg.append("text").attr("class","axis").attr("x",(ml+W)/2).attr("y",H-4).attr("text-anchor","middle").text("t = |S|");
+      svg.append("text").attr("class","axis").attr("transform",`translate(12,${H/2}) rotate(-90)`).attr("text-anchor","middle").text("c = N_S₃");
+      ins.forEach((it,idx)=>{
+        const jx=((idx*2654435761)%1000/1000-0.5)*0.4;
+        svg.append("circle").attr("cx",x(it.t+jx)).attr("cy",y(it.c)).attr("r",4)
+          .attr("fill","#c026d3").attr("fill-opacity",0.6)
+          .append("title").text(`${label(it.primes)}  t=${it.t} k=${it.k} c=${it.c}`);
+      });
+    }
+
+    function drawStats(d) {
+      const a=d.aggregate;
+      document.getElementById("stats").innerHTML =
+        `<div class="stat">S₃ DW invariant over <b>${a.n_instances}</b> prime sets (all p ≡ 1 mod 4), up to t = ${a.max_t}:</div>`+
+        `<div class="stat">all cubic fields totally real (disc &gt; 0): <span class="ok">${a.all_totally_real?"YES ✓ (R3 — Stickelberger + pool ≡ 1 mod 4)":"NO"}</span></div>`+
+        `<div class="stat">decomposition |Hom| = 1 + 3(2ᵗ−1) + (3ᵏ−1) + 6c, exact-rational mass formula verified per instance</div>`+
+        `<div class="stat" style="color:var(--muted)">C₂/C₃ from our machinery; S₃ term 6c refereed by PARI nflist (dual strategy); LMFDB twin pending API access</div>`;
+      document.getElementById("params").textContent =
+        `schema: ${d.schema}\ngenerated_by: ${d.generated_by}\nparams: ${JSON.stringify(d.params)}`;
+    }
+  </script>
+</body>
+</html>

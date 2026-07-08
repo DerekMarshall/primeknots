@@ -102,6 +102,7 @@ All schemas versioned in `docs/schemas/*.schema.json`; every emitted file carrie
 | `cs_partition.json` | 4 | `viz/cs.html` | per prime set: LHS, RHS as complex pairs, |LHS−RHS|, linking-det, phase class |
 | `zeros.json`, `psi_reconstruction.json` | 5 | `viz/explicit_formula.html` | zeros (+ Odlyzko delta), ψ(x) frames per zero count for the animation |
 | `dyn_zeta.json` | 5 | `viz/explicit_formula.html` | model-flow product vs. determinant values |
+| `dw_s3.json` | 6 | `viz/dw.html` | per prime set S: t, k, c, image decomposition of \|Hom\|, Z_DW (exact rational), N_S₃ vs t |
 | `verification.json` | all | `viz/index.html` | dashboard: suite status per stage |
 
 Viewers: plain HTML + D3 v7 from CDN, one file per viewer, no bundler. Shared style in `viz/common.css`. Every viewer renders from JSON only and shows the JSON's `params` block so a screenshot is self-documenting.

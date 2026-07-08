@@ -13,6 +13,7 @@
 #include "emit/emit_borromean.h"
 #include "emit/emit_classgroups.h"
 #include "emit/emit_cs.h"
+#include "emit/emit_dw.h"
 #include "emit/emit_linking.h"
 #include "emit/emit_zeta.h"
 
@@ -112,8 +113,14 @@ int main(int argc, char** argv) {
                 "(t_max=%.0f)\n", out.c_str(), t_max);
             return 0;
         }
+        if (stage == "6") {
+            const char* cache = opt(argc, argv, "--cubic-cache", "data/cubic/s3_counts.txt");
+            at::emit::emit_stage6(out, cache, resolve_generated_by());
+            std::fprintf(stderr, "at emit: stage 6 -> %s/dw_s3.json\n", out.c_str());
+            return 0;
+        }
         std::fprintf(stderr,
-            "at emit: no emitter for stage '%s' (stages 1-5 are built)\n",
+            "at emit: no emitter for stage '%s' (stages 1-6 are built)\n",
             stage.c_str());
         return 2;
     }

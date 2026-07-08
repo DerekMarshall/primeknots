@@ -21,6 +21,7 @@ FILE_SCHEMAS = {
     "zeros.json": "zeros.schema.json",
     "psi_reconstruction.json": "psi_reconstruction.schema.json",
     "dyn_zeta.json": "dyn_zeta.schema.json",
+    "dw_s3.json": "dw_s3.schema.json",
 }
 
 
@@ -41,12 +42,19 @@ def main() -> int:
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    for stage in ("1", "2", "3", "4", "5"):
+    for stage in ("1", "2", "3", "4", "5", "6"):
         # keep validation fast: small bounds (schema-shape check, not full sweeps).
         # Stage 5's bound is the zero-search height t_max — keep it small here.
+        # Stage 6 reads its referee cache (no bound), so pass none.
         b = {"3": "5000", "4": "5000", "5": "120"}.get(stage, args.bound)
-        r = subprocess.run([args.at, "emit", "--stage", stage, "--out", str(out),
-                            "--bound", b], capture_output=True, text=True)
+        cmd = [args.at, "emit", "--stage", stage, "--out", str(out)]
+        if stage == "6":
+            # absolute cache path (repo root = this script's parent's parent)
+            cache = Path(__file__).resolve().parent.parent / "data/cubic/s3_counts.txt"
+            cmd += ["--cubic-cache", str(cache)]
+        else:
+            cmd += ["--bound", b]
+        r = subprocess.run(cmd, capture_output=True, text=True)
         if r.returncode != 0:
             print(f"FAIL: `at emit --stage {stage}` exited", r.returncode, "\n", r.stderr)
             return 1

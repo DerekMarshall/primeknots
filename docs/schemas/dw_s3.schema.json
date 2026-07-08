@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dw_s3/1",
+  "title": "dw_s3",
+  "description": "Stage 6: untwisted S3 Dijkgraaf-Witten invariant Z_DW = |Hom(pi_1(Spec Z[1/S]),S3)|/6 per prime set S. Assembled from our C2 (2^t-1) and C3 (3^k-1) machinery plus the referee-supplied cubic iso-class count c (S3 term 6c). Z_DW as an exact rational; image-decomposition terms; all cubics totally real (R3).",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "aggregate", "instances"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "dw_s3/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["group", "space", "pool", "convention", "bound_rule", "referee"],
+      "properties": {
+        "group": {"type": "string"},
+        "space": {"type": "string"},
+        "pool": {"type": "string"},
+        "convention": {"type": "string"},
+        "bound_rule": {"type": "string"},
+        "referee": {"type": "string"}
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "required": ["n_instances", "all_totally_real", "max_t"],
+      "properties": {
+        "n_instances": {"type": "integer", "minimum": 0},
+        "all_totally_real": {"type": "boolean"},
+        "max_t": {"type": "integer", "minimum": 0}
+      }
+    },
+    "instances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["primes", "t", "k", "c", "hom_count", "z_dw", "terms",
+                     "disc_bound", "all_real", "discs"],
+        "additionalProperties": false,
+        "properties": {
+          "primes": {"type": "array", "items": {"type": "integer", "minimum": 2}},
+          "t": {"type": "integer", "minimum": 0},
+          "k": {"type": "integer", "minimum": 0},
+          "c": {"type": "integer", "minimum": 0},
+          "hom_count": {"type": "integer", "minimum": 1},
+          "z_dw": {
+            "type": "object",
+            "required": ["num", "den"],
+            "additionalProperties": false,
+            "properties": {"num": {"type": "integer"}, "den": {"type": "integer"}}
+          },
+          "terms": {
+            "type": "object",
+            "required": ["trivial", "c2", "c3", "s3"],
+            "additionalProperties": false,
+            "properties": {
+              "trivial": {"type": "integer"}, "c2": {"type": "integer"},
+              "c3": {"type": "integer"}, "s3": {"type": "integer"}
+            }
+          },
+          "disc_bound": {"type": "integer", "minimum": 0},
+          "all_real": {"type": "boolean"},
+          "discs": {"type": "array", "items": {"type": "integer"}}
+        }
+      }
+    }
+  }
+}
