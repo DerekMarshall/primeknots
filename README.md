@@ -3,6 +3,8 @@
 [![CI](https://github.com/DerekMarshall/primeknots/actions/workflows/ci.yml/badge.svg)](https://github.com/DerekMarshall/primeknots/actions/workflows/ci.yml)
 &nbsp;·&nbsp; from-scratch C++20 &nbsp;·&nbsp; 63 verification tests, 0 failing &nbsp;·&nbsp; [MIT](LICENSE)
 
+**▶ [Explainer deck (live, with embedded viewers)](https://derekmarshall.github.io/primeknots/docs/deck/index.html)** · [PDF](docs/deck/deck.pdf) · [the epistemic ledger](docs/ERRATA.md)
+
 **Arithmetic topology, executable.** A from-scratch, dependency-free C++ suite that
 *verifies* — not just states — the theorem chain running from quadratic reciprocity
 (as linking symmetry) through Rédei symbols (triple Milnor invariants, Borromean
