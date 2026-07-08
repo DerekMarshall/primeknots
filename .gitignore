@@ -27,3 +27,7 @@
 
 # Third-party paper PDFs (copyright): kept local, see docs/papers/README.md
 /docs/papers/*.pdf
+
+# Python bytecode cache (from oracle/*.py runs)
+__pycache__/
+*.pyc
