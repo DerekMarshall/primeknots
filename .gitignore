@@ -31,3 +31,7 @@
 # Python bytecode cache (from oracle/*.py runs)
 __pycache__/
 *.pyc
+
+# Claude Code local settings (machine-local hooks: absolute paths, spyc integration)
+.claude/settings.json
+.claude/settings.local.json

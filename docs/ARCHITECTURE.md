@@ -84,7 +84,7 @@ std::complex<double> ruelle_zeta_det(const SuspensionFlow&, std::complex<double>
 
 ## 4. Oracle integration (`oracle/`)
 
-- **PARI/GP**: invoked as a subprocess (`gp -q script.gp`), never linked. Adapters in `oracle/pari.{h,cpp}` serialize one request batch per invocation (thousands of checks per process spawn, not one). Scripts in `oracle/gp/` are plain text and reviewable. Used for: `kronecker` (Stage 0/1), `quadclassunit` (Stage 3), number-field checks (Stage 6).
+- **PARI/GP**: invoked as a subprocess (`gp -q script.gp`), never linked. Adapters in `oracle/pari.{h,cpp}` serialize one request batch per invocation (thousands of checks per process spawn, not one). Scripts in `oracle/gp/*.gp` are plain-text, reviewable **PARI/GP** (the `\\`-comment language of `gp`), e.g. `kronecker.gp`, `cubic_count.gp` — *not* Gnuplot; GitHub Linguist maps the `.gp` extension to Gnuplot, so `.gitattributes` marks them `linguist-detectable=false` to keep the language stats honest. Used for: `kronecker` (Stage 0/1), `quadclassunit`/`bnfnarrow` (Stage 3), cubic-field enumeration `nflist` (Stage 6). Belabas's standalone `cubic` enumerator is a separate LMFDB-independent referee (Stage 6; `oracle/build_belabas.sh`).
 - **LMFDB**: fetched by `oracle/fetch_lmfdb.py` into `data/` with recorded query, date, and SHA-256; tests read only the local cache. Used for: cubic field counts (Stage 6), sanity metadata (Stage 5).
 - **Odlyzko tables**: mirrored into `data/odlyzko/` with checksums; `anchor_zeros_match_odlyzko` compares to ≥ 8 decimals.
 - Missing oracle ⇒ SKIP with visible message; CI treats SKIP of oracle tests as warning, SKIP of anything else as failure.

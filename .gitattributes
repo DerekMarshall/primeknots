@@ -1,0 +1,5 @@
+# oracle/gp/*.gp are PARI/GP scripts (reviewable oracle references; see
+# ARCHITECTURE.md §4). GitHub Linguist maps the .gp extension to Gnuplot, which
+# is wrong — there is no PARI/GP language in Linguist, so exclude them from the
+# language statistics rather than mislabel the repo.
+oracle/gp/*.gp linguist-detectable=false
