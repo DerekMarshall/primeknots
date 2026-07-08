@@ -32,6 +32,8 @@ the source.
 | 9 | 4 | "Equal-parity" candidate for the RHS closed form | reviewer-raised candidate (rider R1) | **Brute-force witness, K=ℚ(√65)** — equal-parity predicts `Z=2`; the brute character sum gives `0`. Killed in favour of "all row-sums even" *before* the RHS was coded (stage4-pinning §R1) |
 | 10 | 5 | RESEARCH.md §7.2: the ψ series "converging onto ψ(x)" | RESEARCH.md author | **Phase-1 pinning + PARI witness at x=8** — the series converges to the jump *midpoint* ψ₀(x)=ψ(x)−Λ(x)/2 = 6.3868…, not ψ(8)=6.7334… (open-questions R6, stage5-pinning §3) |
 | 11 | 6 | S₃ hom-term written as `2c` (embedded-subfield count) | agent (Phase-1 draft) | **Hand-referee (rider R1) + exact-rational mass formula** — LMFDB counts iso classes; the 3 conjugate subfields of a closure are isomorphic ⇒ one class ⇒ `6c`. The `theorem_dw_mass_formula` guards the assembly (stage6-pinning R1) |
+| 12 | infra | The 5 copyrighted paper PDFs were left in git *history* (a later `git rm --cached` only untracked them going forward) and pushed to the public remote | agent (committed the PDFs; the untrack did not purge history) | **Human reviewer's PDF-history audit** — a reachability computation, `git log --diff-filter=A -- docs/papers/` + `git rev-list --objects main | grep pdf` + `gh api contents@<old-commit>` confirming the blob present on the remote. Fixed by a `filter-branch` purge + re-sign + force-push |
+| 13 | 6 | Belabas driver's rad-filter stripped factors of 2 before the ⊆-S test, so even-discriminant cubics (rad ∋ 2 ∉ S) leaked in | agent (referee driver) | **Disagreement with the PARI count** — Belabas reported 7 for `{5,17,29}` vs PARI's 2; the extra discs (5780=2²·5·17², …) exposed the filter bug. The twin caught its own referee |
 
 ## Tally by party — nobody was exempt
 
@@ -40,16 +42,17 @@ the source.
 | Roadmap generator | #1 (O_x scope) |
 | LLM research assistant (Gemini) | #2 (fabricated discriminant citation) |
 | RESEARCH.md author | #8 (p=2 unlicensed), #10 (ψ midpoint) |
-| Human reviewer | #5 (ordinary-vs-narrow oracle), #9 (equal-parity candidate) |
-| Coding agent | #3 (R1 class), #4 (strat counter), #6 (signed-a), #7 (generator cap), #11 (2c/6c) |
-| External referee | #2, #3 (amendment-pass requests), #5 (PARI/gp), and #9's witness path |
+| Human reviewer | #5 (ordinary-vs-narrow oracle), #9 (equal-parity candidate), #12 (PDF-history audit) |
+| Coding agent | #3 (R1 class), #4 (strat counter), #6 (signed-a), #7 (generator cap), #11 (2c/6c), #12 (PDFs in history), #13 (Belabas filter) |
+| External referee | #2, #3 (amendment-pass requests), #5 (PARI/gp), #9's witness path, #13 (PARI disagreement) |
 
 ## Tally by mechanism — every catch was a computation or a citation
 
 coherence check (1) · verbatim quote (1) · CFT re-derivation (1) · parity
 argument (1) · oracle gp cross-check (1) · algebraic identity / associativity (1)
 · exhaustive sweep (1) · source-hypothesis reading (2) · anchor witness (2) ·
-exact-rational identity (1). **Arguments from authority: 0.**
+exact-rational identity (1) · git reachability computation (1) · twin
+disagreement (1). **Arguments from authority: 0.**
 
 ## The senior rule
 
