@@ -279,3 +279,14 @@ if(AT_VALIDATE_PY)
     TIMEOUT 180
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
+
+# --- deck: the explainer deck is an emitted artifact, validated like one -------
+# Every data-claim="ID" in docs/deck/index.html must have a CLAIMS.md row.
+if(AT_VALIDATE_PY)
+  add_test(NAME deck.claims_sourced
+           COMMAND ${AT_VALIDATE_PY} ${CMAKE_SOURCE_DIR}/verify/deck_check.py)
+  set_tests_properties(deck.claims_sourced PROPERTIES
+    LABELS "deck"
+    SKIP_RETURN_CODE 77
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()

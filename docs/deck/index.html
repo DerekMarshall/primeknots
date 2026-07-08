@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>primeknots — arithmetic topology, executable</title>
+<style>
+  :root{ --bg:#0f1420; --fg:#e7ecf5; --muted:#93a1b8; --accent:#6ea8fe; --ok:#3fb768; --warn:#e8a13a; --panel:#182234; --border:#2a3852; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; background:var(--bg); color:var(--fg);
+    font:17px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  code,.mono{ font-family:ui-monospace,Menlo,monospace; }
+  #deck{ height:100vh; }
+  .slide{ display:none; height:100vh; padding:5vh 7vw; flex-direction:column; overflow:auto; }
+  .slide.active{ display:flex; }
+  h1{ font-size:2.6em; margin:.1em 0 .2em; line-height:1.1; }
+  h2{ font-size:1.9em; margin:.1em 0 .4em; color:var(--fg); }
+  .kicker{ color:var(--accent); font-family:ui-monospace,monospace; font-size:.8em; letter-spacing:.12em; text-transform:uppercase; margin-bottom:.6em; }
+  .sub{ color:var(--muted); font-size:1.15em; }
+  ul{ margin:.5em 0; padding-left:1.2em; } li{ margin:.35em 0; }
+  .big{ font-size:1.35em; } .em{ color:var(--accent); } .ok{ color:var(--ok); } .warn{ color:var(--warn); }
+  .panel{ background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:.8em 1em; margin:.5em 0; }
+  .claim{ display:inline-block; font-family:ui-monospace,monospace; font-size:.78em; color:var(--ok);
+    border:1px solid var(--border); border-radius:6px; padding:2px 8px; margin-top:.6em; }
+  .claim::before{ content:"✓ verified · "; color:var(--muted); }
+  .obs{ color:var(--warn); }
+  figure{ margin:.6em 0; flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
+  iframe{ width:100%; flex:1 1 auto; min-height:360px; border:1px solid var(--border); border-radius:10px; background:#fff; }
+  figure img{ max-width:100%; max-height:60vh; border:1px solid var(--border); border-radius:10px; object-fit:contain; }
+  figcaption{ color:var(--muted); font-size:.85em; margin-top:.4em; }
+  .act{ justify-content:center; align-items:flex-start; }
+  .act h1{ font-size:3.2em; } .act .kicker{ font-size:1em; }
+  a{ color:var(--accent); }
+  #hud{ position:fixed; bottom:10px; right:16px; color:var(--muted); font-family:ui-monospace,monospace; font-size:.75em; }
+  #bar{ position:fixed; top:0; left:0; height:3px; background:var(--accent); width:0; transition:width .2s; }
+  .two{ display:grid; grid-template-columns:1fr 1fr; gap:1.2em; }
+  .foot{ color:var(--muted); font-size:.82em; margin-top:auto; }
+  /* print / PDF mode: stack every slide, one per page */
+  body.print .slide{ display:flex !important; height:auto; min-height:96vh; page-break-after:always; }
+  body.print #hud,body.print #bar{ display:none; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="deck">
+
+<!-- ============ ACT I — THE FAILURE MODE ============ -->
+<section class="slide act">
+  <div class="kicker">arithmetic topology, executable</div>
+  <h1>primeknots</h1>
+  <p class="sub big">Named theorems of number theory, verified from scratch in C++ — where the <span class="em">process makes fitting the answer impossible</span>.</p>
+  <p class="foot mono">github.com/DerekMarshall/primeknots · 63 tests, 0 failing · MIT</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act I — the failure mode</div>
+  <h2>A survey that read as mathematics</h2>
+  <ul class="big">
+    <li>A research roadmap mixed <span class="em">real</span> arithmetic topology with a <span class="em">fabricated</span> object — a "chaotic operator O_x" with invented properties.</li>
+    <li>In prose, the fiction was indistinguishable from the facts: same register, same citations-shaped scaffolding.</li>
+    <li>Nothing in the reading experience separated the true claims from the false one.</li>
+  </ul>
+  <div class="panel">The behavior, not the tool: <b>unverified synthesis</b> — assembling plausible text without a mechanism that could reject a wrong piece.</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act I — the failure mode</div>
+  <h2>Why it survived five revisions</h2>
+  <ul class="big">
+    <li>Each critique was <span class="em">absorbed as camouflage</span>: the text got more plausible, not more true.</li>
+    <li>Every review pass raised the polish and lowered the visibility of the seam.</li>
+    <li>Agreement with a reviewer is not evidence. Neither is agreement with expectation.</li>
+  </ul>
+  <div class="panel">Related behaviors seen elsewhere in the project's own history: <b>fitting a result to an expected value</b>, and <b>fabricating a citation</b>. Same root — no falsifying step.</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act I — the moral</div>
+  <h2>Rule 1</h2>
+  <p class="big">Agreement with expectation is evidence <span class="em">only</span> when the process makes fitting impossible.</p>
+  <div class="panel big"><b>Never fit conventions to expected answers.</b> If a published anchor comes out wrong, the bug is in the code or in our <em>reading of the source</em> — go fix the reading. Flipping a sign until the known number appears is falsification of the experiment.</div>
+  <p class="sub">Everything after this slide is the machine that enforces Rule 1.</p>
+</section>
+
+<!-- ============ ACT II — DICTIONARY & LADDER ============ -->
+<section class="slide act">
+  <div class="kicker">Act II</div>
+  <h1>The dictionary<br>and the ladder</h1>
+  <p class="sub big">One analogy — primes as knots — climbed one theorem at a time, each rung a running test.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — the dictionary</div>
+  <h2>Primes ↔ knots</h2>
+  <div class="two">
+    <div>
+      <ul>
+        <li>Spec ℤ[1/S] ↔ a 3-manifold with boundary (one "knot" per prime in S).</li>
+        <li>Legendre symbol ↔ linking number.</li>
+        <li>Rédei symbol ↔ triple (Milnor) linking.</li>
+        <li>class group ↔ H₁; ζ-zeros ↔ a spectrum.</li>
+      </ul>
+      <p class="sub">Morishita's <em>Knots and Primes</em> [M12] is the dictionary; the whole ladder is this one analogy, made executable.</p>
+    </div>
+    <div class="panel mono" style="align-self:center">
+      Stage 0  reciprocity<br>
+      Stage 1  linking matrix<br>
+      Stage 2  Rédei / Borromean<br>
+      Stage 3  4-rank<br>
+      Stage 4  Chern–Simons (mod 2)<br>
+      Stage 5  explicit formula<br>
+      Stage 6  S₃ Dijkgraaf–Witten
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — Stage 0</div>
+  <h2>Reciprocity, the base case</h2>
+  <ul>
+    <li>Legendre/Jacobi symbols, Tonelli–Shanks, Miller–Rabin — from scratch, u128 built-ins only.</li>
+    <li><b>Twin:</b> every symbol computed by Euler's criterion <em>and</em> by the reciprocity law — two algorithms, cross-checked.</li>
+    <li>Quadratic reciprocity + both supplements, verified <span class="em">exhaustively over all odd primes &lt; 10⁷</span>.</li>
+  </ul>
+  <span class="claim" data-claim="qr-exhaustive">QR + supplements: 5.26M pairs; twin 53.2M agreements, exhaustive to 10⁷</span>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — Stage 1</div>
+  <h2>The linking matrix</h2>
+  <figure>
+    <iframe data-viewer="linking" src="../../viz/linking.html" title="linking heatmap"></iframe>
+    <figcaption>The matrix <code>(p/q) = (−1)^{lk₂(p,q)}</code> over primes ≡ 1 (mod 4). It is <b>symmetric</b> — the picture <em>is</em> quadratic reciprocity.</figcaption>
+  </figure>
+  <span class="claim" data-claim="linking-symmetry">symmetry over 39175×39175 (1.53×10⁹ bits, no sampling)</span>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — Stage 2</div>
+  <h2>The Rédei symbol</h2>
+  <ul>
+    <li>The triple symbol <code>[a,b,c] ∈ {±1}</code> is the mod-2 triple <b>Milnor invariant</b> — a Massey product in Galois cohomology (Morishita [M04]).</li>
+    <li><b>Rédei reciprocity:</b> full S₃ symmetry under all six permutations of the arguments — 2022 mathematics (Stevenhagen [S22]), verified over every valid triple in range.</li>
+    <li>The 2-adic normalization is the delicate part: <span class="em">pinned to the source</span> before any code (stage2-pinning §8), with <em>invariance senior to anchor</em>.</li>
+  </ul>
+  <span class="claim" data-claim="redei-s3">702,788 triples × 6 = 4,216,728 symbol evaluations agree</span>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — Stage 2</div>
+  <h2>Borromean primes</h2>
+  <figure>
+    <iframe data-viewer="borromean" src="../../viz/borromean.html" title="Borromean hypergraph"></iframe>
+    <figcaption>Triples pairwise <em>unlinked</em> yet triple-<em>linked</em> (<code>[a,b,c]=−1</code>). Anchor: <code>[13,61,937] = −1</code>, Stevenhagen's worked value.</figcaption>
+  </figure>
+  <span class="claim" data-claim="redei-anchor">[13,61,937] = −1 matches the published value</span>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — Stage 3</div>
+  <h2>Class groups as H₁ — the 4-rank</h2>
+  <figure>
+    <iframe data-viewer="classgroups" src="../../viz/classgroups.html" title="4-rank diagonal"></iframe>
+    <figcaption>Rédei–Reichardt: the 4-rank of the narrow class group (<b>form</b> side) equals the F₂-rank of the linking matrix (<b>linking</b> side). Two computations, one diagonal.</figcaption>
+  </figure>
+  <span class="claim" data-claim="four-rank">1,986 discriminants; form-rank = linking-rank; oracle bnfnarrow</span>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — Stage 4</div>
+  <h2>Arithmetic Chern–Simons (mod 2)</h2>
+  <figure>
+    <iframe data-viewer="cs" src="../../viz/cs.html" title="CS partition function"></iframe>
+    <figcaption>The mod-2 Dijkgraaf–Witten partition function <code>Z_c</code>, computed as a brute character sum (LHS) and a closed form (RHS) — in <b>separate translation units, disjoint authoring sessions</b>. Agreed on first comparison.</figcaption>
+  </figure>
+  <span class="claim" data-claim="cs-identity">LHS = RHS over 386 gated prime sets (4,810 extended)</span>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — Stage 4 · honesty</div>
+  <h2>The degenerate case, named as such</h2>
+  <div class="panel big">
+    The mod-2 (Hirano) case is the <span class="warn">degenerate</span> one: Chern–Simons is F₂-linear, so the identity <em>reduces to linear algebra on the linking matrix</em>.
+  </div>
+  <ul>
+    <li>The contribution was the <b>pinning</b> and a <b>hypothesis erratum</b>: RESEARCH.md's "p = 2 over ℚ" is unlicensed — CKKPPY Thm 1.1 needs odd p over a totally imaginary field.</li>
+    <li>The odd-p Gauss-sum case is <span class="em">future work</span>, not a result here.</li>
+  </ul>
+  <p class="sub">A slide that oversold this would fail our own review.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — Stage 5</div>
+  <h2>The Weil explicit formula</h2>
+  <figure>
+    <iframe data-viewer="explicit_formula" src="../../viz/explicit_formula.html" title="psi reconstruction and model flow"></iframe>
+    <figcaption>ψ(x) rebuilt from ζ zeros. Zeros by Riemann–Siegel, twinned against Euler–Maclaurin, completeness <b>Turing-certified</b> (not Gram's law). Beside it: a model flow (next slide).</figcaption>
+  </figure>
+  <span class="claim" data-claim="zeros-odlyzko">first 10⁴ zeros match Odlyzko to ≥8 dp (max dev 2.9×10⁻⁹)</span>
+  <span class="claim" data-claim="psi-midpoint">converges to the jump midpoint ψ₀, not ψ(x)</span>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — Stage 5 · the model flow</div>
+  <h2>Where the identity IS geometry — and where it isn't</h2>
+  <div class="two">
+    <div>
+      <ul>
+        <li>A subshift's Ruelle zeta: <b>Euler product over closed orbits = 1/det(I−L_s)</b>, exactly — orbits genuinely exist, the identity is geometry.</li>
+        <li>Arithmetic satisfies the <em>same identity shape</em> (primes ↔ orbits, zeros ↔ spectrum)…</li>
+        <li>…but <b class="warn">no such dynamical system is constructed</b>.</li>
+      </ul>
+    </div>
+    <div class="panel big" style="align-self:center">Deninger's foliated flow: <span class="warn">not constructed — that gap <em>is</em> the program</span> [D98].</div>
+  </div>
+  <span class="claim" data-claim="ruelle-twin">Euler product = determinant, agreement ~9×10⁻¹⁶ over an s-grid</span>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act II — Stage 6</div>
+  <h2>Non-abelian S₃ counting</h2>
+  <figure>
+    <iframe data-viewer="dw" src="../../viz/dw.html" title="DW decomposition"></iframe>
+    <figcaption><code>Z_DW = |Hom(π₁,S₃)|/6 = 1/6 + (2ᵗ−1)/2 + (3ᵏ−1)/6 + c</code>. The S₃ term <code>c</code> (cubic iso classes) refereed <b>two independent ways</b>: PARI <code>nflist</code> and K. Belabas's <code>cubic</code>.</figcaption>
+  </figure>
+  <span class="claim" data-claim="dw-decomposition">mass formula exact over 16 sweep instances (exact rational)</span>
+  <span class="claim" data-claim="belabas-twin">Belabas = PARI on all 14 feasible sets</span>
+</section>
+
+<!-- ============ ACT III — THE HARNESS ============ -->
+<section class="slide act">
+  <div class="kicker">Act III</div>
+  <h1>The harness</h1>
+  <p class="sub big">The part that makes agreement mean something.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act III — the five categories</div>
+  <h2>How every claim is tested</h2>
+  <ul>
+    <li><code class="em">twin_</code> — two independent algorithms agree (never optimize both; keep the naive one as referee).</li>
+    <li><code class="em">theorem_</code> — a named theorem over an exhaustive/sampled range.</li>
+    <li><code class="em">anchor_</code> — a specific published value (e.g. [13,61,937]=−1).</li>
+    <li><code class="em">invariance_</code> — independence from an arbitrary choice (sqrt branch, solution, ordering).</li>
+    <li><code class="em">oracle_</code> — PARI/GP, the Odlyzko table, Belabas's cubic — referee, never in <code>src/</code>; SKIP <em>visibly</em> when absent.</li>
+  </ul>
+  <div class="panel"><b>invariance_ is senior to anchor_.</b> A passing anchor with a failing invariance means the convention is still wrong.</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act III — process</div>
+  <h2>Gates, pinning, pre-registration</h2>
+  <ul>
+    <li><b>Two-phase gates:</b> convention-free code first; the normalization is <em>pinned to a source</em> in <code>docs/notes/</code> before the load-bearing code is written.</li>
+    <li><b>Pre-registration:</b> Stage 4's LHS and RHS were built in separate translation units, in disjoint sessions, each seeing only its own spec. A mismatch would have been a <em>deliverable</em>, not a bug to reconcile.</li>
+    <li><b>Stratify the sweep — and sometimes prove the stratum void:</b> mod-8 third slot, corank cells, all-odd×odd-r (empty by parity), and the signature stratum <em>void by Stickelberger</em>.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act III — the centerpiece</div>
+  <h2>ERRATA — everyone was caught</h2>
+  <p class="big">Every party that touched this project was caught in at least one error. Every catch was a <span class="em">computation or a citation</span> — never an argument from authority.</p>
+  <div class="panel mono" style="font-size:.9em">
+    roadmap generator — O_x, by a coherence check<br>
+    spec author — two RESEARCH.md errata, by pinning + a witness value<br>
+    human reviewer — R1, equal-parity (killed by the √65 witness), signature-mix (void by Stickelberger)<br>
+    external (LLM) referee — a fabricated citation, by the verbatim-quote protocol — <em>the same referee made a genuine catch</em><br>
+    coding agent — strat counter (parity), signed-a (associativity), generator cap (sweep), 2c/6c (mass formula), PDFs-in-history, missing headers (a second compiler)
+  </div>
+  <span class="claim" data-claim="errata-count">15 entries; authority-catches: 0 — see docs/ERRATA.md</span>
+</section>
+
+<!-- ============ ACT IV — RESULTS & HORIZONS ============ -->
+<section class="slide act">
+  <div class="kicker">Act IV</div>
+  <h1>Results<br>and horizons</h1>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act IV — results</div>
+  <h2>What was verified</h2>
+  <ul class="big">
+    <li>The full ladder, Stages 0–6, green.</li>
+    <li>Every number on these slides is <span class="em">verified numerically over N cases</span>, N pulled from emitted JSON or test output — never "proved" (that word is for literature theorems, with citation).</li>
+    <li>Empirics are labeled <span class="warn">observed</span>, not asserted: Borromean rate 51.6%; negative-Pell fraction 0.666 vs the Koymans–Pagano asymptotic 0.5805; N_{S₃} growth.</li>
+  </ul>
+  <span class="claim" data-claim="suite-total">63 tests, 0 failing (10 oracle-refereed); extended run all green</span>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act IV — honesty</div>
+  <h2>What is NOT claimed</h2>
+  <ul class="big">
+    <li>Verified numerically over N cases <span class="warn">≠ proved</span>. No slide asserts anything the suite doesn't test.</li>
+    <li>Deninger's dynamical system is <span class="warn">not constructed</span> — the gap is the program, not a result.</li>
+    <li>The mod-2 Chern–Simons case is <span class="warn">degenerate</span> (F₂-linear); the odd-p Gauss sum is future work.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <div class="kicker">Act IV — horizons</div>
+  <h2>Where it goes</h2>
+  <ul class="big">
+    <li><b>Odd-p arithmetic Chern–Simons</b> over totally imaginary fields (CKKPPY in-hypothesis) — the non-degenerate case, as future infrastructure.</li>
+    <li><b>Murmurations</b> — the field's live frontier: statistical structure in arithmetic data that this kind of harness is built to probe honestly.</li>
+  </ul>
+  <p class="foot">References: RESEARCH.md §10. The pictures on these slides are the repo's own viewers, rendering the same emitted JSON the tests consume.</p>
+</section>
+
+</div>
+<div id="hud">← / → · <span id="n">1</span>/<span id="tot">1</span></div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i = 0, tot = slides.length;
+  document.getElementById('tot').textContent = tot;
+  var PRINT = /[?&]print/.test(location.search);
+  function show(n){
+    i = Math.max(0, Math.min(tot-1, n));
+    slides.forEach(function(s,k){ s.classList.toggle('active', k===i); });
+    document.getElementById('n').textContent = i+1;
+    document.getElementById('bar').style.width = ((i+1)/tot*100)+'%';
+  }
+  // PRINT / PDF mode: stack all slides, swap iframes for committed screenshots.
+  if(PRINT){
+    document.body.classList.add('print');
+    document.querySelectorAll('iframe[data-viewer]').forEach(function(f){
+      var img = document.createElement('img');
+      img.src = 'thumb/' + f.getAttribute('data-viewer') + '.png';
+      img.alt = f.title || f.getAttribute('data-viewer');
+      f.parentNode.replaceChild(img, f);
+    });
+  } else {
+    show(0);
+    document.addEventListener('keydown', function(e){
+      if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){ show(i+1); e.preventDefault(); }
+      else if(e.key==='ArrowLeft'||e.key==='PageUp'){ show(i-1); e.preventDefault(); }
+      else if(e.key==='Home'){ show(0); } else if(e.key==='End'){ show(tot-1); }
+    });
+    document.getElementById('deck').addEventListener('click', function(e){
+      if(e.target.closest('a,iframe')) return; show(i+1);
+    });
+  }
+})();
+</script>
+</body>
+</html>
