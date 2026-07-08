@@ -37,6 +37,8 @@ review, and the agent whose own catches sit beside its own bugs.
 | 13 | infra | The 5 copyrighted paper PDFs were left in git *history* (a later `git rm --cached` only untracked them) and pushed to the public remote | coding agent | **Human reviewer's git-reachability audit** — `git log --diff-filter=A -- docs/papers/` + `git rev-list --objects main \| grep pdf` + `gh api contents@<old-commit>`. Fixed by a `filter-branch` purge + re-sign; verified from a fresh clone (publication-audit.md) |
 | 14 | 6 | Belabas driver's rad-filter stripped factors of 2 before the ⊆-S test, so even-disc cubics (rad ∋ 2 ∉ S) leaked | coding agent (referee driver) | **Disagreement with the PARI count** — Belabas reported 7 for `{5,17,29}` vs PARI's 2; the extra discs (5780=2²·5·17², …) exposed the filter bug. The twin caught its own referee |
 | 15 | infra/CI | `std::sqrt`/`std::max`/`std::swap` used without `<cmath>`/`<algorithm>`/`<utility>` — a latent missing-include bug | coding agent | **The CI/GCC build** — Apple clang's libc++ pulls these in transitively and masked it locally; GCC's libstdc++ does not, so the CI leg (a *second compiler*) failed at `qform.cpp` and surfaced it. Fixed across 10 files |
+| 16 | deck | The Stage-0 deck slide claimed "verified exhaustively over all odd primes < 10⁷" — conflating three coverages: the reciprocity check was exhaustive only to 3×10⁴ (5.26M pairs); the 10⁷ bound applied only to the supplements and the twin | coding agent (deck author) | **External referee (deck review)** — the `deck` ctest passed because it verifies row *existence* + *numbers present*, and every number was real and in the ledger; it does not verify that a bound is *attributed* to the right object. Fixed by disaggregating slide + row; checker gap documented (CLAIMS.md header) |
+| 17 | deck | The Borromean slide credited `[13,61,937]=−1` to "Stevenhagen's worked value"; it is the standard Borromean triple of Morishita [M12] ([S22] is the *normalization* source, not the anchor's) | coding agent (deck author) | **External referee (deck review) → citation trace** — RESEARCH.md §10 ("the standard Borromean triple [M12]") and stage2-pinning line 181. Attribution by vibe, corrected against the source |
 
 ## Tally by party — nobody was exempt
 
@@ -45,8 +47,8 @@ review, and the agent whose own catches sit beside its own bugs.
 | Roadmap generator | #1 (O_x scope) |
 | Spec author (RESEARCH.md) | #8 (p=2 unlicensed), #10 (ψ midpoint) |
 | Human reviewer (riders/oracles) | #2 (R1 misclassification), #5 (ordinary-vs-narrow oracle), #9 (equal-parity), #11 (signature-mix, void by Stickelberger) |
-| External (LLM) referee | #3 (fabricated `D_{L/K₁}=(a₂)` citation) — *the same party made the genuine R1 catch in #2* |
-| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers) |
+| External (LLM) referee | #3 (fabricated `D_{L/K₁}=(a₂)` citation) — *the same party made the genuine R1 catch in #2, and caught the agent's deck errors #16–#17* |
+| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution) |
 
 ## Tally by mechanism — every catch was a computation or a citation
 
@@ -54,8 +56,14 @@ coherence check (1) · CFT re-derivation (1) · verbatim quote (1) · parity arg
 (1) · oracle gp cross-check (1) · algebraic identity / associativity (1) ·
 exhaustive sweep (1) · source-hypothesis reading (1) · anchor witness (2) ·
 Stickelberger's theorem (1) · exact-rational identity (1) · git reachability
-enumeration (1) · twin disagreement (1) · second-compiler build (1).
-**Arguments from authority: 0.**
+enumeration (1) · twin disagreement (1) · second-compiler build (1) · external
+referee review + citation trace (2). **Arguments from authority: 0.**
+
+The last two (#16, #17) are the ledger folding in on itself: the deck that
+*presents* this thesis had a coverage conflation and an attribution-by-vibe of
+its own, and the referee layer caught both — one of them (#16) exactly where the
+machine checker is blind (numbers present ≠ numbers correctly attributed). The
+harness catches the harness.
 
 ## The senior rule
 

@@ -120,9 +120,15 @@
   <ul>
     <li>Legendre/Jacobi symbols, Tonelli–Shanks, Miller–Rabin — from scratch, u128 built-ins only.</li>
     <li><b>Twin:</b> every symbol computed by Euler's criterion <em>and</em> by the reciprocity law — two algorithms, cross-checked.</li>
-    <li>Quadratic reciprocity + both supplements, verified <span class="em">exhaustively over all odd primes &lt; 10⁷</span>.</li>
+    <li><b>Three coverages, stated separately</b> (not one "exhaustive to 10⁷"):
+      <ul>
+        <li>the <em>reciprocity law</em> over all pairs of odd primes &lt; 3×10⁴ — 5,260,146 pairs;</li>
+        <li>both <em>supplements</em> over all 664,578 odd primes &lt; 10⁷;</li>
+        <li>the Euler-vs-reciprocity <em>twin</em> — 53,165,634 symbol agreements, exhaustive to 10⁷.</li>
+      </ul>
+    </li>
   </ul>
-  <span class="claim" data-claim="qr-exhaustive">QR + supplements: 5.26M pairs; twin 53.2M agreements, exhaustive to 10⁷</span>
+  <span class="claim" data-claim="qr-exhaustive">reciprocity 5,260,146 pairs to 3×10⁴ · supplements 664,578 primes to 10⁷ · twin 53,165,634 agreements to 10⁷</span>
 </section>
 
 <section class="slide">
@@ -151,9 +157,9 @@
   <h2>Borromean primes</h2>
   <figure>
     <iframe data-viewer="borromean" src="../../viz/borromean.html" title="Borromean hypergraph"></iframe>
-    <figcaption>Triples pairwise <em>unlinked</em> yet triple-<em>linked</em> (<code>[a,b,c]=−1</code>). Anchor: <code>[13,61,937] = −1</code>, Stevenhagen's worked value.</figcaption>
+    <figcaption>Triples pairwise <em>unlinked</em> yet triple-<em>linked</em> (<code>[a,b,c]=−1</code>). Anchor: <code>[13,61,937] = −1</code>, the standard Borromean triple (Morishita [M12]); the <em>normalization</em> is pinned to Stevenhagen [S22]/Corsman [C07].</figcaption>
   </figure>
-  <span class="claim" data-claim="redei-anchor">[13,61,937] = −1 matches the published value</span>
+  <span class="claim" data-claim="redei-anchor">[13,61,937] = −1, the [M12] standard Borromean triple</span>
 </section>
 
 <section class="slide">
@@ -224,7 +230,7 @@
     <figcaption><code>Z_DW = |Hom(π₁,S₃)|/6 = 1/6 + (2ᵗ−1)/2 + (3ᵏ−1)/6 + c</code>. The S₃ term <code>c</code> (cubic iso classes) refereed <b>two independent ways</b>: PARI <code>nflist</code> and K. Belabas's <code>cubic</code>.</figcaption>
   </figure>
   <span class="claim" data-claim="dw-decomposition">mass formula exact over 16 sweep instances (exact rational)</span>
-  <span class="claim" data-claim="belabas-twin">Belabas = PARI on all 14 feasible sets</span>
+  <span class="claim" data-claim="belabas-twin">Belabas = PARI on all 14 feasible sets (2 skipped: D_max = ∏p² &gt; the 10⁷ full-enumeration bound)</span>
 </section>
 
 <!-- ============ ACT III — THE HARNESS ============ -->
@@ -268,7 +274,8 @@
     external (LLM) referee — a fabricated citation, by the verbatim-quote protocol — <em>the same referee made a genuine catch</em><br>
     coding agent — strat counter (parity), signed-a (associativity), generator cap (sweep), 2c/6c (mass formula), PDFs-in-history, missing headers (a second compiler)
   </div>
-  <span class="claim" data-claim="errata-count">15 entries; authority-catches: 0 — see docs/ERRATA.md</span>
+  <p class="sub" style="margin-top:.3em">(A selection — the full ledger has 17 rows, including this deck review's own two.)</p>
+  <span class="claim" data-claim="errata-count">17 entries in docs/ERRATA.md (selection above); authority-catches: 0</span>
 </section>
 
 <!-- ============ ACT IV — RESULTS & HORIZONS ============ -->
