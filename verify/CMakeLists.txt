@@ -227,3 +227,49 @@ add_test(NAME stage5.anchor_zeros_match_odlyzko
 set_tests_properties(stage5.anchor_zeros_match_odlyzko PROPERTIES
   LABELS "stage5;oracle"
   SKIP_RETURN_CODE 77)
+
+# --- Stage 6 (untwisted S₃ Dijkgraaf-Witten counting vs cubic fields) --------
+add_executable(verify_stage6
+  verify_main.cpp
+  stage6/dw_tests.cpp
+  stage6/oracle_tests.cpp)
+target_include_directories(verify_stage6 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_stage6 PRIVATE at_dw)
+target_compile_definitions(verify_stage6 PRIVATE
+  AT_CUBIC_CACHE="${CMAKE_SOURCE_DIR}/data/cubic/s3_counts.txt"
+  AT_LMFDB_CUBIC="${CMAKE_SOURCE_DIR}/data/lmfdb/cubic_s3.txt")
+
+set(STAGE6_CASES
+  invariance_s_ordering
+  anchor_dw_c_zero_and_nonzero
+  theorem_dw_mass_formula
+  theorem_signature_all_totally_real
+  theorem_dw_s3_decomposition)
+foreach(case ${STAGE6_CASES})
+  add_test(NAME stage6.${case} COMMAND verify_stage6 --test-case=${case})
+  set_tests_properties(stage6.${case} PROPERTIES LABELS "stage6")
+endforeach()
+
+# LMFDB twin: reads the cached extract, SKIPs (77) with a visible message when
+# absent (LMFDB API reCAPTCHA-blocked; stage6-pinning.md R4). No gp/subprocess.
+add_test(NAME stage6.twin_cubic_count_lmfdb_vs_pari
+         COMMAND verify_stage6 --test-case=twin_cubic_count_lmfdb_vs_pari)
+set_tests_properties(stage6.twin_cubic_count_lmfdb_vs_pari PROPERTIES
+  LABELS "stage6;oracle"
+  SKIP_RETURN_CODE 77)
+
+# PARI referee regen: re-run the nflist enumeration and diff against the committed
+# cache (guards cache staleness / confirms the live referee). SKIPs (77) if gp
+# absent. RESOURCE_LOCK "gp" per the concurrent-spawn precedent.
+if(AT_VALIDATE_PY)
+  add_test(NAME stage6.oracle_pari_cubic_regen
+           COMMAND ${AT_VALIDATE_PY} ${CMAKE_SOURCE_DIR}/oracle/compute_cubic_counts.py --check)
+  set_tests_properties(stage6.oracle_pari_cubic_regen PROPERTIES
+    LABELS "stage6;oracle"
+    SKIP_RETURN_CODE 77
+    RESOURCE_LOCK "gp"
+    TIMEOUT 180          # backstop: fail fast if nflist ever hangs, never block the suite
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()

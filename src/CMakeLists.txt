@@ -51,11 +51,18 @@ add_library(at_zeta STATIC
 target_include_directories(at_zeta PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_zeta PUBLIC at_core)
 
+# Stage 6 — untwisted S₃ Dijkgraaf-Witten invariant of Spec ℤ[1/S]: assemble
+# |Hom| and Z_DW (exact rational) from t, k (our machinery) + refereed c.
+add_library(at_dw STATIC dw/s3_count.cpp)
+target_include_directories(at_dw PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(at_dw PUBLIC at_core)
+
 add_library(at_emit STATIC
   emit/emit_linking.cpp
   emit/emit_borromean.cpp
   emit/emit_classgroups.cpp
   emit/emit_cs.cpp
-  emit/emit_zeta.cpp)
+  emit/emit_zeta.cpp
+  emit/emit_dw.cpp)
 target_include_directories(at_emit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(at_emit PUBLIC at_linking at_redei at_classgroup at_cs at_zeta)
+target_link_libraries(at_emit PUBLIC at_linking at_redei at_classgroup at_cs at_zeta at_dw)
