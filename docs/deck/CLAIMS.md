@@ -44,7 +44,7 @@ enforced for *numbers correctly attributed*.
 | `ruelle-twin` | Ruelle zeta: Euler product over closed orbits = 1/det(I−L_s) | verified | `stage5.twin_ruelle_orbit_vs_determinant` — agreement ~9e-16 over the s-grid (both golden-mean roofs) |
 | `dw-decomposition` | `Z_DW = 1/6 + (2^t−1)/2 + (3^k−1)/6 + c`, exact rational, every instance | verified | `stage6.theorem_dw_mass_formula` — 16 sweep instances (exact rational); `theorem_dw_s3_decomposition` |
 | `belabas-twin` | Cubic iso-class count `c` agrees between PARI `nflist` and Belabas's `cubic` | verified | `stage6.twin_cubic_count_belabas_vs_pari` — 14 feasible sweep sets agree; 2 recorded skipped (Dmax too large) |
-| `errata-count` | Every party was caught at least once; every catch a computation or a citation | documented | `docs/ERRATA.md` — 17 entries (the slide shows a selection); authority-catches: 0 |
+| `errata-count` | Every party was caught at least once; every catch a computation or a citation | documented | `docs/ERRATA.md` — 18 entries (the slide shows a selection); authority-catches: 0 |
 | `suite-total` | The full suite is green | verified | `ctest` — 63 tests, 0 failing (10 oracle-refereed); extended run all 7 stages exit 0 |
 
 ## Empirics (observed / unasserted — NOT theorems)

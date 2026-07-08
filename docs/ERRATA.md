@@ -39,6 +39,7 @@ review, and the agent whose own catches sit beside its own bugs.
 | 15 | infra/CI | `std::sqrt`/`std::max`/`std::swap` used without `<cmath>`/`<algorithm>`/`<utility>` — a latent missing-include bug | coding agent | **The CI/GCC build** — Apple clang's libc++ pulls these in transitively and masked it locally; GCC's libstdc++ does not, so the CI leg (a *second compiler*) failed at `qform.cpp` and surfaced it. Fixed across 10 files |
 | 16 | deck | The Stage-0 deck slide claimed "verified exhaustively over all odd primes < 10⁷" — conflating three coverages: the reciprocity check was exhaustive only to 3×10⁴ (5.26M pairs); the 10⁷ bound applied only to the supplements and the twin | coding agent (deck author) | **External referee (deck review)** — the `deck` ctest passed because it verifies row *existence* + *numbers present*, and every number was real and in the ledger; it does not verify that a bound is *attributed* to the right object. Fixed by disaggregating slide + row; checker gap documented (CLAIMS.md header) |
 | 17 | deck | The Borromean slide credited `[13,61,937]=−1` to "Stevenhagen's worked value"; it is the standard Borromean triple of Morishita [M12] ([S22] is the *normalization* source, not the anchor's) | coding agent (deck author) | **External referee (deck review) → citation trace** — RESEARCH.md §10 ("the standard Borromean triple [M12]") and stage2-pinning line 181. Attribution by vibe, corrected against the source |
+| 18 | infra/CI | The committed `viz/data/zeros.json` snapshot embedded Odlyzko-oracle-dependent fields (per-zero `delta`, `max_odlyzko_dev`, `oracle:"odlyzko"`) — not reproducible from the repo alone, since the Odlyzko table is gitignored (absent in CI) | coding agent (committed the snapshot at 52e14c3 with the oracle present locally) | **The freshness guard's first CI run** — `zeros.json .aggregate.max_odlyzko_dev: type float≠NoneType`; the guard fired the moment it reached CI. Fixed by committing the *oracle-less* `zeros.json` (the Odlyzko cross-check stays in the suite, `anchor_zeros_match_odlyzko`); the freshness check emits stage 5 `--odlyzko ""` |
 
 ## Tally by party — nobody was exempt
 
@@ -48,7 +49,7 @@ review, and the agent whose own catches sit beside its own bugs.
 | Spec author (RESEARCH.md) | #8 (p=2 unlicensed), #10 (ψ midpoint) |
 | Human reviewer (riders/oracles) | #2 (R1 misclassification), #5 (ordinary-vs-narrow oracle), #9 (equal-parity), #11 (signature-mix, void by Stickelberger) |
 | External (LLM) referee | #3 (fabricated `D_{L/K₁}=(a₂)` citation) — *the same party made the genuine R1 catch in #2, and caught the agent's deck errors #16–#17* |
-| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution) |
+| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution), #18 (oracle-dependent snapshot) |
 
 ## Tally by mechanism — every catch was a computation or a citation
 
@@ -57,13 +58,15 @@ coherence check (1) · CFT re-derivation (1) · verbatim quote (1) · parity arg
 exhaustive sweep (1) · source-hypothesis reading (1) · anchor witness (2) ·
 Stickelberger's theorem (1) · exact-rational identity (1) · git reachability
 enumeration (1) · twin disagreement (1) · second-compiler build (1) · external
-referee review + citation trace (2). **Arguments from authority: 0.**
+referee review + citation trace (2) · CI freshness guard (1). **Arguments from
+authority: 0.**
 
-The last two (#16, #17) are the ledger folding in on itself: the deck that
+The last three (#16, #17, #18) are the ledger folding in on itself: the deck that
 *presents* this thesis had a coverage conflation and an attribution-by-vibe of
-its own, and the referee layer caught both — one of them (#16) exactly where the
-machine checker is blind (numbers present ≠ numbers correctly attributed). The
-harness catches the harness.
+its own (caught by the referee, one of them exactly where the machine checker is
+blind), and the published-data snapshot embedded an oracle dependency it couldn't
+reproduce (caught by the freshness guard on its first CI run — a *second
+environment*, the same mechanism as #15). The harness keeps catching the harness.
 
 ## The senior rule
 

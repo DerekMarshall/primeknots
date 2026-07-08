@@ -50,7 +50,13 @@ def emit_args():
         "2": (["--bound", str(bo["prime_bound"])], ["borromean.json"]),
         "3": (["--bound", str(cg["disc_bound"])], ["classgroups.json"]),
         "4": (["--bound", str(cs["disc_bound"])], ["cs_partition.json"]),
-        "5": (["--bound", str(int(z["t_max"]))],
+        # oracle-less (--odlyzko ""): the published snapshot must be reproducible
+        # from the repo alone, and the Odlyzko table is gitignored (absent in CI).
+        # So zeros.json carries no Odlyzko deltas (oracle="none"). The Odlyzko
+        # cross-check lives in the SUITE (anchor_zeros_match_odlyzko), not the
+        # published data. (ERRATA #18: the first CI freshness run caught the
+        # committed zeros.json embedding oracle-dependent fields.)
+        "5": (["--bound", str(int(z["t_max"])), "--odlyzko", ""],
               ["zeros.json", "psi_reconstruction.json", "dyn_zeta.json"]),
         "6": (["--cubic-cache", cache], ["dw_s3.json"]),
     }
