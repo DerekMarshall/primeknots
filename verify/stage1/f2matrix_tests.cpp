@@ -3,6 +3,7 @@
 #include "doctest/doctest.h"
 
 #include <cstddef>
+#include <utility>
 #include <vector>
 
 #include "linking/f2matrix.h"

@@ -1,5 +1,6 @@
 #include "emit/emit_zeta.h"
 
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>

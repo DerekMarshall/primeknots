@@ -3,6 +3,7 @@
 // docs/notes/stage5-pinning.md §4).
 #include "doctest/doctest.h"
 
+#include <algorithm>
 #include <cmath>
 #include <vector>
 

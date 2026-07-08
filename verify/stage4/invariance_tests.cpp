@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <span>
+#include <utility>
 #include <vector>
 
 #include "cs/lhs.h"

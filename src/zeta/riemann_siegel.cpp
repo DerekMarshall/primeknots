@@ -1,5 +1,6 @@
 #include "zeta/riemann_siegel.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <complex>

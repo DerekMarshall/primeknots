@@ -1,5 +1,6 @@
 #pragma once
 #include <optional>
+#include <stdexcept>
 #include <string>
 
 // PARI/GP oracle adapter (ARCHITECTURE.md §4). This lives in oracle/, never in
