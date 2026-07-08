@@ -239,9 +239,13 @@ target_include_directories(verify_stage6 PRIVATE
 target_link_libraries(verify_stage6 PRIVATE at_dw)
 target_compile_definitions(verify_stage6 PRIVATE
   AT_CUBIC_CACHE="${CMAKE_SOURCE_DIR}/data/cubic/s3_counts.txt"
-  AT_LMFDB_CUBIC="${CMAKE_SOURCE_DIR}/data/lmfdb/cubic_s3.txt")
+  AT_BELABAS_CACHE="${CMAKE_SOURCE_DIR}/data/belabas/cubic_s3.txt")
 
+# All stage6 verify cases read committed caches only (no gp/binary at test time),
+# so they run everywhere including CI. twin_cubic_count_belabas_vs_pari compares
+# the two independent committed referee counts (Belabas `cubic` vs PARI nflist).
 set(STAGE6_CASES
+  twin_cubic_count_belabas_vs_pari
   invariance_s_ordering
   anchor_dw_c_zero_and_nonzero
   theorem_dw_mass_formula
@@ -252,17 +256,8 @@ foreach(case ${STAGE6_CASES})
   set_tests_properties(stage6.${case} PROPERTIES LABELS "stage6")
 endforeach()
 
-# LMFDB twin: reads the cached extract, SKIPs (77) with a visible message when
-# absent (LMFDB API reCAPTCHA-blocked; stage6-pinning.md R4). No gp/subprocess.
-add_test(NAME stage6.twin_cubic_count_lmfdb_vs_pari
-         COMMAND verify_stage6 --test-case=twin_cubic_count_lmfdb_vs_pari)
-set_tests_properties(stage6.twin_cubic_count_lmfdb_vs_pari PROPERTIES
-  LABELS "stage6;oracle"
-  SKIP_RETURN_CODE 77)
-
-# PARI referee regen: re-run the nflist enumeration and diff against the committed
-# cache (guards cache staleness / confirms the live referee). SKIPs (77) if gp
-# absent. RESOURCE_LOCK "gp" per the concurrent-spawn precedent.
+# PARI referee regen: re-run the nflist dual-strategy enumeration and diff the
+# committed cache (guards staleness). SKIPs (77) if gp absent. RESOURCE_LOCK "gp".
 if(AT_VALIDATE_PY)
   add_test(NAME stage6.oracle_pari_cubic_regen
            COMMAND ${AT_VALIDATE_PY} ${CMAKE_SOURCE_DIR}/oracle/compute_cubic_counts.py --check)
@@ -271,5 +266,16 @@ if(AT_VALIDATE_PY)
     SKIP_RETURN_CODE 77
     RESOURCE_LOCK "gp"
     TIMEOUT 180          # backstop: fail fast if nflist ever hangs, never block the suite
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+  # Belabas referee regen: rebuild `cubic` and re-diff its committed cache. SKIPs
+  # (77) if the binary/libpari is absent (e.g. in CI). Provides the independent
+  # cross-check of the Belabas cache the twin compares against.
+  add_test(NAME stage6.oracle_belabas_cubic_regen
+           COMMAND ${AT_VALIDATE_PY} ${CMAKE_SOURCE_DIR}/oracle/belabas_cubic.py --check)
+  set_tests_properties(stage6.oracle_belabas_cubic_regen PROPERTIES
+    LABELS "stage6;oracle"
+    SKIP_RETURN_CODE 77
+    TIMEOUT 180
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()

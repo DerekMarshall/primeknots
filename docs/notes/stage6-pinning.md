@@ -346,8 +346,25 @@ Recording what was tested (per the stratification-counter / Odlyzko-floor preced
   (proof above), not an enumeration. `oracle_pari_cubic_regen` re-runs the whole thing
   live and diffs the committed cache.
 - The single LMFDB field we did fetch (disc 229) agrees with this classification, so
-  the two sources concur where LMFDB was reachable; the twin remains the intended
-  cross-referee pending unthrottled access.
+  the two sources concur where LMFDB was reachable.
+
+**R4 — resolution (capstone): Belabas's `cubic` replaces the pending LMFDB twin.**
+The LMFDB-independent referee is now **Karim Belabas's `cubic` enumerator** (Math.
+Comp. 66 (1997) 1213–1237), his specialized cubic-field algorithm — a code path
+separate from PARI's general `nflist` (though it links libpari for bignums).
+`oracle/build_belabas.sh` fetches the sha256-pinned tarball and builds it;
+`oracle/belabas_cubic.py` runs `cubic Dmax` per sweep set and counts fields with
+disc **not a perfect square** (⇔ Galois group S₃, non-cyclic) and rad(disc) ⊆ S.
+Result: c_Belabas == c_PARI on **all 14** sweep sets whose Dmax = ∏p² is feasible
+to fully enumerate (≤ 10⁷); the 2 large-Dmax sets ({13,37,61}, {5,13,17,29}) are
+recorded as skipped (no silent truncation) and rest on PARI's dual-strategy +
+completeness bound. Both referee counts are committed caches
+(`data/belabas/cubic_s3.txt`, `data/cubic/s3_counts.txt`), so
+`twin_cubic_count_belabas_vs_pari` runs everywhere (including CI) — an offline,
+auditable, deterministic twin with better provenance than a rate-limited API.
+This closes Stage 6's one open item. (A filter bug in the first Belabas driver —
+stripping factors of 2 before the rad-⊆-S check, so even discs leaked — was itself
+caught by disagreement with the PARI count; see ERRATA.)
 
 **Test order (per authorization):** twin_cubic_count_lmfdb_vs_pari → invariance_
 s_ordering → anchors (one S with c = 0 and one with c ≥ 2, both REQUIRED present) →

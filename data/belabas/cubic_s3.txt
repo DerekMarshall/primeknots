@@ -1,0 +1,22 @@
+# Stage 6 Belabas-cubic referee — LMFDB-independent S3 cubic counts
+# generated: 2026-07-07
+# tool: Karim Belabas `cubic` v1.3 (Math. Comp. 66 (1997) 1213-1237)
+# method: cubic Dmax; count disc non-square (S3) with rad(disc) subset S
+# bound_rule: |disc| <= prod p^2; feasible if Dmax <= 10000000 (14 feasible, 2 skipped as too large)
+# format: primes_csv | c_belabas (or 'skip') | disc_bound
+5 | 0 | 25
+13 | 0 | 169
+17 | 0 | 289
+29 | 0 | 841
+37 | 0 | 1369
+61 | 0 | 3721
+5,17 | 0 | 7225
+5,13 | 0 | 4225
+13,61 | 1 | 628849
+29,53 | 0 | 2362369
+13,37 | 0 | 231361
+5,29 | 0 | 21025
+5,13,17 | 1 | 1221025
+5,17,29 | 2 | 6076225
+13,37,61 | skip | 860894281
+5,13,17,29 | skip | 1026882025
