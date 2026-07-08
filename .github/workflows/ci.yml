@@ -33,6 +33,11 @@ jobs:
       - name: Test (non-oracle green; oracle tests SKIP-visible)
         run: ctest --test-dir build --output-on-failure --no-tests=error
 
+      - name: Freshness — committed viz/data snapshot == `at emit` at HEAD
+        # CI verifies exactly what GitHub Pages serves; drift (an emitter changed
+        # without a re-emit) is a build failure. generated_by is normalized.
+        run: ctest --test-dir build -L freshness --output-on-failure
+
       - name: List the oracle tests (these are the ones expected to SKIP)
         if: always()
         run: ctest --test-dir build -N -L oracle

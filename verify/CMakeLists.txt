@@ -290,3 +290,16 @@ if(AT_VALIDATE_PY)
     SKIP_RETURN_CODE 77
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
+
+# --- freshness: the committed viz/data snapshot must equal `at emit` at HEAD ----
+# Closes the "synced manually" decay mode (ARCHITECTURE §5): CI verifies exactly
+# what GitHub Pages serves. Byte-identical standard; generated_by normalized.
+if(AT_VALIDATE_PY)
+  add_test(NAME freshness.snapshot_matches_emit
+           COMMAND ${AT_VALIDATE_PY} ${CMAKE_SOURCE_DIR}/verify/freshness_check.py
+             --at $<TARGET_FILE:at>)
+  set_tests_properties(freshness.snapshot_matches_emit PROPERTIES
+    LABELS "freshness"
+    SKIP_RETURN_CODE 77
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()
