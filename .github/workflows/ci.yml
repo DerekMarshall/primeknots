@@ -1,0 +1,38 @@
+name: CI
+
+# Builds the from-scratch C++20 suite and runs the ORACLE-LESS subset. The oracle
+# tests (PARI/GP, the Odlyzko table, the Belabas binary, LMFDB) are intentionally
+# NOT provisioned here: they SKIP visibly (exit 77 → ctest "Skipped"), exactly as
+# designed (CLAUDE.md #3 / ARCHITECTURE §4). A missing oracle is a warning, never
+# a failure; a real bug in a non-oracle test fails the build.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ ninja-build python3-pip
+          python3 -m pip install --user jsonschema   # lets validate-json run (not an oracle)
+
+      - name: Configure
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build -j
+
+      - name: Test (non-oracle green; oracle tests SKIP-visible)
+        run: ctest --test-dir build --output-on-failure --no-tests=error
+
+      - name: List the oracle tests (these are the ones expected to SKIP)
+        if: always()
+        run: ctest --test-dir build -N -L oracle
