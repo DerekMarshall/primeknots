@@ -1,0 +1,22 @@
+# Stage 6 PARI referee cache — non-Galois (S3) cubic iso-class counts
+# generated: 2026-07-07
+# tool: PARI/GP nflist (resolvent enumeration) + polgalois reclassification
+# bound_rule: |disc| <= prod_{p in S} p^2 (tame v_p(disc) <= 2)
+# c = iso classes of S3 cubics with rad(disc) subset S; all totally real (R3)
+# format: primes_csv | disc_bound | c | all_real(0/1) | discs_csv
+5 | 25 | 0 | 1 | 
+13 | 169 | 0 | 1 | 
+17 | 289 | 0 | 1 | 
+29 | 841 | 0 | 1 | 
+37 | 1369 | 0 | 1 | 
+61 | 3721 | 0 | 1 | 
+5,17 | 7225 | 0 | 1 | 
+5,13 | 4225 | 0 | 1 | 
+13,61 | 628849 | 1 | 1 | 10309
+29,53 | 2362369 | 0 | 1 | 
+13,37 | 231361 | 0 | 1 | 
+5,29 | 21025 | 0 | 1 | 
+5,13,17 | 1221025 | 1 | 1 | 71825
+5,17,29 | 6076225 | 2 | 1 | 12325,357425
+13,37,61 | 860894281 | 1 | 1 | 10309
+5,13,17,29 | 1026882025 | 7 | 1 | 12325,71825,357425,1416389,2416193,2723825,60404825

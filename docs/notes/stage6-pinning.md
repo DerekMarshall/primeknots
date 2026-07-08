@@ -324,6 +324,31 @@ stated in the emitted JSON and the test. The LMFDB extract is cached under `data
 with recorded query string, date, and SHA-256 (ARCHITECTURE §4 precedent); the two
 counts are twinned (`twin_cubic_count_lmfdb_vs_pari`) before c enters the assembly.
 
+**R4 — execution note (2026-07-07): LMFDB API blocked; PARI dual-strategy substitute.**
+Recording what was tested (per the stratification-counter / Odlyzko-floor precedent):
+
+- **LMFDB is reCAPTCHA-blocked for bulk extraction.** Its public API (`/api/nf_fields/`)
+  serves only *scalar-equality* queries (`disc_abs=229` returns clean JSON — confirmed:
+  that field is `galois_label 3T2`, `disc_sign +1`, `ramps [229]`, matching a PARI S₃
+  totally-real cubic). Array/range operators (`ramps={"$containedin":…}`, exact
+  `ramps=[…]`, disc ranges) return the HTML 404 page, and a burst of ~5 requests trips
+  a Google reCAPTCHA bot-challenge (reproduced twice). Bulk independent enumeration is
+  therefore infeasible from here. `oracle/fetch_lmfdb.py` is committed and will build
+  `data/lmfdb/cubic_s3.txt` when API access permits; until then
+  `twin_cubic_count_lmfdb_vs_pari` **SKIPs cleanly** (visible message, exit 77).
+- **Dual-implementation is preserved WITHIN PARI** (non-negotiable #2). c is computed
+  two independent ways in `oracle/gp/cubic_count.gp` and REQUIRED to agree before the
+  cache is written (a disagreement aborts — Rule 1): (A) resolvent-range —
+  `nflist("S3",[1,Dmax],-1,x²−m)` over quadratic resolvents m | ∏S; (B) per-exact-disc
+  — `nflist("S3", d)` summed over candidate discriminants d = ∏ p^{aₚ} (aₚ≤2, ≤Dmax).
+  Every returned field is additionally re-classified by `polgalois` (order 6 ⇒ S₃),
+  a code path independent of nflist's own labelling. Completeness is the D_max bound
+  (proof above), not an enumeration. `oracle_pari_cubic_regen` re-runs the whole thing
+  live and diffs the committed cache.
+- The single LMFDB field we did fetch (disc 229) agrees with this classification, so
+  the two sources concur where LMFDB was reachable; the twin remains the intended
+  cross-referee pending unthrottled access.
+
 **Test order (per authorization):** twin_cubic_count_lmfdb_vs_pari → invariance_
 s_ordering → anchors (one S with c = 0 and one with c ≥ 2, both REQUIRED present) →
 theorem_dw_s3_decomposition + theorem_dw_mass_formula sweep with per-stratum
