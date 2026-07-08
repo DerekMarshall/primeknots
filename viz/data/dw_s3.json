@@ -1,0 +1,24 @@
+{
+  "schema": "dw_s3/1",
+  "generated_by": "8672b2d",
+  "params": {"group": "S3", "space": "Spec Z[1/S]", "pool": "primes = 1 mod 4", "convention": "unconstrained infinity (both signatures); all totally real by R3", "bound_rule": "|disc| <= prod p^2", "referee": "PARI/GP nflist; LMFDB twin pending API access"},
+  "aggregate": {"n_instances": 16, "all_totally_real": true, "max_t": 4},
+  "instances": [
+    {"primes": [5], "t": 1, "k": 0, "c": 0, "hom_count": 4, "z_dw": {"num": 2, "den": 3}, "terms": {"trivial": 1, "c2": 3, "c3": 0, "s3": 0}, "disc_bound": 25, "all_real": true, "discs": []},
+    {"primes": [13], "t": 1, "k": 1, "c": 0, "hom_count": 6, "z_dw": {"num": 1, "den": 1}, "terms": {"trivial": 1, "c2": 3, "c3": 2, "s3": 0}, "disc_bound": 169, "all_real": true, "discs": []},
+    {"primes": [17], "t": 1, "k": 0, "c": 0, "hom_count": 4, "z_dw": {"num": 2, "den": 3}, "terms": {"trivial": 1, "c2": 3, "c3": 0, "s3": 0}, "disc_bound": 289, "all_real": true, "discs": []},
+    {"primes": [29], "t": 1, "k": 0, "c": 0, "hom_count": 4, "z_dw": {"num": 2, "den": 3}, "terms": {"trivial": 1, "c2": 3, "c3": 0, "s3": 0}, "disc_bound": 841, "all_real": true, "discs": []},
+    {"primes": [37], "t": 1, "k": 1, "c": 0, "hom_count": 6, "z_dw": {"num": 1, "den": 1}, "terms": {"trivial": 1, "c2": 3, "c3": 2, "s3": 0}, "disc_bound": 1369, "all_real": true, "discs": []},
+    {"primes": [61], "t": 1, "k": 1, "c": 0, "hom_count": 6, "z_dw": {"num": 1, "den": 1}, "terms": {"trivial": 1, "c2": 3, "c3": 2, "s3": 0}, "disc_bound": 3721, "all_real": true, "discs": []},
+    {"primes": [5,17], "t": 2, "k": 0, "c": 0, "hom_count": 10, "z_dw": {"num": 5, "den": 3}, "terms": {"trivial": 1, "c2": 9, "c3": 0, "s3": 0}, "disc_bound": 7225, "all_real": true, "discs": []},
+    {"primes": [5,13], "t": 2, "k": 1, "c": 0, "hom_count": 12, "z_dw": {"num": 2, "den": 1}, "terms": {"trivial": 1, "c2": 9, "c3": 2, "s3": 0}, "disc_bound": 4225, "all_real": true, "discs": []},
+    {"primes": [13,61], "t": 2, "k": 2, "c": 1, "hom_count": 24, "z_dw": {"num": 4, "den": 1}, "terms": {"trivial": 1, "c2": 9, "c3": 8, "s3": 6}, "disc_bound": 628849, "all_real": true, "discs": [10309]},
+    {"primes": [29,53], "t": 2, "k": 0, "c": 0, "hom_count": 10, "z_dw": {"num": 5, "den": 3}, "terms": {"trivial": 1, "c2": 9, "c3": 0, "s3": 0}, "disc_bound": 2362369, "all_real": true, "discs": []},
+    {"primes": [13,37], "t": 2, "k": 2, "c": 0, "hom_count": 18, "z_dw": {"num": 3, "den": 1}, "terms": {"trivial": 1, "c2": 9, "c3": 8, "s3": 0}, "disc_bound": 231361, "all_real": true, "discs": []},
+    {"primes": [5,29], "t": 2, "k": 0, "c": 0, "hom_count": 10, "z_dw": {"num": 5, "den": 3}, "terms": {"trivial": 1, "c2": 9, "c3": 0, "s3": 0}, "disc_bound": 21025, "all_real": true, "discs": []},
+    {"primes": [5,13,17], "t": 3, "k": 1, "c": 1, "hom_count": 30, "z_dw": {"num": 5, "den": 1}, "terms": {"trivial": 1, "c2": 21, "c3": 2, "s3": 6}, "disc_bound": 1221025, "all_real": true, "discs": [71825]},
+    {"primes": [5,17,29], "t": 3, "k": 0, "c": 2, "hom_count": 34, "z_dw": {"num": 17, "den": 3}, "terms": {"trivial": 1, "c2": 21, "c3": 0, "s3": 12}, "disc_bound": 6076225, "all_real": true, "discs": [12325,357425]},
+    {"primes": [13,37,61], "t": 3, "k": 3, "c": 1, "hom_count": 54, "z_dw": {"num": 9, "den": 1}, "terms": {"trivial": 1, "c2": 21, "c3": 26, "s3": 6}, "disc_bound": 860894281, "all_real": true, "discs": [10309]},
+    {"primes": [5,13,17,29], "t": 4, "k": 1, "c": 7, "hom_count": 90, "z_dw": {"num": 15, "den": 1}, "terms": {"trivial": 1, "c2": 45, "c3": 2, "s3": 42}, "disc_bound": 1026882025, "all_real": true, "discs": [12325,71825,357425,1416389,2416193,2723825,60404825]}
+  ]
+}

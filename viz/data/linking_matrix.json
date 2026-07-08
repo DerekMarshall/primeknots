@@ -1,0 +1,10 @@
+{
+  "schema": "linking_matrix/1",
+  "generated_by": "8672b2d",
+  "params": {"prime_bound": 500, "n_primes": 44, "residue_class": "1 mod 4"},
+  "n": 44,
+  "row_bytes": 6,
+  "primes": [5,13,17,29,37,41,53,61,73,89,97,101,109,113,137,149,157,173,181,193,197,229,233,241,257,269,277,281,293,313,317,337,349,353,373,389,397,401,409,421,433,449,457,461],
+  "rows_base64": ["VmVb9RYF","Mde4WPMO","uTXe5jAC","tG8p0sgL","jzaILeoO","Tt5teZAE","oVlPpb8E","XApPrP0F","Tyj5rMAD","uui8uJsF","P8BHzWUF","6LOitzsN","doik5xgC","HUs8GlUH","a6bhRqME","Il7dJV8P","6cWkkvQD","xQyMHMcP","5LYDF1AF","/6NCKrcF","B6Ogzp0I","KnsRawsA","5cUIbfwK","FtsTUl4K","cZxkrsoK","DHi9zXQI","1d1Wg2UO","sid6EywH","KyqHqOQM","9ZtoERYL","L1Twgj0H","zR8RVxAM","wu46RKwJ","U8qqIWQP","waTbfhMD","2JrwSbEK","57rd4owG","1kxJXgsK","mqXHFwII","+kNbERkI","ia8PaAcI","HrHDbT4I","8+4O3BIA","GojSt+sD"],
+  "stats": {"off_diagonal_ones": 978, "off_diagonal_total": 1892, "density": 0.516913, "row_degree_min": 19, "row_degree_max": 26, "row_degree_mean": 22.227273}
+}
