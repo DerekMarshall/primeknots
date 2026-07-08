@@ -1,6 +1,6 @@
 {
   "schema": "dyn_zeta/1",
-  "generated_by": "8672b2d",
+  "generated_by": "f16d927",
   "construction_gap": "This subshift: fully constructed — orbits are closed paths, the Euler product = determinant identity IS geometry. Deninger's arithmetic flow: not constructed — the same identity (explicit formula) holds, but the dynamical system is conjectural.",
   "orbit_truncation_N": 150,
   "models": [
