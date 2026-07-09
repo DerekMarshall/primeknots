@@ -13,6 +13,14 @@ add_library(at_symbols STATIC
 target_include_directories(at_symbols PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_symbols PUBLIC at_core)
 
+# Stage M0 (murmurations) — elliptic curves + a_p charsum referee.
+# ell -> {symbols, core} (ARCHITECTURE-M §1). No family/averaging concepts here.
+add_library(at_ell STATIC
+  ell/curve.cpp
+  ell/ap.cpp)
+target_include_directories(at_ell PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(at_ell PUBLIC at_symbols)
+
 add_library(at_linking STATIC
   linking/f2matrix.cpp
   linking/linking_matrix.cpp)

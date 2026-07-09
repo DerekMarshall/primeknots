@@ -280,6 +280,43 @@ if(AT_VALIDATE_PY)
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
+# --- M0 (murmurations: a_p machinery, convention-free) ----------------------
+add_executable(verify_m0
+  verify_main.cpp
+  m0/ap_tests.cpp
+  m0/oracle_tests.cpp)
+target_include_directories(verify_m0 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_m0 PRIVATE at_ell at_oracle)
+
+set(M0_CASES
+  anchor_ap_11a1
+  anchor_ap_bad_prime
+  invariance_weierstrass_model)
+foreach(case ${M0_CASES})
+  add_test(NAME m0.${case} COMMAND verify_m0 --test-case=${case})
+  set_tests_properties(m0.${case} PROPERTIES LABELS "m0")
+endforeach()
+
+# Oracle: our a_p refereed by PARI ellap. SKIPs (77) if gp absent; RESOURCE_LOCK
+# serializes gp spawns under `ctest -j` (as elsewhere).
+add_test(NAME m0.oracle_ellap COMMAND verify_m0 --test-case=oracle_ellap)
+set_tests_properties(m0.oracle_ellap PROPERTIES
+  LABELS "m0;oracle"
+  SKIP_RETURN_CODE 77
+  RESOURCE_LOCK "gp")
+
+# Clean-SKIP contract for M0's oracle (per Stage 0 precedent): gp absent must give
+# a visible [SKIP] + exit 77, never a silent pass. This test always PASSES.
+add_test(NAME m0.oracle_clean_skip_when_gp_absent
+         COMMAND ${CMAKE_COMMAND}
+           -DORACLE_BIN=$<TARGET_FILE:verify_m0>
+           -DTESTCASE=oracle_ellap
+           -DEMPTY_DIR=${CMAKE_CURRENT_BINARY_DIR}/no_gp_path_m0
+           -P ${CMAKE_CURRENT_SOURCE_DIR}/oracle_skip_check.cmake)
+set_tests_properties(m0.oracle_clean_skip_when_gp_absent PROPERTIES LABELS "m0;oracle")
+
 # --- deck: the explainer deck is an emitted artifact, validated like one -------
 # Every data-claim="ID" in docs/deck/index.html must have a CLAIMS.md row.
 if(AT_VALIDATE_PY)

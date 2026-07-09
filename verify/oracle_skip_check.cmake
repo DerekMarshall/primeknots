@@ -5,14 +5,19 @@
 # SKIP *visibly* — exit code 77 and a printed "[SKIP]" line — never a silent
 # pass (exit 0) and never a failure. Passes iff the contract holds.
 #
-# Inputs (via -D): ORACLE_BIN (the verify_stage0 binary), EMPTY_DIR (a dir with
-# no `gp` on it, used as the entire PATH).
+# Inputs (via -D): ORACLE_BIN (a verify_stageN binary), EMPTY_DIR (a dir with no
+# `gp` on it, used as the entire PATH), TESTCASE (the oracle case to run; defaults
+# to oracle_kronecker for the Stage 0 caller).
+
+if(NOT DEFINED TESTCASE)
+  set(TESTCASE "oracle_kronecker")
+endif()
 
 file(MAKE_DIRECTORY "${EMPTY_DIR}")
 set(ENV{PATH} "${EMPTY_DIR}")   # PATH containing no gp; binary launched by abs path
 
 execute_process(
-  COMMAND "${ORACLE_BIN}" "--test-case=oracle_kronecker"
+  COMMAND "${ORACLE_BIN}" "--test-case=${TESTCASE}"
   RESULT_VARIABLE rc
   OUTPUT_VARIABLE out
   ERROR_VARIABLE err)
