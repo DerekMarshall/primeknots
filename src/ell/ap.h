@@ -14,6 +14,12 @@ using at::core::u64;
 // Phase-2 fast path is checked against — do NOT optimize it.
 int ap_charsum(const Curve& E, u64 p);
 
+// Small-prime computed path (m0-pinning §5, rider R1). Direct point count on the
+// LONG model mod p, valid at any good prime (p ∤ Δ(model)) — used for p ∈ {2,3},
+// which the short-model referee (ap_charsum, p > 3) cannot reach. The point at
+// infinity is counted EXPLICITLY. a_p = p + 1 − #E(𝔽_p). O(p²): a referee, frozen.
+int ap_enumerate(const Curve& E, u64 p);
+
 // Bad-prime a_q from ecdata's Atkin–Lehner sign (m0-pinning §3, PARI-adjudicated).
 // w_sign is the ecdata '+'/'-' as +1/−1; ord_q_N is the conductor valuation at q.
 //   multiplicative (ord_q_N == 1):  a_q = −w_sign

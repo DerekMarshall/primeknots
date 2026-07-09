@@ -284,6 +284,8 @@ endif()
 add_executable(verify_m0
   verify_main.cpp
   m0/ap_tests.cpp
+  m0/fast_tests.cpp
+  m0/cache_tests.cpp
   m0/oracle_tests.cpp)
 target_include_directories(verify_m0 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
@@ -292,8 +294,12 @@ target_link_libraries(verify_m0 PRIVATE at_ell at_oracle)
 
 set(M0_CASES
   anchor_ap_11a1
+  anchor_ap_small_primes
   anchor_ap_bad_prime
-  invariance_weierstrass_model)
+  invariance_weierstrass_model
+  twin_ap_charsum_vs_table
+  invariance_parallel_vs_serial
+  anchor_ap_cache_stale_hash_refused)
 foreach(case ${M0_CASES})
   add_test(NAME m0.${case} COMMAND verify_m0 --test-case=${case})
   set_tests_properties(m0.${case} PROPERTIES LABELS "m0")

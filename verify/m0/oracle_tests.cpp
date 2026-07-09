@@ -42,10 +42,13 @@ TEST_CASE("oracle_ellap") {
         {"19a1", {0, 1, 1, -9, -15}},   {"37a1", {0, 0, 1, -1, 0}},
         {"389a1", {0, 1, 1, -2, 0}},    {"5077a1", {0, 0, 1, -7, 6}},
     };
-    const std::vector<u64> primes = {5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,
-                                     47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
+    // Includes p ∈ {2,3}: the small-prime enumeration path (m0-pinning §5) is
+    // refereed by PARI too, not just the p>3 charsum referee.
+    const std::vector<u64> primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
+                                     43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
 
-    // Good-prime referee jobs (p ∤ Δ_min ⇔ good reduction, for a minimal model).
+    // Good-prime jobs (p ∤ Δ_min ⇔ good reduction, for a minimal model). p ∈ {2,3}
+    // go through ap_enumerate (long model); p > 3 through the frozen charsum referee.
     struct Job { u64 p; int ours; };
     std::vector<Job> good_jobs;
     std::ostringstream script;
@@ -53,7 +56,8 @@ TEST_CASE("oracle_ellap") {
         const i128 D = discriminant(c.E);
         for (u64 p : primes) {
             if (D % static_cast<i128>(p) == 0) continue;  // bad prime: handled below
-            good_jobs.push_back({p, ap_charsum(c.E, p)});
+            const int ours = (p <= 3) ? ap_enumerate(c.E, p) : ap_charsum(c.E, p);
+            good_jobs.push_back({p, ours});
             script << "print(ellap(ellinit(" << model_str(c.E) << ")," << p << "))\n";
         }
     }
@@ -87,9 +91,10 @@ TEST_CASE("oracle_ellap") {
         ++bad_matched;
     }
 
-    MESSAGE("oracle_ellap: " << good_matched << " good-prime a_p (charsum referee) + "
-            << bad_matched << " bad-prime a_q (A–L conversion) matched PARI ellap");
+    MESSAGE("oracle_ellap: " << good_matched
+            << " good-prime a_p (charsum p>3 + enumeration p∈{2,3}) + " << bad_matched
+            << " bad-prime a_q (A–L conversion) matched PARI ellap");
     REQUIRE(good_matched == good_jobs.size());   // whole batch consumed
-    REQUIRE(good_jobs.size() == 178);            // 6 curves × 22 good + 2 × 23
+    REQUIRE(good_jobs.size() == 192);            // 25 primes × 8 curves − 8 bad (curve,p)
     REQUIRE(bad_matched == 5);
 }

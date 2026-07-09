@@ -39,6 +39,31 @@ int ap_charsum(const Curve& E, u64 p) {
     return static_cast<int>(-sum);
 }
 
+int ap_enumerate(const Curve& E, u64 p) {
+    // Point count on the long model y²+a1xy+a3y = x³+a2x²+a4x+a6 mod p, O(p²).
+    // Precondition: p ∤ Δ(model) (good reduction — m0-pinning §5). Any good prime;
+    // used for p ∈ {2,3} where the short-model referee does not apply.
+    auto rp = [p](i64 v) -> u64 {
+        i64 m = v % static_cast<i64>(p);
+        return static_cast<u64>(m < 0 ? m + static_cast<i64>(p) : m);
+    };
+    auto mul = [p](u64 a, u64 b) -> u64 { return static_cast<u64>(static_cast<u128>(a) * b % p); };
+    auto add = [p](u64 a, u64 b) -> u64 { return (a + b) % p; };
+
+    const u64 a1 = rp(E.a1), a2 = rp(E.a2), a3 = rp(E.a3), a4 = rp(E.a4), a6 = rp(E.a6);
+
+    u64 count = 1;   // the point at infinity, counted EXPLICITLY (m0-pinning §5)
+    for (u64 x = 0; x < p; ++x) {
+        const u64 x2 = mul(x, x);
+        const u64 rhs = add(add(add(mul(x2, x), mul(a2, x2)), mul(a4, x)), a6);
+        for (u64 y = 0; y < p; ++y) {
+            const u64 lhs = add(add(mul(y, y), mul(a1, mul(x, y))), mul(a3, y));
+            if (lhs == rhs) ++count;
+        }
+    }
+    return static_cast<int>(static_cast<i64>(p) + 1 - static_cast<i64>(count));
+}
+
 int ap_from_atkin_lehner(int w_sign, int ord_q_N) {
     if (ord_q_N == 1) return -w_sign;   // multiplicative q ∥ N
     return 0;                           // additive q² | N

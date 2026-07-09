@@ -13,13 +13,24 @@ add_library(at_symbols STATIC
 target_include_directories(at_symbols PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_symbols PUBLIC at_core)
 
-# Stage M0 (murmurations) — elliptic curves + a_p charsum referee.
+# Stage M0 (murmurations) — elliptic curves, a_p referees (charsum p>3 +
+# enumeration for p∈{2,3}), the fast path, and the versioned a_p cache.
 # ell -> {symbols, core} (ARCHITECTURE-M §1). No family/averaging concepts here.
 add_library(at_ell STATIC
   ell/curve.cpp
-  ell/ap.cpp)
+  ell/ap.cpp
+  ell/ap_fast.cpp
+  ell/ap_cache.cpp)
 target_include_directories(at_ell PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(at_ell PUBLIC at_symbols)
+target_link_libraries(at_ell PUBLIC at_symbols Threads::Threads)
+
+# a_p cache generator hash (ARCHITECTURE-M §4): sha256 of the fast-path generator
+# source. A change to ell/ap_fast.cpp changes this, so the loader refuses caches
+# written by an older generator. Computed at configure time (re-configure to
+# refresh — the CMakeLists change on any src edit already triggers that here).
+file(SHA256 ${CMAKE_CURRENT_SOURCE_DIR}/ell/ap_fast.cpp AT_AP_GENERATOR_HASH)
+set_source_files_properties(ell/ap_cache.cpp PROPERTIES
+  COMPILE_DEFINITIONS AP_GENERATOR_HASH="${AT_AP_GENERATOR_HASH}")
 
 add_library(at_linking STATIC
   linking/f2matrix.cpp

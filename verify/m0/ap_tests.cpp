@@ -42,6 +42,19 @@ TEST_CASE("anchor_ap_11a1") {
     REQUIRE(checked == kGoodPrimes11a1.size());
 }
 
+TEST_CASE("anchor_ap_small_primes") {
+    // a_2, a_3 via the long-model enumeration path (m0-pinning §5, rider R1).
+    // 11a1 is good at 2,3 (N=11); a_2=-2, a_3=-1 quoted from aplist line "11 a".
+    CHECK(ap_enumerate(k11a1, 2) == -2);
+    CHECK(ap_enumerate(k11a1, 3) == -1);
+    MESSAGE("anchor_ap_small_primes: a_2=-2, a_3=-1 for 11a1 (enumeration, ∞ counted) "
+            "matched Cremona aplist");
+    // Sanity: the enumeration agrees with the p>3 charsum referee where both apply
+    // (e.g. p=5), so the two referees share the same a_p convention.
+    CHECK(ap_enumerate(k11a1, 5) == ap_charsum(k11a1, 5));
+    REQUIRE(ap_enumerate(k11a1, 5) == 1);
+}
+
 TEST_CASE("anchor_ap_bad_prime") {
     // (label, q, ecdata A–L sign w_q as ±1, ord_q(N), expected a_q). Adjudicated
     // by PARI ellap at the pinned models (m0-pinning §3c). The additive rows
