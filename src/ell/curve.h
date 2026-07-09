@@ -32,4 +32,14 @@ Curve translate(const Curve& E, i64 r, i64 s, i64 t);
 //   scale:     (x,y) ↦ (x/u², y/u³)  ⇒  a_i ↦ u^i·a_i  [integral for integer u]
 Curve scale(const Curve& E, i64 u);
 
+// Minimality precondition (m0-pinning §5, correction C1). Good reduction at p is
+// p ∤ Δ_minimal ⟺ p ∤ N (conductor, oracle) — NOT p ∤ Δ(model): Δ scales by u¹²
+// under a rescaling, so a non-minimal model has extra primes in Δ that do not
+// divide N. Point-counting a_p on a non-p-minimal model counts a SINGULAR
+// reduction and returns a wrong a_p silently. This asserts the consistency
+// "p ∤ Δ(model) ⟺ p ∤ N for all p" (equivalently rad(Δ(model)) = rad(N)); it
+// THROWS std::runtime_error if some prime divides Δ(model) but not N. Every curve
+// entering the a_p path must pass this (the M1 loader calls it per curve).
+void assert_minimal(const Curve& E, at::core::u64 conductor_N);
+
 }  // namespace at::ell

@@ -6,6 +6,8 @@
 //   invariance_weierstrass_model — a_p is a model-choice invariant (§2).
 #include "doctest/doctest.h"
 
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 #include "ell/ap.h"
@@ -79,21 +81,40 @@ TEST_CASE("anchor_ap_bad_prime") {
 }
 
 TEST_CASE("invariance_weierstrass_model") {
-    // Same curve (11a1), three integral models; a_p must not see the choice (§2).
+    // Same curve (11a1); a_p must not see the model choice (§2) — among MINIMAL
+    // models. Both A and B are minimal (N=11), so the API accepts them.
     const Curve A = k11a1;                  // minimal
-    const Curve B = translate(A, 1, 1, 1);  // u = 1 shift
-    const Curve C = scale(A, 2);            // a_i ↦ 2^i a_i  (good primes are ∤ 2)
+    const Curve B = translate(A, 1, 1, 1);  // u = 1 shift — still minimal
+    assert_minimal(A, 11);
+    assert_minimal(B, 11);
 
     u64 checked = 0;
     for (u64 p : kGoodPrimes11a1) {
-        const int a = ap_charsum(A, p);
-        const int b = ap_charsum(B, p);
-        const int c = ap_charsum(C, p);
-        CHECK(a == b);
-        CHECK(a == c);
+        CHECK(ap_charsum(A, p) == ap_charsum(B, p));
         ++checked;
     }
-    MESSAGE("invariance_weierstrass_model: a_p agreed across 3 models of 11a1 over "
+    MESSAGE("invariance_weierstrass_model: a_p agreed across 2 minimal models of 11a1 over "
             << checked << " good primes");
     REQUIRE(checked == 22);
+
+    // Correction C1: a NON-minimal model must be REFUSED, not silently used. Scaling
+    // by u=2 makes Δ ↦ 2¹²·Δ, so 2 | Δ(model) but 2 ∤ N=11 — non-minimal at 2.
+    const Curve C = scale(A, 2);
+    bool refused = false;
+    try {
+        assert_minimal(C, 11);
+    } catch (const std::runtime_error& e) {
+        refused = true;
+        const std::string why = e.what();
+        MESSAGE("minimality guard fired (C1): " << why);
+    }
+    CHECK(refused);
+    REQUIRE(refused);   // the checked precondition demonstrated firing
+
+    // The silent hazard the guard prevents: point-counting the non-minimal model at
+    // p=2 counts a SINGULAR reduction (y²=x³ mod 2) and returns the wrong a_2.
+    CHECK(ap_enumerate(C, 2) == 0);    // wrong (singular)
+    CHECK(ap_enumerate(A, 2) == -2);   // true a_2 on the minimal model
+    MESSAGE("hazard shown: enumeration on the non-minimal model gives a_2=0 (wrong); "
+            "true a_2=-2 — the guard refuses C before any a_p is computed");
 }

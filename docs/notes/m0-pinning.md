@@ -212,14 +212,29 @@ equal to 1 if E has split multiplicative reduction at p, equal to −1 if E has
 non-split multiplicative reduction at p, and equal to 0 if E has additive reduction
 at p." (Also the §3 corroboration.)
 
-**Good-reduction / enumeration-validity criterion (the discriminant test).** The
-reduced Weierstrass model over 𝔽_p is nonsingular ⟺ **p ∤ Δ(model)** (Δ is by
-definition the obstruction to nonsingularity of the plane cubic; standard, Silverman
-AEC Ch. III.1). *Rule-6 note:* Silverman was not fetched, so this is stated as the
-standard nonsingularity fact and **adjudicated operationally against PARI** below,
-not attributed by a verbatim quote I cannot verify. When p ∤ Δ(model), E has good
-reduction at p and the enumeration on this model yields the true a_p; for the ecdata
-minimal models, p ∤ Δ(model) ⟺ p ∤ N.
+**Good-reduction criterion (correction C1 — minimal-model-only).** Good reduction
+of E at p is **p ∤ Δ_minimal ⟺ p ∤ N** (N the conductor, oracle-provenance). This is
+NOT "p ∤ Δ(model)" in general: under a rescaling (x,y) ↦ (u²x, u³y) the discriminant
+scales Δ ↦ u¹²·Δ, so a non-minimal model carries extra primes in Δ that do not
+divide N. The reduced *model* over 𝔽_p is nonsingular ⟺ p ∤ Δ(model) (Δ is by
+definition the obstruction to nonsingularity; standard, Silverman AEC Ch. III.1 —
+*rule-6 note:* not fetched, so stated as the standard fact and adjudicated against
+PARI below, not attributed by a verbatim quote I cannot verify), and this coincides
+with good reduction **only when the model is p-minimal**.
+
+**The hazard (state it plainly).** Point-counting a_p on a **non-p-minimal** model
+counts a *singular* reduction and returns a **wrong a_p silently** — e.g. `scale(11a1,
+2)` reduces to y² = x³ (mod 2), giving a_2 = 0 instead of the true −2. Guard: the ell
+API takes minimality as a **checked precondition**, `ell::assert_minimal(E, N)`,
+which throws when a prime divides Δ(model) but not N (i.e. asserts p ∤ Δ(model) ⟺
+p ∤ N for all p). Every curve entering the a_p path must pass it; the M1 ecdata
+loader calls it per curve. Demonstrated firing (both the refusal and the wrong-a_p
+it prevents) in `invariance_weierstrass_model`, to the cache-refusal standard.
+
+**Current M0 results are unaffected:** every input used is an ecdata *minimal* model
+(the anchors, the sample curves, the grid), so p ∤ Δ(model) ⟺ p ∤ N held throughout;
+C1 hardens the precondition against a future non-minimal input, it does not change
+any computed value. Operational adjudication of the criterion on the minimal models:
 
   | curve | model | Δ(model) | 2∤Δ | 3∤Δ | N | agrees w/ p∤N |
   |---|---|---|---|---|---|---|
@@ -264,16 +279,11 @@ the table path and is never used in the grid — only as the twin referee.
 
 ## Standing decisions (project-wide)
 
-**Repo name — DECIDED, staged (Derek, explicit; rule 7 satisfied).** The repository
-stays `primeknots` **through M2**; the name is retained as an homage to the project's
-origin (arithmetic topology, primes-as-knots), **not** a scope claim, and the
-M-stages live under it. **Revisit at the M3 gate** — M3 (Zubrilina, weight-2
-newforms via Eichler–Selberg) is when the repo *provably* spans both subjects
-(arithmetic topology + arithmetic statistics of modular forms) and the deck framing
-reopens, so a rename decision is genuinely on the table there and not before.
-(Earlier "permanently" is superseded by this staged form at Derek's word.)
-
-**Deferred consequence (no action now — for whichever session next touches
-public-facing text):** the README should eventually carry a one-line note that the
+**Repo name — DECIDED permanently (Derek, explicit; rule 7 satisfied).** The
+repository remains `primeknots` **permanently**, as an homage to the project's
+origin (arithmetic topology, primes-as-knots), **not** a scope claim; M-stages and
+any future stage families live under it. **No M3 revisit** — this supersedes the
+earlier "staged to M3" note at Derek's explicit word (C2). Deferred consequence, for
+whichever session next touches public-facing text: a one-line README note that the
 repo's scope outgrew its name deliberately, so a reader arriving for murmurations
-data isn't confused by the title.
+data isn't confused by the title. No action now.
