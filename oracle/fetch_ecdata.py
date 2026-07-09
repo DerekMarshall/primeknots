@@ -35,8 +35,10 @@ FORMAT_DOC = f"docs/file-format.txt @ {ECDATA_COMMIT}"
 BASE = f"https://raw.githubusercontent.com/JohnCremona/ecdata/{ECDATA_COMMIT}"
 
 # M0 slice: conductors < 10000 (contains the 11a1 anchor + ample sampling).
-# M1 extends RANGES to the full N <= 500000 set through this same script.
-RANGES = ["00000-09999"]
+# M1 (added at the M1 pinning gate): +10000-19999 so the HLOP Figure-1 ranges
+# [7500,10000] and [5000,10000] are fully covered up to N=10000 (the data slice
+# follows the paper's ranges — m1-pinning P3 / the standing note).
+RANGES = ["00000-09999", "10000-19999"]
 KINDS = ["allcurves", "aplist"]
 
 ROOT = Path(__file__).resolve().parent.parent
