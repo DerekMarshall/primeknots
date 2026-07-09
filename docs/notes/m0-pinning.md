@@ -4,9 +4,11 @@ Two-phase gate for Stage M0 (RESEARCH-M §2, ARCHITECTURE-M §7). Convention-fre
 code and the frozen referee do not exist until the [PIN TO SOURCE] items below are
 resolved against **sources**, not against RESEARCH-M.md (a paraphrase) or memory.
 
-**Status.** Phase 0 (sources + data) complete — §0. Phase 1A (§1–§4) complete —
-comprehension gate cleared, pins resolved against sources below. `src/ell` and its
-tests (Phase 1B) follow these pins; the charsum referee is frozen once green.
+**Status.** Phase 0 (sources + data) — §0, complete. Phase 1 (§1–§4, pins + frozen
+referee + tests) — complete, pinning review PASSED. Phase 2 (§5 small-prime path +
+fast path + a_p cache + parallel bit-identity) — authorized; §5 is the R1 mini-pin.
+The charsum referee (§1) and `ap_enumerate` (§5) are frozen referees; the fast path
+is checked against them.
 
 ---
 
@@ -161,7 +163,10 @@ from ecdata @ pin; `ellap` from `gp` (recorded verbatim):
 **Resolution — hypothesis CONFIRMED.** Pinned conversion `ell::ap_from_atkin_lehner`:
 `ord_q(N)==1 ⇒ a_q = −w_q` (multiplicative); `ord_q(N)≥2 ⇒ a_q = 0` (additive —
 the A–L sign is present but a_q vanishes; the 27a1/32a1 rows prove the naive
-"convert the sign" is wrong). **Tate's algorithm at p = 2, 3 remains DEFERRED to
+"convert the sign" is wrong). **Independently corroborated by a second source**,
+SS25 §1.2 (quoted in §5): a_q = +1 (split mult.), −1 (non-split mult.), 0 (additive)
+— matching the PARI adjudication (the A–L sign w_q = −a_q for multiplicative q, so
+−w_q recovers the split/non-split value). **Tate's algorithm at p = 2, 3 remains DEFERRED to
 M0b** (its own gate): here q-reduction-type comes from ord_q(N) and the a_q value
 from the oracle A–L sign, never from computing the local model.
 
@@ -189,12 +194,84 @@ N < 10,000 slice, extending the fetch (new manifest, new shas) is the required
 move; selecting among the paper's ranges by what is already downloaded would be
 family-definition drift.*
 
+## §5 — Small-prime a_2, a_3  [PIN TO SOURCE — resolved; rider R1]
+
+The frozen charsum referee (§1) is **p > 3** (the short model needs 6 invertible).
+But §3a establishes the M1 statistic sums a_p over **all** primes, so good-prime
+a_2 and a_3 need their own computed path. `ell::ap_enumerate`: direct point count
+on the **long** Weierstrass model mod p (valid for any good p, used at p ∈ {2,3}),
+
+    #E(𝔽_p) = 1  +  #{ (x,y) ∈ 𝔽_p² : y² + a1·x·y + a3·y ≡ x³ + a2·x² + a4·x + a6 } ,
+    a_p = p + 1 − #E(𝔽_p),
+
+with the point at infinity counted **explicitly** as the leading `1`.
+
+**a_p formula (quoted, SS25 §1.2, `docs/papers/sawin-sutherland-2504.12295.pdf`):**
+"For p prime, a_p(E) is equal to p + 1 − |E(𝔽_p)| if E has good reduction at p,
+equal to 1 if E has split multiplicative reduction at p, equal to −1 if E has
+non-split multiplicative reduction at p, and equal to 0 if E has additive reduction
+at p." (Also the §3 corroboration.)
+
+**Good-reduction / enumeration-validity criterion (the discriminant test).** The
+reduced Weierstrass model over 𝔽_p is nonsingular ⟺ **p ∤ Δ(model)** (Δ is by
+definition the obstruction to nonsingularity of the plane cubic; standard, Silverman
+AEC Ch. III.1). *Rule-6 note:* Silverman was not fetched, so this is stated as the
+standard nonsingularity fact and **adjudicated operationally against PARI** below,
+not attributed by a verbatim quote I cannot verify. When p ∤ Δ(model), E has good
+reduction at p and the enumeration on this model yields the true a_p; for the ecdata
+minimal models, p ∤ Δ(model) ⟺ p ∤ N.
+
+  | curve | model | Δ(model) | 2∤Δ | 3∤Δ | N | agrees w/ p∤N |
+  |---|---|---|---|---|---|---|
+  | 11a1 | [0,-1,1,-10,-20] | −11⁵ = −161051 | ✓ | ✓ | 11 | ✓ (good at 2,3) |
+  | 14a1 | [1,0,1,4,-6] | −2⁶·7³ = −21952 | ✗ | ✓ | 14 | ✓ (bad at 2) |
+  | 27a1 | [0,0,1,0,-7] | −3⁹ = −19683 | ✓ | ✗ | 27 | ✓ (bad at 3) |
+
+  (`gp`: `E.disc`, `ellglobalred(E)[1]`.) p ∤ Δ(model) ⟺ p ∤ N in every row.
+
+**Referee structure — Option B (stated).** ONE enumeration implementation
+(`ell::ap_enumerate`), twinned against **`oracle_ellap` extended to p ∈ {2,3}**
+across a REQUIREd curve sample. PARI `ellap` computes a_2, a_3 correctly for every
+reduction type and is genuinely independent; a second hand-rolled enumeration would
+share the same point-count skeleton (twin-independence principle), so PARI is the
+right outside witness.
+
+**Anchor (`anchor_ap_small_primes`), source-quoted.** `11a1` (good at 2, 3 since
+N=11): a_2 = **−2**, a_3 = **−1** — `aplist.00000-09999` line `11 a`, first two
+AP25 tokens. Enumeration hand-check: mod 2, y²+y = x³+x² ⇒ 4 affine + 1 ∞ = 5 ⇒
+a_2 = 3−5 = −2 ✓; mod 3, 4 affine + 1 ∞ = 5 ⇒ a_3 = 4−5 = −1 ✓.
+
+**Failure mode guarded.** An off-by-one at infinity at p=2 shifts every curve's a_2
+by 1, silently biasing the leftmost bins of every murmuration curve M1 will draw.
+The explicit `+1`, the anchor, and `oracle_ellap` at p ∈ {2,3} pin it.
+
+## Performance — Phase 2 wall-time (a_p fast path)
+
+Per-prime QR-table batching (`ell::ap_fast_grid`), measured on this machine
+(Darwin, ~10 cores), grid = 1000 curves × 1227 primes (p ≤ 10⁴) = 1,227,000 cells:
+
+| mode | time | throughput |
+|---|---|---|
+| parallel | 5.52 s | 2.24 × 10⁵ a_p/s |
+| serial | 54.7 s | 2.24 × 10⁴ a_p/s |
+
+Speedup ≈ 9.9×; parallel and serial outputs **bit-identical** (also asserted by
+`invariance_parallel_vs_serial`). Extrapolating to M1's ~10⁵-curve grid over the
+same prime range is ~10² × this ⇒ core-minutes parallel, consistent with the
+ARCHITECTURE-M §5 budget ("M1 default grid in core-minutes, extended overnight").
+The frozen referee (`ap_charsum`, per-symbol modpow) is ~10× slower per cell than
+the table path and is never used in the grid — only as the twin referee.
+
 ## Standing decisions (project-wide)
 
-**Repo name — DECIDED (Derek, explicit; rule 7 satisfied).** The repository stays
-`primeknots` **permanently**. The name is retained as an homage to the project's
-origin (arithmetic topology, primes-as-knots), **not** a scope claim; the M-stages
-and any future stage families live under it. No further naming deliberation is open.
+**Repo name — DECIDED, staged (Derek, explicit; rule 7 satisfied).** The repository
+stays `primeknots` **through M2**; the name is retained as an homage to the project's
+origin (arithmetic topology, primes-as-knots), **not** a scope claim, and the
+M-stages live under it. **Revisit at the M3 gate** — M3 (Zubrilina, weight-2
+newforms via Eichler–Selberg) is when the repo *provably* spans both subjects
+(arithmetic topology + arithmetic statistics of modular forms) and the deck framing
+reopens, so a rename decision is genuinely on the table there and not before.
+(Earlier "permanently" is superseded by this staged form at Derek's word.)
 
 **Deferred consequence (no action now — for whichever session next touches
 public-facing text):** the README should eventually carry a one-line note that the
