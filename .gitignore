@@ -29,6 +29,13 @@
 # Third-party paper PDFs (copyright): kept local, see docs/papers/README.md
 /docs/papers/*.pdf
 
+# Cremona ecdata (M0): fetched by oracle/fetch_ecdata.py at a pinned commit,
+# verified against data/cremona/MANIFEST.json. Data files not committed; the
+# manifest + README are. (Mirrors the Odlyzko precedent above.)
+/data/cremona/allcurves.*
+/data/cremona/aplist.*
+/data/cremona/curvedata.*
+
 # Python bytecode cache (from oracle/*.py runs)
 __pycache__/
 *.pyc

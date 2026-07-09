@@ -20,3 +20,22 @@ Other normative sources are books, not distributable here — see `docs/RESEARCH
 
 Odlyzko's zero table (Stage 5 oracle) lives under `data/odlyzko/` and is fetched
 by `oracle/fetch_odlyzko.py` against a committed checksum manifest.
+
+## Murmurations (M-stages), from `docs/RESEARCH-M.md`
+
+Fetched by `oracle/fetch_papers_m.py` (title-page verified; manifest written to
+`docs/papers/MANIFEST-M.json`). PDFs gitignored as above.
+
+| Filename (expected) | Work | Source |
+|---|---|---|
+| `hlop-2204.10140.pdf` | He, Lee, Oliver, Pozdnyakov — *Murmurations of elliptic curves* [HLOP22] (M1 normative) | arXiv:2204.10140 |
+| `lop-2307.00256.pdf` | Lee, Oliver, Pozdnyakov — *Murmurations of Dirichlet characters* [LOP23] (M2 normative) | arXiv:2307.00256 |
+| `zubrilina-2310.07681.pdf` | N. Zubrilina — *Murmurations* [Z25] (M3 normative) | arXiv:2310.07681 |
+| `sawin-sutherland-2504.12295.pdf` | Sawin, Sutherland — *Murmurations for elliptic curves ordered by height* [SS25] (M4 normative) | arXiv:2504.12295 |
+| `cowan-2408.12723.pdf` | A. Cowan — *Murmurations and ratios conjectures* [C24] (Q3 context) | arXiv:2408.12723 |
+| `sarnak-letter-2726.pdf` | P. Sarnak — letter on murmurations and root numbers [Sar23] (framing) | publications.ias.edu/sarnak/paper/2726 |
+
+Reproducibility pin for these is arXiv ID + version + title-page check, not a
+byte-exact sha256 (arXiv re-renders PDFs). The primary M-stage dataset, Cremona's
+`ecdata`, is fetched by `oracle/fetch_ecdata.py` into `data/cremona/` against a
+sha256-pinned commit — see `data/cremona/README.md`.

@@ -1,0 +1,47 @@
+{
+  "note": "arXiv ID + version + title-page check is the pin; sha256 is informational (arXiv re-renders). PDFs gitignored, never committed.",
+  "fetch_command": "oracle/fetch_papers_m.py",
+  "fetch_date": "2026-07-09",
+  "papers": [
+    {
+      "file": "hlop-2204.10140.pdf",
+      "url": "https://arxiv.org/pdf/2204.10140",
+      "status": "verified",
+      "sha256_16": "4872e8dff26da05c",
+      "bytes": 1292093
+    },
+    {
+      "file": "lop-2307.00256.pdf",
+      "url": "https://arxiv.org/pdf/2307.00256",
+      "status": "verified",
+      "sha256_16": "cb24d6c094ab6d7c",
+      "bytes": 1194321
+    },
+    {
+      "file": "zubrilina-2310.07681.pdf",
+      "url": "https://arxiv.org/pdf/2310.07681",
+      "status": "verified",
+      "sha256_16": "b486d40541fbffe0",
+      "bytes": 15177783
+    },
+    {
+      "file": "sawin-sutherland-2504.12295.pdf",
+      "url": "https://arxiv.org/pdf/2504.12295",
+      "status": "verified",
+      "sha256_16": "59f7685d5e9a513c",
+      "bytes": 1361272
+    },
+    {
+      "file": "cowan-2408.12723.pdf",
+      "url": "https://arxiv.org/pdf/2408.12723",
+      "status": "verified",
+      "sha256_16": "e927cd740d9d8b50",
+      "bytes": 1212670
+    },
+    {
+      "file": "sarnak-letter-2726.pdf",
+      "url": "https://publications.ias.edu/sarnak/paper/2726",
+      "status": "SKIP (manual, framing-only): HTTP Error 404: Not Found"
+    }
+  ]
+}

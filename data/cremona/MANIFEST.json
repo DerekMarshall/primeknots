@@ -1,0 +1,23 @@
+{
+  "ecdata_tag": "2026-04-22",
+  "ecdata_commit": "25cec5ecfec8b9f016eb1631ac633194c2bed39f",
+  "source_repo": "https://github.com/JohnCremona/ecdata",
+  "format_doc": "docs/file-format.txt @ 25cec5ecfec8b9f016eb1631ac633194c2bed39f",
+  "fetch_command": "oracle/fetch_ecdata.py",
+  "fetch_date": "2026-07-09",
+  "provenance": "conductor/rank/root_number/bad-prime a_p/minimal model = oracle; good-prime a_p = computed by src/ell (this data referees it)",
+  "files": [
+    {
+      "file": "allcurves.00000-09999",
+      "source": "allcurves/allcurves.00000-09999",
+      "sha256": "259f3846329395b371e8079c77a6f1097adaebc98a054974573e241416efa968",
+      "bytes": 2146401
+    },
+    {
+      "file": "aplist.00000-09999",
+      "source": "aplist/aplist.00000-09999",
+      "sha256": "a1cc11fb2c53b58bcf03600cd67d8d9133a14381f1df9dac7b096c20699eca65",
+      "bytes": 3809559
+    }
+  ]
+}
