@@ -188,3 +188,15 @@ slice follows them — never the reverse. If the pinned ranges exceed the curren
 N < 10,000 slice, extending the fetch (new manifest, new shas) is the required
 move; selecting among the paper's ranges by what is already downloaded would be
 family-definition drift.*
+
+## Standing decisions (project-wide)
+
+**Repo name — DECIDED (Derek, explicit; rule 7 satisfied).** The repository stays
+`primeknots` **permanently**. The name is retained as an homage to the project's
+origin (arithmetic topology, primes-as-knots), **not** a scope claim; the M-stages
+and any future stage families live under it. No further naming deliberation is open.
+
+**Deferred consequence (no action now — for whichever session next touches
+public-facing text):** the README should eventually carry a one-line note that the
+repo's scope outgrew its name deliberately, so a reader arriving for murmurations
+data isn't confused by the title.
