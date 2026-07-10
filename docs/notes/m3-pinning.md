@@ -171,9 +171,30 @@ secondary cross-check of the finite-r-sum M₂ above.)
 
 ---
 
-## Phase-2 boundary (gated)
+## R5 — the H₁(0) boundary cannot occur for the family
 
-Only P4 (Hurwitz) is built. No Eichler–Selberg trace assembly, no averaging, no density
-TU, no emitter/viewer until this pinning review is signed off — and the P1/P2/P3
-conventions survive the adversarial referee. Deviations are deliverables. Branch
-`murmurations`, local only.
+The r-sum boundary r² = 4P/N (where the disc r²N²−4PN = 0 and H₁(0) = −1/12 would
+enter) requires 2√(P/N) ∈ ℤ, i.e. 4P/N a perfect square. For square-free N ≥ 3 and
+prime P ∤ N: 4P/N ∈ ℤ needs N | 4P, and gcd(N,P)=1 ⇒ N | 4 ⇒ N ∈ {1,2} (4 is not
+square-free) — excluded. So 2√(P/N) is never integral for the family; r_max =
+⌊2√(P/N)⌋ < 2√(P/N) strictly, hence r²N²−4PN < 0 strictly for every term and H₁(0)
+never enters. (`trace.cpp` sums 1 ≤ r ≤ ⌊2√(P/N)⌋; boundary handling not needed.)
+
+## Phase 2 — pinning review PASSED; trace formula validated (R1/R2/R3)
+
+Referee hand-adjudicated P1 at N=11, P∈{2,3,5} against M0's independent a_P — the
+referee-verified cells (quoted): **P=2 → −2, P=3 → −1, P=5 → 1**. `src/mform/trace`
+assembles the P1 formula; the ladder adjudicates itself:
+- **R1 `anchor_trace_dim1`** (N∈{11,14,15}, dim 1, ε=+1): assembled trace == a_P(E)·ε,
+  a_P from M0 (`ell::ap_charsum`/`ap_enumerate`), 40 cells.
+- **R2 `anchor_trace_mixed_sign`** (N=37: 37a ε=−1, 37b ε=+1): trace == a(37a)·(−1) +
+  a(37b)·(+1) — the ε=−1 branch of the §P3 sign chain exercised (the mod-8 lesson).
+- **R3 `anchor_trace_old_part`**: N=33 (dim S₂=3: 2 old from level 11, 1 new) → trace
+  == newform 33a only (old part excluded); N=22 (dim S₂=2, all old) → trace == 0. The
+  old-part-vanishing lemma tested mechanically, not trusted.
+- `theorem_trace_is_integral`: assembled RHS ∈ ℤ over 246 (square-free N, P) pairs.
+Root numbers quoted from PARI `ellrootno`: 11a/14a/15a/33a = +1, 37a = −1, 37b = +1.
+
+**Remaining Phase 2 (gated by budget, pre-registered below):** the density M₂ TU
+(separate session), convergence to M₂ with the R4 discontinuity-location test, emitter
++ viewer, freshness. No M4 stubs. Branch `murmurations`, local only.

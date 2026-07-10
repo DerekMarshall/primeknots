@@ -362,13 +362,16 @@ endforeach()
 # --- M3 P4 (murmurations: Hurwitz class numbers — the one Phase-1 code) ------
 add_executable(verify_m3
   verify_main.cpp
-  m3/hurwitz_tests.cpp)
+  m3/hurwitz_tests.cpp
+  m3/trace_tests.cpp)
 target_include_directories(verify_m3 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
   ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(verify_m3 PRIVATE at_mform at_oracle)
+target_link_libraries(verify_m3 PRIVATE at_mform at_ell at_oracle)
 
-foreach(case anchor_hurwitz_small twin_hurwitz_forms_vs_decomposition)
+foreach(case anchor_hurwitz_small twin_hurwitz_forms_vs_decomposition
+         anchor_trace_dim1 anchor_trace_mixed_sign anchor_trace_old_part
+         theorem_trace_is_integral)
   add_test(NAME m3.${case} COMMAND verify_m3 --test-case=${case})
   set_tests_properties(m3.${case} PROPERTIES LABELS "m3")
 endforeach()

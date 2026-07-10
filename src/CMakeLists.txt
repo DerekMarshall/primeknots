@@ -29,7 +29,8 @@ target_link_libraries(at_ell PUBLIC at_symbols Threads::Threads)
 # Stage M3 (murmurations) — modular-form trace-formula ingredients. mform -> core
 # (Hurwitz class numbers); the Eichler–Selberg traces (Phase 2) will add classgroup.
 add_library(at_mform STATIC
-  mform/hurwitz.cpp)
+  mform/hurwitz.cpp
+  mform/trace.cpp)
 target_include_directories(at_mform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_mform PUBLIC at_core)
 
