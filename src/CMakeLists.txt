@@ -26,6 +26,13 @@ add_library(at_ell STATIC
 target_include_directories(at_ell PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_ell PUBLIC at_symbols Threads::Threads)
 
+# Stage M3 (murmurations) — modular-form trace-formula ingredients. mform -> core
+# (Hurwitz class numbers); the Eichler–Selberg traces (Phase 2) will add classgroup.
+add_library(at_mform STATIC
+  mform/hurwitz.cpp)
+target_include_directories(at_mform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(at_mform PUBLIC at_core)
+
 # Stage M1 (murmurations) — family definition + per-prime averaging.
 # murm -> ell (ARCHITECTURE-M §1). No ordering/density concepts beyond HLOP's
 # conductor family.

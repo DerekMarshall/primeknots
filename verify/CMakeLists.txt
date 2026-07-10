@@ -359,6 +359,23 @@ foreach(case twin_primitive_root theorem_gauss_sum_abs theorem_gauss_sum_conjuga
   set_tests_properties(m2.${case} PROPERTIES LABELS "m2")
 endforeach()
 
+# --- M3 P4 (murmurations: Hurwitz class numbers — the one Phase-1 code) ------
+add_executable(verify_m3
+  verify_main.cpp
+  m3/hurwitz_tests.cpp)
+target_include_directories(verify_m3 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_m3 PRIVATE at_mform at_oracle)
+
+foreach(case anchor_hurwitz_small twin_hurwitz_forms_vs_decomposition)
+  add_test(NAME m3.${case} COMMAND verify_m3 --test-case=${case})
+  set_tests_properties(m3.${case} PROPERTIES LABELS "m3")
+endforeach()
+add_test(NAME m3.oracle_hurwitz_vs_pari COMMAND verify_m3 --test-case=oracle_hurwitz_vs_pari)
+set_tests_properties(m3.oracle_hurwitz_vs_pari PROPERTIES
+  LABELS "m3;oracle" SKIP_RETURN_CODE 77 RESOURCE_LOCK "gp")
+
 # --- deck: the explainer deck is an emitted artifact, validated like one -------
 # Every data-claim="ID" in docs/deck/index.html must have a CLAIMS.md row.
 if(AT_VALIDATE_PY)
