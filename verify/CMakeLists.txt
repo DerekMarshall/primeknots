@@ -359,12 +359,16 @@ foreach(case twin_primitive_root theorem_gauss_sum_abs theorem_gauss_sum_conjuga
   set_tests_properties(m2.${case} PROPERTIES LABELS "m2")
 endforeach()
 
-# --- M3 P4 (murmurations: Hurwitz class numbers — the one Phase-1 code) ------
+# --- M3 (murmurations: Zubrilina replication — Hurwitz, trace, density, dim,
+# the fast sieve, and the empirical convergence) ------------------------------
 add_executable(verify_m3
   verify_main.cpp
   m3/hurwitz_tests.cpp
   m3/trace_tests.cpp
-  m3/density_tests.cpp)
+  m3/density_tests.cpp
+  m3/dimension_tests.cpp
+  m3/fast_tests.cpp
+  m3/convergence_tests.cpp)
 target_include_directories(verify_m3 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
   ${CMAKE_CURRENT_SOURCE_DIR})
@@ -372,13 +376,22 @@ target_link_libraries(verify_m3 PRIVATE at_mform at_murm at_ell at_oracle)
 
 foreach(case anchor_hurwitz_small twin_hurwitz_forms_vs_decomposition
          anchor_trace_dim1 anchor_trace_mixed_sign anchor_trace_old_part
-         theorem_trace_is_integral theorem_zub_density_teeth theorem_zub_density_features)
+         theorem_trace_is_integral theorem_zub_density_teeth theorem_zub_density_features
+         anchor_dim_s2new theorem_dim_oldnew_consistency
+         twin_hurwitz_sieve_vs_referee twin_trace_fast_vs_referee
+         theorem_zub_empirical_teeth theorem_zub_empirical_convergence)
   add_test(NAME m3.${case} COMMAND verify_m3 --test-case=${case})
   set_tests_properties(m3.${case} PROPERTIES LABELS "m3")
 endforeach()
-add_test(NAME m3.oracle_hurwitz_vs_pari COMMAND verify_m3 --test-case=oracle_hurwitz_vs_pari)
-set_tests_properties(m3.oracle_hurwitz_vs_pari PROPERTIES
-  LABELS "m3;oracle" SKIP_RETURN_CODE 77 RESOURCE_LOCK "gp")
+# The empirical/sieve cases build a ~3.4e7 Hurwitz sieve; give them headroom.
+set_tests_properties(m3.twin_hurwitz_sieve_vs_referee m3.theorem_zub_empirical_teeth
+  m3.theorem_zub_empirical_convergence PROPERTIES TIMEOUT 180)
+
+foreach(ocase oracle_hurwitz_vs_pari oracle_dim_s2new)
+  add_test(NAME m3.${ocase} COMMAND verify_m3 --test-case=${ocase})
+  set_tests_properties(m3.${ocase} PROPERTIES
+    LABELS "m3;oracle" SKIP_RETURN_CODE 77 RESOURCE_LOCK "gp")
+endforeach()
 
 # --- deck: the explainer deck is an emitted artifact, validated like one -------
 # Every data-claim="ID" in docs/deck/index.html must have a CLAIMS.md row.

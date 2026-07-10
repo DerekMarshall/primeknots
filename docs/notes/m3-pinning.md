@@ -203,12 +203,84 @@ finds the derivative discontinuities at **0.248, 1.000, 2.248 ≈ {1/4, 1, 9/4}*
 oscillation (6 sign changes). The formula side is authored independently of the
 trace-assembly side (separate-TU protocol); neither edited after this comparison.
 
-**Remaining Phase 2 (gated by session budget, pre-registered):** the dimension-
-normalized **empirical convergence** — [Σ□_N Tr T_P|S₂^new(N)]/[Σ□_N dim S₂^new(N)]
-(assembled from `mform::trace`, needs a `dim S₂^new` genus formula + a fast H₁ at
-scale, P4-perf note) → M₂(y), applying the R4 locator to the EMPIRICAL curve (its
-teeth at n²/4) — and the emitter + viewer + freshness. The convergence tolerance is
-committed in that step before it runs. The high-risk mathematics (the trace formula
-conventions R1/R2/R3, the density formula + its teeth R4/P5) is validated; the
-remainder averages already-validated components. No M4 stubs. Branch `murmurations`,
-local only.
+## M3 completion — dim normalization, fast H₁, empirical convergence [DONE]
+
+The pre-registered remainder, built in a fresh session. Design fixed from bounded
+exploration (P6.3) and **committed before the confirmation run** (commit-before-run,
+RESEARCH-M §7): the test files carry the committed scale, detector, targets, and
+tolerance; `ctest` is the confirmation.
+
+### dim S₂^new(N) — PINNED FIRST (normalization, the statistic's denominator)
+
+Zubrilina states **no** dimension formula (she uses dim S₂^new(N) abstractly as the
+normalization), so the arbiter is the **standard Γ₀(N) formula** (Diamond–Shurman,
+*A First Course in Modular Forms*, GTM 228, Ch. 3):
+
+    dim S₂(Γ₀(N)) = genus g(X₀(N)) = 1 + μ/12 − ν₂/4 − ν₃/3 − ν∞/2,
+
+with **every special case quoted** (`src/mform/dimension`):
+- **index** μ = N·∏_{p|N}(1+1/p) = ∏_{p^e‖N} p^{e−1}(p+1);
+- **ν₂** (order-2 elliptic points) = 0 if 4|N, else ∏_{p|N}(1 + (−4|p)). The
+  discriminant is **−4**, not −1: the Kronecker symbol (−4|2) = 0 (so the p=2 factor
+  is 1), (−4|p) = (−1|p) for odd p (+1 iff p≡1 mod 4). Using (−1|2)=+1 instead gives
+  a wrong, non-integral genus at every even N — the one subtle special case.
+- **ν₃** (order-3 elliptic points) = 0 if 9|N, else ∏_{p|N}(1 + (−3|p)); (−3|3)=0,
+  (−3|2)=−1 (x²+x+1 inert at 2), (−3|p)=+1 iff p≡1 mod 3.
+- **cusps** ν∞ = Σ_{d|N} φ(gcd(d, N/d)) (= 2^{ω(N)} for square-free N).
+- **new subspace** (Atkin–Lehner–Li): a newform of level M appears in S₂(Γ₀(N)) with
+  multiplicity σ₀(N/M), so dim S₂ = σ₀ ∗ dim S₂^new (Dirichlet convolution); inverting,
+  **dim S₂^new(N) = Σ_{d|N} β(N/d)·dim S₂(Γ₀(d))**, β = μ∗μ (multiplicative: β(1)=1,
+  β(p)=−2, β(p²)=1, β(p^k≥3)=0).
+
+Adjudicated **eigenvalue-free**, independently of the trace formula:
+- `anchor_dim_s2new` — published LMFDB newform dimensions (11→1, 37→2, 389→32,
+  1990→65, …), CI-green (no gp).
+- `theorem_dim_oldnew_consistency` — dim S₂(Γ₀(N)) == Σ_{M|N} σ₀(N/M)·dim S₂^new(M)
+  over N∈[1,400] (inverts the Möbius sieve internally).
+- `oracle_dim_s2new` — the **REQUIREd sweep vs PARI `mfdim([N,2],0)` over ALL
+  square-free N in the family range [2,2000]** (PARI is LMFDB's dimension engine).
+  Verified exact: also matches over all square-free N ≤ 3000 during pinning.
+
+### Fast H₁ path — the sieve, twinned against the frozen referee
+
+`mform::HurwitzTable`: a one-pass sieve of 12·H(n) (exact ℤ; H's denominators divide
+12) over [0,B], accumulating the **same reduced forms** as `hurwitz_by_forms` but by
+output range, so it parallelizes (disjoint n-ranges, no locks, deterministic) and gives
+O(1) lookups for the run's ~10⁵ evaluations. **The referee is not optimized** (ERRATA
+#20); the sieve is checked against it: `twin_hurwitz_sieve_vs_referee` (== over a
+sample spanning [0, family max 4PN = 33 662 840]) and `twin_trace_fast_vs_referee` (the
+sieve-backed trace overload == the referee trace over an (N,P) sample). The committed
+scale keeps the whole argument range **≤ 3.4×10⁷**, deliberately inside the exact
+integer sieve — no floating-point class numbers (the run stays true to compute-it-
+exactly). Parallel sieve B=4×10⁷ builds in ~4 s (vs ~76 s single-threaded at 2.4×10⁷).
+
+### Empirical convergence — COMMITTED design, then confirmed
+
+Empirical side = the **short-interval statistic (Theorem 1, k=2)** assembled per level
+from `mform::trace` (fast overload) and normalized by `dim_s2_new`
+(`murm::zub_empirical`), authored as a separate TU from the M₂ formula side. **Committed
+design (frozen pre-run):** scale **X = 1800**, window **Y = ⌊X^0.70⌋ = 190** (Theorem-1
+short interval, 113 square-free levels), per-prime sampling y = P/X ∈ (0, 2.35]. R4
+detector (committed): smooth half-width 0.025, resample grid 0.01 over [0.08, 2.33],
+positive-Δ² local maxima above 0.30·max, min separation 0.20. Teeth targets
+**{¼, 1, 9⁄4}**, tolerance **0.12** — dominated by the y=9⁄4 window smear
+(9⁄4)(Y/X) ≈ 0.25, so a detected corner sits within ~half that of the onset (a physical
+resolution derived a priori, not a fitted knob).
+
+**Confirmation run (`theorem_zub_empirical_teeth` / `_convergence`, and the emitter):**
+- Empirical teeth detected at **{0.25, 0.79, 1.01, 1.25, 1.45, 1.65, 1.95, 2.21}**; the
+  three predicted teeth **{¼, 1, 9⁄4} matched at distances {0.000, 0.010, 0.040}** — all
+  inside tol 0.12. **PASS.** The other five detections are M₂'s **intrinsic smooth
+  oscillation maxima**; the finite empirical resolution (window smear + ~10² exact traces
+  per prime) cannot separate them from the √-cusp teeth — reported, not fitted away. The
+  discriminating fact is that {¼, 1, 9⁄4} land at n²/4 (a wrong y-convention, e.g. 4P/N,
+  would move them off) — the two low-y teeth are located to 0.00/0.01, pinning y = P/X.
+- **Convergence (reported empiric):** L2 = RMS(emp − M₂) = 0.5511 (X=600) → 0.5160
+  (1000) → 0.4773 (1400) → 0.4500 (1800), monotone decreasing with X (the theorem is
+  X→∞). L2 is the *supporting* empiric; the teeth are the pass/fail.
+- Emitter `emit_m3` → `viz/data/zubrilina_murmuration.json` (per-prime scatter +
+  smoothed empirical + M₂ fine grid + residuals + both teeth sets + detector + L2 +
+  convergence), viewer `viz/zubrilina.html`, schema, validate-json + freshness wired.
+
+No disagreement between empirical kinks and {¼, 1, 9⁄4} arose, so the y = P/X convention
+stands (nothing to send back to pinning). No M4 stubs. Branch `murmurations`, local.

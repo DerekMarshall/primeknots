@@ -30,9 +30,11 @@ target_link_libraries(at_ell PUBLIC at_symbols Threads::Threads)
 # (Hurwitz class numbers); the Eichler–Selberg traces (Phase 2) will add classgroup.
 add_library(at_mform STATIC
   mform/hurwitz.cpp
-  mform/trace.cpp)
+  mform/trace.cpp
+  mform/dimension.cpp)
 target_include_directories(at_mform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(at_mform PUBLIC at_core)
+# Threads: the Hurwitz sieve (fast path) fills disjoint output ranges in parallel.
+target_link_libraries(at_mform PUBLIC at_core Threads::Threads)
 
 # Stage M1 (murmurations) — family definition + per-prime averaging.
 # murm -> ell (ARCHITECTURE-M §1). No ordering/density concepts beyond HLOP's
@@ -40,9 +42,12 @@ target_link_libraries(at_mform PUBLIC at_core)
 add_library(at_murm STATIC
   murm/murmuration.cpp
   murm/dirichlet_murmuration.cpp
-  murm/zub_density.cpp)
+  murm/zub_density.cpp
+  murm/zub_empirical.cpp)
 target_include_directories(at_murm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(at_murm PUBLIC at_ell)
+# murm -> {ell, mform}: M1/M2 averaging uses ell (a_p); M3's empirical convergence
+# assembles the newform trace formula (mform) over the family (ARCHITECTURE-M §1).
+target_link_libraries(at_murm PUBLIC at_ell at_mform)
 
 # a_p cache generator hash (ARCHITECTURE-M §4): sha256 of the fast-path generator
 # source. A change to ell/ap_fast.cpp changes this, so the loader refuses caches

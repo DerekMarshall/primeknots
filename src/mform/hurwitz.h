@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 #include "core/int_types.h"
 
 // Stage M3 — Hurwitz class numbers H(n) (Zubrilina's H₁(−n)), the class-number
@@ -32,5 +34,23 @@ Frac hurwitz_by_decomposition(i64 n);  // (B) Σ_{f²|n} weighted PRIMITIVE clas
 // The referee (= method A). Do not optimize; the fast large-argument path is M3
 // Phase 2's problem, checked against this.
 Frac hurwitz(i64 n);
+
+// Fast large-argument path (M3-completion): a one-pass SIEVE of 12·H(n) for all
+// n ≤ bound, giving O(1) lookups for the convergence run's ~10⁵ evaluations at
+// arguments 4PN up to the family's max. It accumulates the SAME reduced positive-
+// definite forms as `hurwitz_by_forms` (−a<b≤a≤c, tie-break at c=a) but over the
+// whole range at once, so it is twinned against — never a replacement for — the
+// frozen referee (ERRATA #20: the referee is not the thing that gets optimized).
+// Stores 12·H exactly in ℤ (H's denominators divide 12; 12·H(0) = −1).
+class HurwitzTable {
+public:
+    explicit HurwitzTable(i64 bound);   // build 12·H over [0, bound]
+    i64 bound() const { return bound_; }
+    Frac operator()(i64 n) const;       // H(n) as a reduced Frac; n must be ≤ bound
+    i64 twelve_h(i64 n) const { return t12_[n]; }   // raw 12·H(n)
+private:
+    i64 bound_;
+    std::vector<int> t12_;              // 12·H(n); int suffices (12·H ≪ 2³¹ here)
+};
 
 }  // namespace at::mform

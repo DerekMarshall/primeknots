@@ -1,5 +1,9 @@
 #include "mform/hurwitz.h"
 
+#include <algorithm>
+#include <atomic>
+#include <thread>
+
 namespace at::mform {
 
 namespace {
@@ -76,5 +80,67 @@ Frac hurwitz_by_decomposition(i64 n) {
 }
 
 Frac hurwitz(i64 n) { return hurwitz_by_forms(n); }
+
+// --- fast path: the 12·H sieve (twinned against hurwitz_by_forms) --------------
+
+namespace {
+// 12·weight of a reduced form: generic 12 (weight 1), x²+y² multiple 6 (weight
+// 1/2, b=0 & a=c), x²+xy+y² multiple 4 (weight 1/3, a=b=c). Matches weight().
+int weight12(i64 a, i64 b, i64 c) {
+    if (b == 0 && a == c) return 6;
+    if (a == b && b == c) return 4;
+    return 12;
+}
+}  // namespace
+
+namespace {
+// Fill 12·H over the OUTPUT range [lo,hi] by enumerating every reduced form (a,b,c)
+// whose disc n = 4ac − b² lands in [lo,hi]. Because the range is by n, different
+// ranges touch disjoint array cells — so this parallelizes with no locks and no
+// merge, and the result is independent of thread order (every form of a given disc
+// is enumerated by the one range that owns that disc). Deterministic (freshness).
+void fill_range(std::vector<int>& t12, i64 lo, i64 hi) {
+    for (i64 a = 1; 3 * a * a <= hi; ++a) {
+        for (i64 b = -a + 1; b <= a; ++b) {
+            const i64 b2 = b * b;
+            const i64 fa = 4 * a;
+            i64 c0 = (lo + b2 + fa - 1) / fa;    // ceil((lo+b²)/4a)
+            if (c0 < a) c0 = a;                  // reduced: c ≥ a
+            const i64 c1 = (hi + b2) / fa;        // floor((hi+b²)/4a)
+            for (i64 c = c0; c <= c1; ++c) {
+                if (c == a && b < 0) continue;    // reduced-form tie-break
+                t12[4 * a * c - b2] += weight12(a, b, c);
+            }
+        }
+    }
+}
+}  // namespace
+
+HurwitzTable::HurwitzTable(i64 bound) : bound_(bound), t12_(bound + 1, 0) {
+    t12_[0] = -1;   // 12·H(0) = −1
+    // Partition [1, bound] into chunks pulled by a pool of threads; each thread owns
+    // a disjoint output range (fill_range), so no synchronization on the array.
+    unsigned hw = std::thread::hardware_concurrency();
+    const unsigned nthreads = hw ? (hw > 16 ? 16 : hw) : 1;
+    const i64 nchunks = static_cast<i64>(nthreads) * 4;
+    const i64 chunk = bound / nchunks + 1;
+    std::atomic<i64> next{0};
+    auto worker = [&] {
+        for (;;) {
+            const i64 ci = next.fetch_add(1);
+            i64 lo = ci * chunk;
+            if (lo > bound) break;
+            if (lo < 1) lo = 1;                   // cell 0 is the special H(0)
+            const i64 hi = std::min(bound, ci * chunk + chunk - 1);
+            fill_range(t12_, lo, hi);
+        }
+    };
+    std::vector<std::thread> pool;
+    for (unsigned t = 1; t < nthreads; ++t) pool.emplace_back(worker);
+    worker();
+    for (auto& th : pool) th.join();
+}
+
+Frac HurwitzTable::operator()(i64 n) const { return frac(t12_[n], 12); }
 
 }  // namespace at::mform

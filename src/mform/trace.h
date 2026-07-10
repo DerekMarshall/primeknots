@@ -15,4 +15,10 @@ using at::core::i64;
 
 Frac newform_weighted_trace_k2(i64 N, i64 P);
 
+// Same assembled formula, but reading H₁ from the fast sieve instead of the O(n)
+// referee — for the convergence run's ~10⁵ evaluations (M3-completion). Requires
+// H.bound() ≥ 4PN. Twinned against the referee overload (twin_trace_fast_vs_referee):
+// identical up to which H₁ implementation supplies the class numbers.
+Frac newform_weighted_trace_k2(i64 N, i64 P, const HurwitzTable& H);
+
 }  // namespace at::mform
