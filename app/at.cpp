@@ -19,6 +19,7 @@
 #include "emit/emit_linking.h"
 #include "emit/emit_murmuration.h"
 #include "emit/emit_zeta.h"
+#include "emit/emit_zubrilina.h"
 
 #ifndef AT_GIT_FALLBACK
 #define AT_GIT_FALLBACK "unknown"
@@ -140,8 +141,15 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "at emit: stage m2 -> %s/dirichlet_murmuration.json\n", out.c_str());
             return 0;
         }
+        if (stage == "m3") {
+            // Zubrilina murmuration: empirical trace-formula average vs M₂(y) density,
+            // teeth at n²/4. Zero external data (§9 repo-reproducible default).
+            at::emit::emit_m3(out, resolve_generated_by());
+            std::fprintf(stderr, "at emit: stage m3 -> %s/zubrilina_murmuration.json\n", out.c_str());
+            return 0;
+        }
         std::fprintf(stderr,
-            "at emit: no emitter for stage '%s' (stages 1-6, m1 are built)\n",
+            "at emit: no emitter for stage '%s' (stages 1-6, m1-m3 are built)\n",
             stage.c_str());
         return 2;
     }

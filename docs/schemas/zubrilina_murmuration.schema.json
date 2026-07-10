@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "zubrilina_murmuration/1",
+  "title": "zubrilina_murmuration",
+  "description": "Stage M3 (completion): the Zubrilina murmuration (arXiv:2310.07681, Thm 1). The empirical short-interval statistic — [Σ□ Σ_f a_f(P)ε(f)] / [Σ□ dim S₂^new(N)] over square-free weight-2 newforms, assembled from the class-number trace formula and normalized by the genus/Möbius newform dimension — overlaid on the density M₂(y), with residuals, the derivative-discontinuity teeth at y=n²/4, the L2 distance, and the convergence trend. Zero external eigenvalue data — from scratch (Hurwitz class numbers → trace formula → averaged).",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "empirical", "smoothed", "density", "teeth", "l2", "convergence"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "zubrilina_murmuration/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["family", "statistic", "source", "external_data", "provenance",
+                   "X", "window_Y", "y_max", "n_levels", "n_primes", "max_hurwitz_arg", "y_axis"],
+      "additionalProperties": false,
+      "properties": {
+        "family": {"type": "string"},
+        "statistic": {"type": "string"},
+        "source": {"type": "string"},
+        "external_data": {"type": "string"},
+        "provenance": {"type": "string"},
+        "X": {"type": "number"},
+        "window_Y": {"type": "integer", "minimum": 1},
+        "y_max": {"type": "number"},
+        "n_levels": {"type": "integer", "minimum": 1},
+        "n_primes": {"type": "integer", "minimum": 1},
+        "max_hurwitz_arg": {"type": "integer", "minimum": 1},
+        "y_axis": {"type": "string"}
+      }
+    },
+    "empirical": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["y", "p", "emp", "m2", "resid"],
+        "additionalProperties": false,
+        "properties": {
+          "y": {"type": "number"}, "p": {"type": "number"}, "emp": {"type": "number"},
+          "m2": {"type": "number"}, "resid": {"type": "number"}
+        }
+      }
+    },
+    "smoothed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["y", "v"],
+        "additionalProperties": false,
+        "properties": {"y": {"type": "number"}, "v": {"type": "number"}}
+      }
+    },
+    "density": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["y", "m2"],
+        "additionalProperties": false,
+        "properties": {"y": {"type": "number"}, "m2": {"type": "number"}}
+      }
+    },
+    "teeth": {
+      "type": "object",
+      "required": ["targets", "tolerance", "empirical", "formula", "matched_dist", "detector", "note"],
+      "additionalProperties": false,
+      "properties": {
+        "targets": {"type": "array", "items": {"type": "number"}},
+        "tolerance": {"type": "number"},
+        "empirical": {"type": "array", "items": {"type": "number"}},
+        "formula": {"type": "array", "items": {"type": "number"}},
+        "matched_dist": {"type": "array", "items": {"type": "number"}},
+        "detector": {
+          "type": "object",
+          "required": ["y_lo", "y_hi", "grid", "smooth_hw", "threshold_frac", "min_sep"],
+          "additionalProperties": false,
+          "properties": {
+            "y_lo": {"type": "number"}, "y_hi": {"type": "number"}, "grid": {"type": "number"},
+            "smooth_hw": {"type": "number"}, "threshold_frac": {"type": "number"}, "min_sep": {"type": "number"}
+          }
+        },
+        "note": {"type": "string"}
+      }
+    },
+    "l2": {"type": "number"},
+    "convergence": {
+      "type": "object",
+      "required": ["note", "points"],
+      "additionalProperties": false,
+      "properties": {
+        "note": {"type": "string"},
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["X", "Y", "levels", "l2"],
+            "additionalProperties": false,
+            "properties": {
+              "X": {"type": "number"}, "Y": {"type": "integer"},
+              "levels": {"type": "integer"}, "l2": {"type": "number"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

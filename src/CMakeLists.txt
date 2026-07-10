@@ -109,6 +109,7 @@ add_library(at_emit STATIC
   emit/emit_zeta.cpp
   emit/emit_dw.cpp
   emit/emit_murmuration.cpp
-  emit/emit_dirichlet.cpp)
+  emit/emit_dirichlet.cpp
+  emit/emit_zubrilina.cpp)
 target_include_directories(at_emit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_emit PUBLIC at_linking at_redei at_classgroup at_cs at_zeta at_dw at_murm)

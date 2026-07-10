@@ -97,6 +97,21 @@ def main() -> int:
             print(f"FAIL: murmuration_curve.json violates schema: {e.message} (at {list(e.path)})")
             failures += 1
 
+    # M3 (Zubrilina): repo-reproducible but its emit builds a ~3.4e7 Hurwitz sieve (a
+    # few seconds), so schema-check the COMMITTED snapshot here and leave the byte-for-
+    # byte re-emit to the freshness suite (which guarantees committed == emit at HEAD).
+    m3_file = Path(__file__).resolve().parent.parent / "viz/data/zubrilina_murmuration.json"
+    if m3_file.exists():
+        m3_schema = schema_dir / "zubrilina_murmuration.schema.json"
+        try:
+            jsonschema.validate(instance=json.loads(m3_file.read_text()),
+                                schema=json.loads(m3_schema.read_text()))
+            print("OK: (committed) zubrilina_murmuration.json valid against zubrilina_murmuration.schema.json")
+            checked += 1
+        except jsonschema.ValidationError as e:
+            print(f"FAIL: zubrilina_murmuration.json violates schema: {e.message} (at {list(e.path)})")
+            failures += 1
+
     # Cross-field invariants the schema can't express.
     lm = json.loads((out / "linking_matrix.json").read_text())
     if not (lm["n"] == len(lm["primes"]) == len(lm["rows_base64"])):

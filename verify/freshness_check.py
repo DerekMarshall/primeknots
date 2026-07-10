@@ -63,6 +63,11 @@ def emit_args():
         # code, so byte-checked everywhere including CI (the §9 repo-reproducible
         # default). emit_m2 takes no parameters.
         "m2": ([], ["dirichlet_murmuration.json"]),
+        # M3 (Zubrilina murmuration): also zero external data (Hurwitz class numbers →
+        # trace formula → averaged); byte-checked everywhere. emit_m3 takes no
+        # parameters. The emit builds a ~3.4e7 Hurwitz sieve, so this file is the
+        # slowest to re-emit (a few seconds).
+        "m3": ([], ["zubrilina_murmuration.json"]),
     }
     # M1 (murmurations): reproducible from the repo via the committed derived extract
     # (data/cremona/m1_extract.txt, R2), so it is byte-checked everywhere including CI
