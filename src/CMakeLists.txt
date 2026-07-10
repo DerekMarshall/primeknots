@@ -9,7 +9,8 @@ target_include_directories(at_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(at_symbols STATIC
   symbols/legendre.cpp
   symbols/jacobi.cpp
-  symbols/tonelli_shanks.cpp)
+  symbols/tonelli_shanks.cpp
+  symbols/dirichlet.cpp)
 target_include_directories(at_symbols PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_symbols PUBLIC at_core)
 
@@ -29,7 +30,8 @@ target_link_libraries(at_ell PUBLIC at_symbols Threads::Threads)
 # murm -> ell (ARCHITECTURE-M §1). No ordering/density concepts beyond HLOP's
 # conductor family.
 add_library(at_murm STATIC
-  murm/murmuration.cpp)
+  murm/murmuration.cpp
+  murm/dirichlet_murmuration.cpp)
 target_include_directories(at_murm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_murm PUBLIC at_ell)
 

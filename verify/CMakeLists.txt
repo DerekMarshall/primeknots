@@ -343,6 +343,22 @@ foreach(case anchor_family_counts theorem_scale_collapse theorem_antiphase)
     SKIP_RETURN_CODE 77)
 endforeach()
 
+# --- M2 (murmurations: Dirichlet characters, LOP) ---------------------------
+# Zero external data (from scratch) — runs everywhere, no SKIP.
+add_executable(verify_m2
+  verify_main.cpp
+  m2/dirichlet_tests.cpp)
+target_include_directories(verify_m2 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_m2 PRIVATE at_murm)
+
+foreach(case twin_primitive_root theorem_gauss_sum_abs theorem_gauss_sum_conjugate
+         anchor_dirichlet_family_counts theorem_murmuration_dirichlet assert_zero_external_data)
+  add_test(NAME m2.${case} COMMAND verify_m2 --test-case=${case})
+  set_tests_properties(m2.${case} PROPERTIES LABELS "m2")
+endforeach()
+
 # --- deck: the explainer deck is an emitted artifact, validated like one -------
 # Every data-claim="ID" in docs/deck/index.html must have a CLAIMS.md row.
 if(AT_VALIDATE_PY)

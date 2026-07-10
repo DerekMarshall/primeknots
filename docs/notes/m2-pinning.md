@@ -109,8 +109,34 @@ certified-count discipline (RESEARCH-M §4), the M2 analogue of M1's `anchor_fam
 
 ---
 
-## Phase-2 boundary (gated)
+## Phase-2 design — PRE-REGISTERED, committed before the confirmation run
 
-No character/Gauss-sum/averaging code, no `theorem_murmuration_dirichlet`, no emitter,
-no viewer until this pinning review is signed off. Branch `murmurations`, local only.
-Two-phase gate: this log is reviewed against LOP before the pipeline TU is written.
+Phase 1 was signed off; Phase 2 is authorized. Per the new **commit-before-run** rule
+(RESEARCH-M §7, ERRATA #19), the `theorem_murmuration_dirichlet` design below is
+committed to git **before** the confirmation ctest is executed. Informed by *bounded
+exploration* (magnitudes only; RESEARCH-M §5 permits it) — the bounds are generous
+(density scale is O(1)), fixed here, and the primary evidence is the **convergence
+trend**, not a tuned threshold. A run exceeding a bound is a recorded deliverable,
+never a reason to loosen it.
+
+- **Parity invariance (structural, all X):** the even statistic is REAL and the odd
+  statistic purely IMAGINARY (the densities are cos and −i·sin). REQUIRE
+  |Im P̃₊| < 1e-9 and |Re P̃₋| < 1e-9. (Exact in exploration — |·| = 0 to floor.)
+- **Geometric convergence — PRIMARY (unconditional, LOP eq. 1.3):** c = 2, X ∈
+  {1000, 2000, 4000}. REQUIRE max_y ‖P±(y,X,2) − density_geom±(y,2)‖ **< 0.10** at
+  X = 4000, AND the error **strictly decreases** X: 1000 → 4000. (Many prime
+  conductors → low noise; the cleaner target.)
+- **Sharp convergence — SECONDARY (RH, LOP eq. 1.4):** δ = 0.7, X ∈ {500,1000,2000,
+  4000}. REQUIRE err **< 0.45** at X = 4000 AND decreasing X: 500 → 4000. Noisier
+  (few primes in [X, X+X^δ]) — reported as "converging, low prime count", not hidden.
+- **Null control (R1c, cross-parity):** REQUIRE max_y ‖P̃₊(y) − density_sharp_odd(y)‖
+  **> 0.5** — the even (real) statistic cannot match the odd (imaginary) density; a
+  statistic that could would be parity-degenerate. Designed and committed here, before
+  the run.
+- **Convergence rate** (error per X, both intervals) is emitted as an **empiric
+  (observed)**, never asserted as a theorem; the theorem's content is X → ∞.
+
+## Phase-2 boundary
+
+Two-phase gate honored: this log (incl. the pre-registered design above) is committed
+before the confirmation run. No M3 code or stubs. Branch `murmurations`, local only.
