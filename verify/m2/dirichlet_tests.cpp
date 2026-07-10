@@ -7,6 +7,7 @@
 // Zero external data (the whole module takes numbers, opens no file).
 #include "doctest/doctest.h"
 
+#include <algorithm>
 #include <cmath>
 #include <complex>
 #include <vector>
