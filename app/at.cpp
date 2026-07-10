@@ -14,6 +14,7 @@
 #include "emit/emit_classgroups.h"
 #include "emit/emit_cs.h"
 #include "ell/ecdata.h"
+#include "emit/emit_dirichlet.h"
 #include "emit/emit_dw.h"
 #include "emit/emit_linking.h"
 #include "emit/emit_murmuration.h"
@@ -131,6 +132,12 @@ int main(int argc, char** argv) {
             std::fprintf(stderr,
                 "at emit: stage m1 -> %s/murmuration_curve.json (n_primes=%zu)\n",
                 out.c_str(), nprimes);
+            return 0;
+        }
+        if (stage == "m2") {
+            // Dirichlet-character murmurations: zero external data (§9 clean case).
+            at::emit::emit_m2(out, resolve_generated_by());
+            std::fprintf(stderr, "at emit: stage m2 -> %s/dirichlet_murmuration.json\n", out.c_str());
             return 0;
         }
         std::fprintf(stderr,

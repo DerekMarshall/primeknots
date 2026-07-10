@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dirichlet_murmuration/1",
+  "title": "dirichlet_murmuration",
+  "description": "Stage M2: LOP murmurations of Dirichlet characters (arXiv:2307.00256, Thm 1.1). Per prime conductor, the average of χ(p)/τ(χ) over primitive even/odd characters, as a function of y. Sharp interval P̃± → cos(2πy)/−i sin(2πy); geometric interval P± → ∫₁^c. Even statistic real, odd imaginary (parity). Convergence trend is an observed empiric. Zero external data — computed from scratch (characters, Gauss sums, primes).",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "sharp", "geometric", "convergence", "null"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "dirichlet_murmuration/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["family", "statistic", "source", "external_data", "display_X", "sharp_delta", "geom_c"],
+      "properties": {
+        "family": {"type": "string"},
+        "statistic": {"type": "string"},
+        "source": {"type": "string"},
+        "external_data": {"type": "string"},
+        "display_X": {"type": "number"},
+        "sharp_delta": {"type": "number"},
+        "geom_c": {"type": "number"}
+      }
+    },
+    "sharp": {"$ref": "#/$defs/curve"},
+    "geometric": {"$ref": "#/$defs/curve"},
+    "convergence": {
+      "type": "object",
+      "required": ["note", "geometric", "sharp"],
+      "additionalProperties": false,
+      "properties": {
+        "note": {"type": "string"},
+        "geometric": {"type": "array", "items": {"$ref": "#/$defs/conv"}},
+        "sharp": {"type": "array", "items": {"$ref": "#/$defs/conv"}}
+      }
+    },
+    "null": {
+      "type": "object",
+      "required": ["kind", "value", "must_exceed"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"type": "string"},
+        "value": {"type": "number"},
+        "must_exceed": {"type": "number"}
+      }
+    }
+  },
+  "$defs": {
+    "curve": {
+      "type": "object",
+      "required": ["interval", "X", "param", "n_prime_conductors", "chars_even", "chars_odd", "points"],
+      "additionalProperties": false,
+      "properties": {
+        "interval": {"type": "string"},
+        "X": {"type": "number"},
+        "param": {"type": "number"},
+        "n_prime_conductors": {"type": "integer", "minimum": 0},
+        "chars_even": {"type": "integer", "minimum": 0},
+        "chars_odd": {"type": "integer", "minimum": 0},
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["y", "even_re", "even_im", "odd_re", "odd_im", "density_even", "density_odd_im"],
+            "additionalProperties": false,
+            "properties": {
+              "y": {"type": "number"}, "even_re": {"type": "number"}, "even_im": {"type": "number"},
+              "odd_re": {"type": "number"}, "odd_im": {"type": "number"},
+              "density_even": {"type": "number"}, "density_odd_im": {"type": "number"}
+            }
+          }
+        }
+      }
+    },
+    "conv": {
+      "type": "object",
+      "required": ["X", "max_err"],
+      "additionalProperties": false,
+      "properties": {"X": {"type": "number"}, "max_err": {"type": "number"}}
+    }
+  }
+}

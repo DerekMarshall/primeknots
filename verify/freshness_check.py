@@ -59,6 +59,10 @@ def emit_args():
         "5": (["--bound", str(int(z["t_max"])), "--odlyzko", ""],
               ["zeros.json", "psi_reconstruction.json", "dyn_zeta.json"]),
         "6": (["--cubic-cache", cache], ["dw_s3.json"]),
+        # M2 (Dirichlet murmurations): zero external data — a pure function of the
+        # code, so byte-checked everywhere including CI (the §9 repo-reproducible
+        # default). emit_m2 takes no parameters.
+        "m2": ([], ["dirichlet_murmuration.json"]),
     }
     # M1 (murmurations): reproducible from the repo via the committed derived extract
     # (data/cremona/m1_extract.txt, R2), so it is byte-checked everywhere including CI

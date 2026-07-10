@@ -22,6 +22,7 @@ FILE_SCHEMAS = {
     "psi_reconstruction.json": "psi_reconstruction.schema.json",
     "dyn_zeta.json": "dyn_zeta.schema.json",
     "dw_s3.json": "dw_s3.schema.json",
+    "dirichlet_murmuration.json": "dirichlet_murmuration.schema.json",
 }
 
 
@@ -42,16 +43,19 @@ def main() -> int:
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    for stage in ("1", "2", "3", "4", "5", "6"):
+    for stage in ("1", "2", "3", "4", "5", "6", "m2"):
         # keep validation fast: small bounds (schema-shape check, not full sweeps).
         # Stage 5's bound is the zero-search height t_max — keep it small here.
-        # Stage 6 reads its referee cache (no bound), so pass none.
+        # Stage 6 reads its referee cache (no bound); M2 takes no parameters
+        # (zero external data — from scratch).
         b = {"3": "5000", "4": "5000", "5": "120"}.get(stage, args.bound)
         cmd = [args.at, "emit", "--stage", stage, "--out", str(out)]
         if stage == "6":
             # absolute cache path (repo root = this script's parent's parent)
             cache = Path(__file__).resolve().parent.parent / "data/cubic/s3_counts.txt"
             cmd += ["--cubic-cache", str(cache)]
+        elif stage == "m2":
+            pass  # no parameters
         else:
             cmd += ["--bound", b]
         r = subprocess.run(cmd, capture_output=True, text=True)
