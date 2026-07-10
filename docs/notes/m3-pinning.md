@@ -195,6 +195,20 @@ assembles the P1 formula; the ladder adjudicates itself:
 - `theorem_trace_is_integral`: assembled RHS ∈ ℤ over 246 (square-free N, P) pairs.
 Root numbers quoted from PARI `ellrootno`: 11a/14a/15a/33a = +1, 37a = −1, 37b = +1.
 
-**Remaining Phase 2 (gated by budget, pre-registered below):** the density M₂ TU
-(separate session), convergence to M₂ with the R4 discontinuity-location test, emitter
-+ viewer, freshness. No M4 stubs. Branch `murmurations`, local only.
+**Density side done (`src/murm/zub_density`, separate TU):** M₂(y) = α·Σν(r)√(4y−r²)
++ β√y − γy with the verbatim Euler products; `theorem_zub_density_teeth` — the **R4
+kink locator** (second-difference spike, grid h=0.004, tol 0.01, committed pre-run)
+finds the derivative discontinuities at **0.248, 1.000, 2.248 ≈ {1/4, 1, 9/4}**;
+`theorem_zub_density_features` — positive root-number bias near 0 (M₂(0.05)>0) and
+oscillation (6 sign changes). The formula side is authored independently of the
+trace-assembly side (separate-TU protocol); neither edited after this comparison.
+
+**Remaining Phase 2 (gated by session budget, pre-registered):** the dimension-
+normalized **empirical convergence** — [Σ□_N Tr T_P|S₂^new(N)]/[Σ□_N dim S₂^new(N)]
+(assembled from `mform::trace`, needs a `dim S₂^new` genus formula + a fast H₁ at
+scale, P4-perf note) → M₂(y), applying the R4 locator to the EMPIRICAL curve (its
+teeth at n²/4) — and the emitter + viewer + freshness. The convergence tolerance is
+committed in that step before it runs. The high-risk mathematics (the trace formula
+conventions R1/R2/R3, the density formula + its teeth R4/P5) is validated; the
+remainder averages already-validated components. No M4 stubs. Branch `murmurations`,
+local only.

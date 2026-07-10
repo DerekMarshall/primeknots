@@ -39,7 +39,8 @@ target_link_libraries(at_mform PUBLIC at_core)
 # conductor family.
 add_library(at_murm STATIC
   murm/murmuration.cpp
-  murm/dirichlet_murmuration.cpp)
+  murm/dirichlet_murmuration.cpp
+  murm/zub_density.cpp)
 target_include_directories(at_murm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_murm PUBLIC at_ell)
 
