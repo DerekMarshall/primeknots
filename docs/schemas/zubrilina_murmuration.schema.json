@@ -12,7 +12,8 @@
     "params": {
       "type": "object",
       "required": ["family", "statistic", "source", "external_data", "provenance",
-                   "X", "window_Y", "y_max", "n_levels", "n_primes", "max_hurwitz_arg", "y_axis"],
+                   "X", "window_Y", "y_max", "n_levels", "n_primes", "max_hurwitz_arg",
+                   "y_axis", "l2_note"],
       "additionalProperties": false,
       "properties": {
         "family": {"type": "string"},
@@ -26,7 +27,8 @@
         "n_levels": {"type": "integer", "minimum": 1},
         "n_primes": {"type": "integer", "minimum": 1},
         "max_hurwitz_arg": {"type": "integer", "minimum": 1},
-        "y_axis": {"type": "string"}
+        "y_axis": {"type": "string"},
+        "l2_note": {"type": "string"}
       }
     },
     "empirical": {

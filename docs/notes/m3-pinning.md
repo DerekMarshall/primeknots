@@ -278,6 +278,14 @@ resolution derived a priori, not a fitted knob).
 - **Convergence (reported empiric):** L2 = RMS(emp − M₂) = 0.5511 (X=600) → 0.5160
   (1000) → 0.4773 (1400) → 0.4500 (1800), monotone decreasing with X (the theorem is
   X→∞). L2 is the *supporting* empiric; the teeth are the pass/fail.
+- **L2-magnitude note (so the artifact can't be misread as weak evidence):** L2 ≈ 0.45
+  at X=1800 is the **expected order**, not a weak fit. A short-interval window holds only
+  ~10² exact newform traces, so the per-prime scatter (Var a_f(P) ~ P per form, averaged
+  over O(10²) forms) dominates the finite-X deviation from M₂ at these window sizes; the
+  scatter shrinks only as the window (and hence the level count) grows, which is why L2
+  decreases with X. The **calibrated pass/fail is the pre-committed teeth locations**
+  (√-cusps at y=n²/4, a *convention* test immune to the scatter magnitude), not the L2
+  value. This note is mirrored verbatim into the emitted `params.l2_note` field.
 - Emitter `emit_m3` → `viz/data/zubrilina_murmuration.json` (per-prime scatter +
   smoothed empirical + M₂ fine grid + residuals + both teeth sets + detector + L2 +
   convergence), viewer `viz/zubrilina.html`, schema, validate-json + freshness wired.
