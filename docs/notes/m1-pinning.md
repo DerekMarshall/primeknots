@@ -80,6 +80,32 @@ primes, p₁ = 2 … p₁₀₀₀ = 7919** (indices 1 ≤ n ≤ 1000).
 
   The slice follows the paper's ranges, not the reverse (m0-pinning standing note).
 
+- **Derived extract — repo-reproducibility (R2).** ecdata is under the **Artistic
+  License 2.0**, whose preamble states the Package "may be copied, modified,
+  distributed, and/or redistributed"; a derived/modified version is redistributable
+  with attribution. So the M1 pipeline reads a **committed derived extract** —
+  exactly the rows it consumes (label, N, minimal model, rank, bad-prime A–L signs)
+  — restoring reproducible-from-repo for CI (freshness/validate) at trivial size,
+  instead of the SKIP-when-absent path. Provenance chain:
+  - `data/cremona/m1_extract.txt` — git-tracked, sha256
+    `9c465d6b68fe438b90d12bafc458131adda2b85d086649588407b50ccf2a578e`, 30,366
+    isogeny classes, covered range [2500, 10000].
+  - derived by `at ecdata-extract --lo 2500 --hi 10000` from the raw slices
+    `allcurves.00000-09999`/`.10000-19999` + `aplist.*` at ecdata release
+    `2026-04-22 / 25cec5ec` (the sha256s pinned in `data/cremona/MANIFEST.json`).
+  - attribution: J. Cremona, *ecdata*, Artistic License 2.0. The extract is a
+    "Modified Version" carrying this notice in its header.
+  - faithfulness verified: `at emit --stage m1` from the extract is byte-identical
+    (payload) to emit from the raw slices. The loader prefers the extract; raw
+    slices are only needed to regenerate it. Being git-tracked, the extract's
+    integrity is git's (any change shows in the diff) — no separate checksum test.
+  - **size, flagged:** 1.4 MB — the largest committed blob, over the project's
+    self-imposed 1 MB observation (publication-audit.md). Justified: a 4× reduction
+    from the raw slices, license-clean, and the price of R2's repo-reproducibility;
+    plain text is required (no zlib in `src/`). This is a documented, not silent,
+    exception — the publication audit's blob table is to be updated when the
+    `murmurations` branch merges.
+
 ## P4 — binning, and the scale-collapse test design
 
 **Binning: none in Figure 1.** HLOP plot (n, f_r(n)) — one point per prime index n
@@ -115,19 +141,29 @@ invariant, not an HLOP figure). Design, fixed **before any confirmation run**:
   larger and the reported ratio (D/F) an *upper*-biased optimism. So a passing
   collapse is necessary-not-sufficient; the achieved D/F ratio is reported as an
   **empiric (observed)** per rank (R1b), never as a proof.
-- **Null control (rider R1c), designed before the run.** The same statistic on a
-  wrong-label pairing must FAIL: `scale_collapse(A_r, B_{r'})` with r' an **antiphase
-  (opposite-parity) rank** (r0↔r1, r2↔r1; even = {0,2}, odd = {1}). Because even/odd
-  murmurations are antiphase, a genuine collapse of A_r onto B_r must NOT collapse
-  A_r onto B_{r'}: **REQUIRE null D/F ≥ 3** where the test has power (r0, r1). A
-  collapse statistic that passes the scrambled pairing measures nothing; this is
-  demonstrated-firing applied to a statistic. (Empirically robust — the antiphase
-  null clears 3 at every prime count tested, unlike a within-curve reversal.)
-- **Per-class verdicts (rider R2), no blended pass.** Each rank is judged with its
-  OWN floor; |E_2| ≈ 1380 (vs |E_0| ≈ 8536) makes the r=2 floor several × looser, so
-  its null may not clear 3. That panel is reported "consistent, low power" (real
-  D < T but null not rejected) — stated, not averaged away. REQUIRE null-fail only
-  for r0, r1.
+- **Claim, correctly scoped (rider R1).** The verdict on real data is "**consistent
+  with p/N scaling**" (D < T), *not* "proven to scale". Two controls, reported side
+  by side:
+  - **Reversal null (the scaling-power control, `scale_collapse_null`).** Reverse one
+    curve's a_p means in y — a *non-scaling* scramble — and recompute D/F. This is the
+    test's **power against a wrong scaling** at these family sizes. It is **limited and
+    erratic**: it clears the 3F bar for one rank (r1, D/F ≈ 3.58) but not the others
+    (r0 ≈ 2.86, r2 ≈ 1.44) — a within-curve reversal is a weak, shape-dependent
+    scrambler, which is exactly why the parity null was added as the reliable control.
+    It always exceeds the real D/F (the statistic orders real ≪ scramble, checked), but
+    the 3F bar cannot reliably reject it. Honest statement: "consistent with p/N
+    scaling; power to distinguish alternative scalings is limited at these family
+    sizes — reversal control D/F = [numbers below]."
+  - **Parity null (the non-degeneracy control).** `scale_collapse(A_r, B_{r'})` with
+    r' an opposite-parity rank (r0↔r1, r2↔r1). This is **NOT a scaling null** — it
+    differs from the real comparison in *two* variables (rank AND range). It tests
+    that the statistic is not degenerate across parity classes: **REQUIRE D/F ≥ 3**
+    where powered (r0, r1). It is robust (clears 3 at every prime count) precisely
+    because even/odd murmurations are antiphase.
+- **Per-class verdicts (rider R2), no blended pass.** Each rank judged with its OWN
+  floor; |E_2| ≈ 1380 (vs |E_0| ≈ 8536) makes the r=2 floor several × looser. r=2 is
+  reported "consistent, low power" (real D < T; controls not rejected) — stated, not
+  averaged away. REQUIRE the parity-null rejection only for r0, r1.
 
 Antiphase / parity-consistency invariant (`theorem_antiphase`). The murmuration sign
 tracks rank **parity** (root number): ranks 0,1 are opposite parity, ranks 0,2 the
@@ -136,12 +172,34 @@ over the shared prime grid **corr(f₀,f₁) < −0.5** (antiphase) and **corr(f
 (in phase). Both are modest bars a genuine relationship clears and noise would not.
 
 **Phase-2 record (achieved, reported as empirics — R1b).** At n_primes = 300:
-family counts 4328/5194/8536/1380 (exact); collapse ratio D/F = 0.95 (r0), 1.07 (r1),
-0.80 (r2), all < 3 → pass; antiphase-null D/F = 4.89 (r0), 4.68 (r1) → ≥ 3, rejected
-(power), 2.82 (r2) → not rejected (**low power**, |E₂| small — R2, reported not
-hidden); corr(f₀,f₁) = −0.84, corr(f₀,f₂) = +0.70. The a_p come from the M0 machinery
-(computed good primes, §3-converted bad primes). These ratios use the independent-a_p
-floor F (R1a) and are necessary-not-sufficient evidence, not proof.
+family counts 4328/5194/8536/1380 (exact). Real collapse D/F = 0.95 (r0), 1.07 (r1),
+0.80 (r2) — all < 3, consistent with p/N scaling. **Reversal null (scaling power)**
+D/F = 2.86 (r0), 3.58 (r1), 1.44 (r2) — clears 3 only for r1, i.e. **limited and
+erratic power** to reject a wrong scaling at these family sizes (the statistic orders
+real ≪ reversal in every rank, but the 3F bar rejects the reversal only for r1 — a
+within-curve reversal is a weak scrambler). **Parity null (non-degeneracy)** D/F =
+4.89 (r0), 4.68 (r1) → rejected; 2.82 (r2) → not rejected (low power, |E₂| small — R2).
+corr(f₀,f₁) = −0.84 (antiphase), corr(f₀,f₂) = +0.70 (in phase). a_p from the M0
+machinery. All ratios use the independent-a_p floor F (R1a) — necessary-not-
+sufficient evidence, not proof.
+
+**Deviation postscript (rider R1a/R1d — PR-postscript pattern).**
+- *Original design:* a single within-curve **reversal** null, REQUIREd to fail (D/F ≥ 3).
+- *Observed behavior:* the reversal null did **not** robustly clear 3 — the r0
+  experiment measured ≈ 2.4–2.9 across n_primes ∈ {300,500,700}, and per-rank it is
+  erratic (at n_primes=300 it clears 3 for r1 = 3.58 but not r0 = 2.86 or r2 = 1.44).
+  A within-curve reversal is a weak, shape-dependent scrambler at these amplitudes.
+- *Replacement:* added the **parity** null (opposite-parity rank), which robustly clears
+  3 (4.89/4.70/3.75), as the non-degeneracy control; the reversal null was **not deleted**
+  but re-scoped to a reported *scaling-power* measurement.
+- *Timing (stated plainly, from the record):* the swap happened **after** the real-data
+  collapse results were seen — the smoke run showed the real collapse passing *and* the
+  reversal null's behavior, which is what prompted adding the parity null. The git record
+  cannot corroborate the order: the reversal null was intra-session and never committed
+  (commit 0e4cdb4 already carried only the parity null). This is disclosed as a
+  post-hoc control change; the real-data collapse verdict (D/F < 3) is independent of
+  which null is used, and both nulls are now reported (additions + relabels only, no
+  test deletions).
 
 ## P5 — family-count certification plan (and it already reproduces)
 

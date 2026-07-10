@@ -13,6 +13,7 @@
 #include "emit/emit_borromean.h"
 #include "emit/emit_classgroups.h"
 #include "emit/emit_cs.h"
+#include "ell/ecdata.h"
 #include "emit/emit_dw.h"
 #include "emit/emit_linking.h"
 #include "emit/emit_murmuration.h"
@@ -136,6 +137,20 @@ int main(int argc, char** argv) {
             "at emit: no emitter for stage '%s' (stages 1-6, m1 are built)\n",
             stage.c_str());
         return 2;
+    }
+
+    if (std::strcmp(argv[1], "ecdata-extract") == 0) {
+        // Regenerate the committed derived extract from the pinned RAW ecdata slices
+        // (R2). Run once; the extract is committed and the loader prefers it.
+        const char* ecdata = opt(argc, argv, "--ecdata-dir", "data/cremona");
+        unsigned long long lo = std::strtoull(opt(argc, argv, "--lo", "2500"), nullptr, 10);
+        unsigned long long hi = std::strtoull(opt(argc, argv, "--hi", "10000"), nullptr, 10);
+        std::string outf = opt(argc, argv, "--out", "data/cremona/m1_extract.txt");
+        auto curves = at::ell::load_ecdata_raw(ecdata, lo, hi);
+        at::ell::write_extract(outf, curves, lo, hi);
+        std::fprintf(stderr, "at ecdata-extract: %zu classes [%llu,%llu] -> %s\n",
+                     curves.size(), lo, hi, outf.c_str());
+        return 0;
     }
 
     std::fprintf(stderr, "at: unknown command '%s'\n\n", argv[1]);

@@ -30,6 +30,9 @@ constexpr std::size_t NP = 300;   // primes: enough power for the antiphase null
 bool ecdata_present() {
     namespace fs = std::filesystem;
     if (!fs::is_directory(AT_ECDATA_DIR)) return false;
+    // The committed derived extract makes M1 repo-reproducible (R2); raw slices are
+    // the fallback. Present in CI, so these tests run everywhere.
+    if (fs::exists(fs::path(AT_ECDATA_DIR) / "m1_extract.txt")) return true;
     for (const auto& e : fs::directory_iterator(AT_ECDATA_DIR))
         if (e.path().filename().string().rfind("allcurves.", 0) == 0) return true;
     return false;
@@ -86,30 +89,36 @@ TEST_CASE("theorem_scale_collapse") {
     const auto a1 = murmuration_curve(all, 1, 2500, 5000, NP), b1 = murmuration_curve(all, 1, 5000, 10000, NP);
     const auto a2 = murmuration_curve(all, 2, 2500, 5000, NP), b2 = murmuration_curve(all, 2, 5000, 10000, NP);
     const int G = 60;
-    // real: same rank; null: antiphase (opposite-parity) rank on the B side (R1c).
-    const auto c0 = scale_collapse(a0, b0, G), n0 = scale_collapse(a0, b1, G);
-    const auto c1 = scale_collapse(a1, b1, G), n1 = scale_collapse(a1, b0, G);
-    const auto c2 = scale_collapse(a2, b2, G), n2 = scale_collapse(a2, b1, G);
+    // real: same rank & scaled ranges. rev: within-curve reversal (scaling-power
+    // measurement, reported — R1b). par: opposite-parity rank (non-degeneracy — R1c).
+    const auto c0 = scale_collapse(a0, b0, G), rev0 = scale_collapse_null(a0, b0, G), par0 = scale_collapse(a0, b1, G);
+    const auto c1 = scale_collapse(a1, b1, G), rev1 = scale_collapse_null(a1, b1, G), par1 = scale_collapse(a1, b0, G);
+    const auto c2 = scale_collapse(a2, b2, G), rev2 = scale_collapse_null(a2, b2, G), par2 = scale_collapse(a2, b1, G);
 
-    MESSAGE("collapse r0: real ratio=" << c0.ratio << " (pass<3) | antiphase null=" << n0.ratio
-            << " (fail>=3) | F=" << c0.floor_F);
-    MESSAGE("collapse r1: real ratio=" << c1.ratio << " | antiphase null=" << n1.ratio
-            << " | F=" << c1.floor_F);
-    MESSAGE("collapse r2: real ratio=" << c2.ratio << " | antiphase null=" << n2.ratio
-            << " | F=" << c2.floor_F << "  (LOW POWER: |E_2| small, null not required to fail — R2)");
+    MESSAGE("collapse r0: real D/F=" << c0.ratio << " (consistent<3) | reversal-null D/F=" << rev0.ratio
+            << " (scaling power; limited if <3) | parity-null D/F=" << par0.ratio << " (non-degeneracy>=3) | F=" << c0.floor_F);
+    MESSAGE("collapse r1: real D/F=" << c1.ratio << " | reversal-null D/F=" << rev1.ratio
+            << " | parity-null D/F=" << par1.ratio << " | F=" << c1.floor_F);
+    MESSAGE("collapse r2: real D/F=" << c2.ratio << " | reversal-null D/F=" << rev2.ratio
+            << " | parity-null D/F=" << par2.ratio << " | F=" << c2.floor_F
+            << "  (LOW POWER: |E_2| small — R2)");
 
-    // Power cases (r0, r1): the collapse holds AND the null is rejected.
+    // Real collapse: consistent with p/N scaling (all ranks).
     CHECK(c0.ratio < 3.0);
-    CHECK(n0.ratio >= 3.0);
     CHECK(c1.ratio < 3.0);
-    CHECK(n1.ratio >= 3.0);
-    // r2: consistent (real passes) but low power — the null is NOT required to fail.
     CHECK(c2.ratio < 3.0);
+    // The statistic distinguishes the real collapse from a scramble (reversal above
+    // real), even where the 3F bar is too loose to reject the scramble (limited power).
+    CHECK(rev0.ratio > c0.ratio);
+    CHECK(rev1.ratio > c1.ratio);
+    // Parity non-degeneracy: rejected where there is power (r0, r1). NOT a scaling null.
+    CHECK(par0.ratio >= 3.0);
+    CHECK(par1.ratio >= 3.0);
     REQUIRE(c0.ratio < 3.0);
-    REQUIRE(n0.ratio >= 3.0);   // a collapse that couldn't reject the antiphase null measures nothing
     REQUIRE(c1.ratio < 3.0);
-    REQUIRE(n1.ratio >= 3.0);
     REQUIRE(c2.ratio < 3.0);
+    REQUIRE(par0.ratio >= 3.0);   // parity non-degeneracy holds where powered
+    REQUIRE(par1.ratio >= 3.0);
 }
 
 TEST_CASE("theorem_antiphase") {

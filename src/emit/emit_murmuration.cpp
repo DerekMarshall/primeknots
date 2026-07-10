@@ -44,25 +44,31 @@ void write_panel(std::ostream& f, const char* panel, const char* color, const Mu
 }
 
 void write_collapse(std::ostream& f, int rank, u64 aN1, u64 aN2, std::size_t famA,
-                    u64 bN1, u64 bN2, std::size_t famB, int null_rank,
-                    const CollapseResult& r, const CollapseResult& nul) {
+                    u64 bN1, u64 bN2, std::size_t famB, int parity_rank,
+                    const CollapseResult& r, const CollapseResult& rev,
+                    const CollapseResult& par) {
     const bool pass = r.ratio < 3.0;
-    const bool null_fails = nul.ratio >= 3.0;
-    // Low power when the family is small enough that the noise floor swamps the
-    // antiphase signal — the null cannot be rejected (rider R2). Flagged, not hidden.
-    const bool low_power = !null_fails;
+    const bool rev_rejects = rev.ratio >= 3.0;     // scaling-power measurement (R1b)
+    const bool par_rejects = par.ratio >= 3.0;     // parity non-degeneracy (R1c)
     f << "{\"rank\": " << rank
       << ", \"rangeA\": [" << aN1 << "," << aN2 << "], \"family_A\": " << famA
       << ", \"rangeB\": [" << bN1 << "," << bN2 << "], \"family_B\": " << famB
       << ", \"grid_points\": " << r.grid_points
       << ", \"rms\": " << num(r.rms) << ", \"floor_F\": " << num(r.floor_F)
       << ", \"ratio\": " << num(r.ratio) << ", \"tolerance\": 3"
-      << ", \"pass\": " << (pass ? "true" : "false")
-      << ", \"null_pairing\": \"rank " << rank << " vs rank " << null_rank
-      << " (antiphase label-shuffle)\""
-      << ", \"null_ratio\": " << num(nul.ratio)
-      << ", \"null_fails_tolerance\": " << (null_fails ? "true" : "false")
-      << ", \"low_power\": " << (low_power ? "true" : "false") << "}";
+      << ", \"consistent_with_scaling\": " << (pass ? "true" : "false")
+      // Reversal null: a NON-scaling scramble; its ratio is the test's power against
+      // a wrong scaling at these family sizes (reported, not a gate).
+      << ", \"reversal_null\": {\"kind\": \"within-curve reversal (scaling power)\""
+      << ", \"ratio\": " << num(rev.ratio) << ", \"rejects\": " << (rev_rejects ? "true" : "false")
+      << "}"
+      // Parity null: opposite-parity rank; tests non-degeneracy, differs in TWO
+      // variables (rank AND range), NOT a scaling null.
+      << ", \"parity_null\": {\"kind\": \"rank " << rank << " vs rank " << parity_rank
+      << " — parity non-degeneracy (differs in rank AND range; not a scaling null)\""
+      << ", \"ratio\": " << num(par.ratio) << ", \"rejects\": " << (par_rejects ? "true" : "false")
+      << "}"
+      << ", \"limited_power_vs_scaling\": " << (rev_rejects ? "false" : "true") << "}";
 }
 
 }  // namespace
@@ -81,15 +87,18 @@ void emit_m1(const std::string& out_dir, const std::string& ecdata_dir,
     const MurmCurve p0_50 = mc(0, 5000, 10000);   // bottom: f0  (also collapse B, r=0)
     const MurmCurve p2_50 = mc(2, 5000, 10000);   // bottom: f2  (also collapse B, r=2)
 
-    // Scale-collapse [2500,5000] vs [5000,10000], per rank (R2). The null is the
-    // same statistic with an antiphase (opposite-parity) rank on the B side (R1c):
-    // r0↔r1, r2↔r1 (r0,r2 even; r1 odd).
+    // Scale-collapse [2500,5000] vs [5000,10000], per rank (R2), with TWO controls:
+    //  reversal null (within-curve scramble → scaling-power measurement, R1b), and
+    //  parity null (opposite-parity rank on B → non-degeneracy, R1c: r0↔r1, r2↔r1).
     const MurmCurve a0 = mc(0, 2500, 5000), a1 = mc(1, 2500, 5000), a2 = mc(2, 2500, 5000);
     const MurmCurve b1 = mc(1, 5000, 10000);
     const int GRID = 60;
-    const CollapseResult c0 = scale_collapse(a0, p0_50, GRID), n0 = scale_collapse(a0, b1, GRID);      // null: r0-A vs r1-B
-    const CollapseResult c1 = scale_collapse(a1, b1, GRID),   n1c = scale_collapse(a1, p0_50, GRID);   // null: r1-A vs r0-B
-    const CollapseResult c2 = scale_collapse(a2, p2_50, GRID),n2c = scale_collapse(a2, b1, GRID);      // null: r2-A vs r1-B
+    const CollapseResult c0 = scale_collapse(a0, p0_50, GRID);
+    const CollapseResult rev0 = scale_collapse_null(a0, p0_50, GRID), par0 = scale_collapse(a0, b1, GRID);
+    const CollapseResult c1 = scale_collapse(a1, b1, GRID);
+    const CollapseResult rev1 = scale_collapse_null(a1, b1, GRID), par1 = scale_collapse(a1, p0_50, GRID);
+    const CollapseResult c2 = scale_collapse(a2, p2_50, GRID);
+    const CollapseResult rev2 = scale_collapse_null(a2, p2_50, GRID), par2 = scale_collapse(a2, b1, GRID);
 
     std::ofstream f(fs::path(out_dir) / "murmuration_curve.json");
     f << "{\n  \"schema\": \"murmuration_curve/1\",\n";
@@ -113,9 +122,9 @@ void emit_m1(const std::string& out_dir, const std::string& ecdata_dir,
     write_panel(f, "bottom", "#0f9d58", p2_50);
     f << "\n  ],\n";
     f << "  \"collapse\": [\n    ";
-    write_collapse(f, 0, 2500, 5000, a0.family_size, 5000, 10000, p0_50.family_size, 1, c0, n0); f << ",\n    ";
-    write_collapse(f, 1, 2500, 5000, a1.family_size, 5000, 10000, b1.family_size, 0, c1, n1c); f << ",\n    ";
-    write_collapse(f, 2, 2500, 5000, a2.family_size, 5000, 10000, p2_50.family_size, 1, c2, n2c);
+    write_collapse(f, 0, 2500, 5000, a0.family_size, 5000, 10000, p0_50.family_size, 1, c0, rev0, par0); f << ",\n    ";
+    write_collapse(f, 1, 2500, 5000, a1.family_size, 5000, 10000, b1.family_size, 0, c1, rev1, par1); f << ",\n    ";
+    write_collapse(f, 2, 2500, 5000, a2.family_size, 5000, 10000, p2_50.family_size, 1, c2, rev2, par2);
     f << "\n  ]\n}\n";
 }
 

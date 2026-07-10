@@ -25,11 +25,26 @@ struct EcCurve {
     std::map<u64, int> bad_w;     // bad prime p | N -> Atkin–Lehner sign w_p ∈ {+1,-1} (oracle)
 };
 
-// Load isogeny-class representatives with conductor in [N1, N2] from all
-// allcurves.*/aplist.* files under `dir`. Calls ell::assert_minimal per curve
-// (C1 precondition). Throws std::runtime_error if a curve in range has no aplist
-// row, or if a model fails minimality. The first 25 primes (< 100) map to AP25.
+// Load isogeny-class representatives with conductor in [N1, N2]. Prefers the
+// committed derived extract `<dir>/m1_extract.txt` (repo-reproducible, R2); falls
+// back to parsing the raw allcurves.*/aplist.* slices when the extract is absent.
+// Calls ell::assert_minimal per curve (C1). Throws if a curve in range has no
+// aplist row / model fails minimality / the extract does not cover [N1,N2].
 std::vector<EcCurve> load_ecdata_range(const std::string& dir, u64 N1, u64 N2);
+
+// Always parse the raw allcurves.*/aplist.* slices (ignores any committed extract).
+// Used to (re)generate the extract from the pinned raw data.
+std::vector<EcCurve> load_ecdata_raw(const std::string& dir, u64 N1, u64 N2);
+
+// Write the derived extract (exactly the rows M1 consumes) covering [lo,hi], so
+// the pipeline is reproducible from the repo without the gitignored raw slices.
+// A "Modified Version" of ecdata under the Artistic License 2.0 — sha-linked to
+// the pinned release in data/cremona/MANIFEST.json (R2 / m1-pinning §0).
+void write_extract(const std::string& path, const std::vector<EcCurve>& curves,
+                   u64 lo, u64 hi);
+
+// The extract filename the loader prefers under an ecdata dir.
+extern const char* kM1ExtractName;
 
 // The 25 primes < 100, in AP25 order (index i ↔ i-th prime).
 extern const u64 kAP25Primes[25];

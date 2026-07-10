@@ -60,10 +60,10 @@ def emit_args():
               ["zeros.json", "psi_reconstruction.json", "dyn_zeta.json"]),
         "6": (["--cubic-cache", cache], ["dw_s3.json"]),
     }
-    # M1 (murmurations): unlike stages 1-6, its snapshot is NOT reproducible from
-    # the repo alone — it is computed from the pinned Cremona ecdata (gitignored).
-    # So it is byte-checked only when the ecdata slices are present (locally); in
-    # CI it SKIPs, with the sha256-pinned manifest as the reproducibility anchor.
+    # M1 (murmurations): reproducible from the repo via the committed derived extract
+    # (data/cremona/m1_extract.txt, R2), so it is byte-checked everywhere including CI
+    # — the loader reads the extract, not the gitignored raw slices. The guard below
+    # only skips if even the extract is missing (a broken checkout).
     if (SNAP / "murmuration_curve.json").exists():
         mp = load(SNAP / "murmuration_curve.json")["params"]
         args["m1"] = (["--ecdata-dir", str(ROOT / "data" / "cremona"),
@@ -73,7 +73,11 @@ def emit_args():
 
 def ecdata_present():
     ecdir = ROOT / "data" / "cremona"
-    return ecdir.is_dir() and any(p.name.startswith("allcurves.") for p in ecdir.iterdir())
+    if not ecdir.is_dir():
+        return False
+    if (ecdir / "m1_extract.txt").exists():   # committed extract → repo-reproducible
+        return True
+    return any(p.name.startswith("allcurves.") for p in ecdir.iterdir())
 
 
 def norm(text):
@@ -123,8 +127,8 @@ def main():
     drift = []
     for stage, (args, files) in stages.items():
         if stage == "m1" and not ecdata_present():
-            print("  SKIP m1 (murmuration_curve.json): ecdata absent — not repo-reproducible; "
-                  "re-fetch via oracle/fetch_ecdata.py at the pinned sha to byte-check it")
+            print("  SKIP m1 (murmuration_curve.json): committed extract m1_extract.txt "
+                  "missing (broken checkout) — regenerate via `at ecdata-extract`")
             continue
         r = subprocess.run([str(AT), "emit", "--stage", stage, "--out", str(tmp)] + args,
                            capture_output=True, text=True)

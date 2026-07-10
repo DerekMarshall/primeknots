@@ -60,3 +60,33 @@ Viewers: `viz/murmurations.html` (family curves with range presets, scale-collap
 ## 8. Failure modes this delta is built against
 
 Named so the tests can target them: sign/off-by-one in a_p (global, silent → source-quoted anchor + model invariance); family-definition drift from the paper (soft anchors make this invisible → definitions quoted, counts certified); cache staleness (→ generator-hash refusal); pattern-fitting (→ prereg contract, holdout disjointness check, looks ledger); tolerance shopping (→ tolerances justified in logs before runs, changes to a tolerance are log events); oracle-provenance leakage into computed claims (→ §2 declaration + CI grep).
+
+## 9. Snapshot reproducibility (amendment to the ERRATA #18 principle)
+
+ERRATA #18 established: the committed `viz/data` snapshot must be reproducible from
+the repo alone, and the freshness guard byte-checks it in CI. Some M-stages compute
+their snapshot from **external data**, which cannot be inlined. This amends the
+principle into two named artifact classes:
+
+- **Repo-reproducible (the default).** No external data; the snapshot is a pure
+  function of committed code. Freshness byte-checks it from the repo in CI, exactly
+  per ERRATA #18. **M2 is the clean case** — Dirichlet-character murmurations use
+  *zero external data* (asserted in the suite), so their snapshot is fully
+  repo-reproducible; this is the default every stage should aim for.
+
+- **External-data-derived.** The snapshot is computed from an external dataset
+  (M1: Cremona ecdata). Policy, in order of preference:
+  1. **If the dataset's license permits redistribution** (M1: ecdata is Artistic
+     License 2.0), commit a **compact derived extract** — exactly the parsed rows
+     the stage consumes — git-tracked, header-attributed, and sha-linked in its log
+     to the pinned upstream release. This *restores* the repo-reproducible property:
+     freshness/validate/tests read the extract and run in CI. The raw upstream slices
+     stay gitignored (fetched, checksum-pinned) and are needed only to regenerate the
+     extract (`at ecdata-extract`). **M1 takes this path.**
+  2. **If redistribution is not permitted**, the snapshot is a *SKIP-class* artifact:
+     freshness/validate/tests SKIP cleanly (exit 77) when the data is absent, with the
+     sha256-pinned fetch manifest as the reproducibility anchor. **Residual risk,
+     stated explicitly:** CI cannot detect drift for a SKIP-class snapshot — only a
+     local run with the data present can. This is a real gap, accepted only when
+     redistribution is barred; it is not the default and must be named in the stage's
+     log, never left implicit.

@@ -43,9 +43,9 @@
       </div>
     </section>
     <section class="panel">
-      <h2>Scale collapse in y = p/N, per rank (with antiphase null control)</h2>
+      <h2>Scale collapse in y = p/N, per rank (two controls)</h2>
       <div id="collapse"></div>
-      <div class="stat" style="color:var(--muted)">Disjoint windows [2500,5000] vs [5000,10000] collapse onto one curve in y=p/N (ratio = RMS distance / sampling-noise floor F; pass if &lt; 3). The <b>null</b> pairs the wrong (antiphase) rank and must FAIL — a collapse that can't reject it measures nothing. Rank 2 is low power (small family). F assumes independent a<sub>p</sub> (anticonservative — the murmuration IS correlation); ratios are observed empirics, not proof.</div>
+      <div class="stat" style="color:var(--muted)">Disjoint windows [2500,5000] vs [5000,10000] are <b>consistent with p/N scaling</b> (ratio = RMS distance / sampling-noise floor F; &lt; 3). Two controls: the <b>reversal null</b> (within-curve scramble) measures the test's <em>power against a wrong scaling</em> — it turned out limited (ratio &lt; 3, not rejected) at these family sizes; the <b>parity null</b> pairs the opposite-parity rank and tests non-degeneracy (differs in rank AND range, so it is NOT a scaling null). Rank 2 is low power. F assumes independent a<sub>p</sub> (anticonservative — the murmuration IS correlation); ratios are observed empirics, not proof.</div>
     </section>
     <section class="panel">
       <h2>Family counts &amp; provenance</h2>
@@ -97,13 +97,15 @@
     function drawCollapse(rows) {
       const fmt = d3.format(".3f");
       let html = "<table class='collapse'><tr><th>rank</th><th>windows</th><th>|E_A|</th><th>|E_B|</th>"+
-        "<th>ratio D/F</th><th>collapse</th><th>null ratio</th><th>null</th></tr>";
+        "<th>D/F</th><th>scaling</th><th>reversal null (power)</th><th>parity null</th></tr>";
       rows.forEach(c=>{
-        const pass = c.pass ? "<span class='ok'>pass ✓</span>" : "<span class='warn'>no</span>";
-        const nul = c.null_fails_tolerance ? "<span class='ok'>fails ✓</span>"
-                    : (c.low_power ? "<span class='warn'>low power</span>" : "<span class='warn'>—</span>");
+        const scaling = c.consistent_with_scaling ? "<span class='ok'>consistent ✓</span>" : "<span class='warn'>no</span>";
+        const rev = `${fmt(c.reversal_null.ratio)} ` + (c.reversal_null.rejects
+                    ? "<span class='ok'>rejects</span>" : "<span class='warn'>limited</span>");
+        const par = `${fmt(c.parity_null.ratio)} ` + (c.parity_null.rejects
+                    ? "<span class='ok'>rejects ✓</span>" : "<span class='warn'>low power</span>");
         html += `<tr><td>${c.rank}</td><td>[${c.rangeA}] / [${c.rangeB}]</td><td>${c.family_A}</td><td>${c.family_B}</td>`+
-          `<td>${fmt(c.ratio)}</td><td>${pass}</td><td>${fmt(c.null_ratio)}</td><td>${nul}</td></tr>`;
+          `<td>${fmt(c.ratio)}</td><td>${scaling}</td><td>${rev}</td><td>${par}</td></tr>`;
       });
       html += "</table>";
       document.getElementById("collapse").innerHTML = html;

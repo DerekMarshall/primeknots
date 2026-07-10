@@ -31,5 +31,17 @@
       "sha256": "e637c3f3899eaa05d2577ae604485302bf0cf448af95f400c3eebba4538cd171",
       "bytes": 4402395
     }
-  ]
+  ],
+  "derived_extract": {
+    "file": "m1_extract.txt",
+    "sha256": "9c465d6b68fe438b90d12bafc458131adda2b85d086649588407b50ccf2a578e",
+    "rows": 30366,
+    "range": [
+      2500,
+      10000
+    ],
+    "derived_from": "ecdata release 2026-04-22 / 25cec5ec (the files above), via `at ecdata-extract --lo 2500 --hi 10000`",
+    "license": "Cremona ecdata under the Artistic License 2.0 \u2014 a redistributable Modified Version (attribution in the file header)",
+    "note": "committed + git-tracked; the M1 loader prefers it over the raw slices (R2); see docs/notes/m1-pinning.md \u00a7P3"
+  }
 }

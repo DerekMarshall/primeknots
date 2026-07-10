@@ -120,6 +120,10 @@ def fetch():
                       "good-prime a_p = computed by src/ell (this data referees it)",
         "files": files,
     }
+    # Preserve the committed derived-extract pin (written by `at ecdata-extract`, R2)
+    # across re-fetches; the extract is git-tracked, sha-linked here to this release.
+    if existing is not None and existing.get("derived_extract") is not None:
+        new["derived_extract"] = existing["derived_extract"]
     # Only rewrite the (committed) manifest when file bytes actually changed —
     # keeps re-runs from churning fetch_date into a spurious diff.
     if existing is not None and existing.get("files") == files \

@@ -138,4 +138,13 @@ CollapseResult scale_collapse(const MurmCurve& A, const MurmCurve& B, int grid_p
     return r;
 }
 
+CollapseResult scale_collapse_null(const MurmCurve& A, const MurmCurve& B, int grid_points) {
+    // Within-curve reversal in y — a non-scaling scramble. Its ratio is a power
+    // measurement of the collapse statistic (reported, not a gate — R1b).
+    MurmCurve Ar = A;
+    const std::size_t n = Ar.points.size();
+    for (std::size_t i = 0; i < n; ++i) Ar.points[i].avg = A.points[n - 1 - i].avg;
+    return scale_collapse(Ar, B, grid_points);
+}
+
 }  // namespace at::murm

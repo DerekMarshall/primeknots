@@ -50,11 +50,16 @@ struct CollapseResult {
 };
 CollapseResult scale_collapse(const MurmCurve& A, const MurmCurve& B, int grid_points);
 
-// The null control (rider R1c) is the SAME statistic applied to a wrong-label
-// pairing: scale_collapse(A_r, B_r') with r' an antiphase (opposite-parity) rank.
-// Because even- and odd-rank murmurations oscillate in antiphase (HLOP), a genuine
-// collapse of A_r onto B_r must NOT collapse A_r onto B_r' — so the null must FAIL
-// the tolerance where the test has power (rank 0,1; rank 2 is low-power, R2). No
-// separate function is needed: the caller passes the mismatched-rank curve.
+// TWO complementary controls (m1-pinning P4; riders R1/R2):
+//  - Reversal null (this function): reverse one curve's avgs in y — a NON-scaling
+//    scramble. Its D/F is REPORTED as the collapse statistic's power against a wrong
+//    scaling at these family sizes; it turned out LIMITED (D/F < 3 — a within-curve
+//    reversal is not rejected at the 3F bar). A measured power number, not a gate.
+//  - Parity null: the SAME statistic with an opposite-parity rank on the B side
+//    (caller passes scale_collapse(A_r, B_r')). Tests statistic non-degeneracy across
+//    parity classes; it differs from the real comparison in TWO variables (rank AND
+//    range), so it is NOT a scaling null. Where there is power it must be rejected
+//    (D/F >= 3, ranks 0/1; rank 2 low-power).
+CollapseResult scale_collapse_null(const MurmCurve& A, const MurmCurve& B, int grid_points);
 
 }  // namespace at::murm

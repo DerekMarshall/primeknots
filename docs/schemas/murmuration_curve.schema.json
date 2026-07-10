@@ -69,8 +69,8 @@
       "items": {
         "type": "object",
         "required": ["rank", "rangeA", "family_A", "rangeB", "family_B", "grid_points",
-                     "rms", "floor_F", "ratio", "tolerance", "pass",
-                     "null_pairing", "null_ratio", "null_fails_tolerance", "low_power"],
+                     "rms", "floor_F", "ratio", "tolerance", "consistent_with_scaling",
+                     "reversal_null", "parity_null", "limited_power_vs_scaling"],
         "additionalProperties": false,
         "properties": {
           "rank": {"type": "integer", "minimum": 0},
@@ -83,11 +83,28 @@
           "floor_F": {"type": "number"},
           "ratio": {"type": "number"},
           "tolerance": {"type": "number"},
-          "pass": {"type": "boolean"},
-          "null_pairing": {"type": "string"},
-          "null_ratio": {"type": "number"},
-          "null_fails_tolerance": {"type": "boolean"},
-          "low_power": {"type": "boolean"}
+          "consistent_with_scaling": {"type": "boolean"},
+          "reversal_null": {
+            "type": "object",
+            "required": ["kind", "ratio", "rejects"],
+            "additionalProperties": false,
+            "properties": {
+              "kind": {"type": "string"},
+              "ratio": {"type": "number"},
+              "rejects": {"type": "boolean"}
+            }
+          },
+          "parity_null": {
+            "type": "object",
+            "required": ["kind", "ratio", "rejects"],
+            "additionalProperties": false,
+            "properties": {
+              "kind": {"type": "string"},
+              "ratio": {"type": "number"},
+              "rejects": {"type": "boolean"}
+            }
+          },
+          "limited_power_vs_scaling": {"type": "boolean"}
         }
       }
     }
