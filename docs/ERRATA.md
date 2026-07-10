@@ -31,6 +31,7 @@ quote), not an argument from authority.
 | 18 | infra/CI | The committed `viz/data/zeros.json` snapshot embedded Odlyzko-oracle-dependent fields (per-zero `delta`, `max_odlyzko_dev`, `oracle:"odlyzko"`) — not reproducible from the repo alone, since the Odlyzko table is gitignored (absent in CI) | coding agent (committed the snapshot at 52e14c3 with the oracle present locally) | **The freshness guard's first CI run** — `zeros.json .aggregate.max_odlyzko_dev: type float≠NoneType`; the guard fired the moment it reached CI. Fixed by committing the *oracle-less* `zeros.json` (the Odlyzko cross-check stays in the suite, `anchor_zeros_match_odlyzko`); the freshness check emits stage 5 `--odlyzko ""` |
 | 19 | M1 (murm.) | A **pre-declared statistical control was changed after the results were seen**: the M1 scale-collapse null was declared a within-curve reversal REQUIREd to fail, but when the reversal did not robustly fail it was swapped for an antiphase/parity null — a post-hoc change to a pre-registered design (the M-ladder's first entry) | coding agent (M1 Phase 2) | **External referee (M1 review), from prose** — flagged the swap as a deviation; the git record could **not** corroborate the timing either way (the reversal null was intra-session, never committed). Resolution: reversal reinstated as a *reported* scaling-power measurement, antiphase relabeled the parity non-degeneracy control, deviation postscript (m1-pinning §P4); durable fix — **any pre-declared design (tolerance/null/threshold) is committed before its run** (RESEARCH-M §7, ARCHITECTURE-M) |
 | 20 | M3 (murm.) | While hand-adjudicating the M3 trace formula at N=11 (P1 review), a wrong first-pass value of the Hurwitz class number **H(220)** was used | external referee (M3 pinning review) | **The P4 Hurwitz twin** — `mform::hurwitz(220)` (twinned direct-vs-decomposition + PARI `qfbhclassno`-verified) gave the correct value, exposing the slip before it entered a verified anchor cell. Corrected in-review; the N=11 cells (P∈{2,3,5} = −2,−1,1) now match M0's a_P exactly. The convention was solid before the terms consumed it — exactly P4's purpose |
+| 21 | infra/CI (murm.) | `std::max({…})` in `emit_dirichlet.cpp` (M2) used without `<algorithm>` — the same latent missing-include class as #15 — plus two-arg `std::max` in `zub_density.cpp`/`zub_empirical.cpp` (M3) riding on transitive includes. Latent since M2 because the **`murmurations` branch had accrued M0–M3 without ever running CI**: `.github/workflows/ci.yml` triggers `on: push` only for `[main]`, so branch pushes never invoked the second compiler | coding agent (M2/M3) | **The first CI run on the branch (`gh workflow run ci.yml --ref murmurations`)** — GCC/libstdc++ failed at `emit_dirichlet.cpp:30` where Apple clang's libc++ had masked it. The systemic finding (branch never CI'd) is the real lesson: a second-environment referee that only guards `main` leaves branch work unrefereed until a manual dispatch. Fixed the 3 files; process fix — run CI on the branch after material pushes (recorded in [[github-remote]]) |
 
 ## Tally by party — nobody was exempt
 
@@ -40,7 +41,7 @@ quote), not an argument from authority.
 | Spec author (RESEARCH.md) | #8 (p=2 unlicensed), #10 (ψ midpoint) |
 | Human reviewer (riders/oracles) | #2 (R1 misclassification), #5 (ordinary-vs-narrow oracle), #9 (equal-parity), #11 (signature-mix, void by Stickelberger) |
 | External (LLM) referee | #3 (fabricated `D_{L/K₁}=(a₂)` citation), #20 (own H(220) slip) — *the same party made the genuine R1 catch in #2, caught the agent's deck errors #16–#17 and the M1 null-swap #19, and had its own #20 caught by the P4 twin* |
-| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution), #18 (oracle-dependent snapshot), #19 (M1 post-hoc null swap) |
+| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution), #18 (oracle-dependent snapshot), #19 (M1 post-hoc null swap), #21 (missing headers again — branch un-CI'd) |
 
 ## Tally by mechanism — every catch was a computation or a citation
 
@@ -62,9 +63,15 @@ M-ladder's first entries: #19 — a *pre-declared control changed after the resu
 seen*, caught by the referee from prose, whose fix is now a process rule
 (commit-the-design-before-the-run; RESEARCH-M §7); and #20 — the referee's OWN H(220)
 slip, caught by the P4 Hurwitz twin before it reached a verified cell (the convention
-solid before the elliptic terms consumed it). Note: the explainer deck's
-"18 entries" claim is the Stage 0–6 ladder count; M-ladder rows (#19+) accrue here
-and the deck is extended to them when the M-stages are presented (deferred, tracked).
+solid before the elliptic terms consumed it); and #21 — a *recurrence* of #15's
+missing-`<algorithm>` class, latent since M2 because the `murmurations` branch had
+accrued M0–M3 without CI ever running (the workflow's `push` trigger is `main`-only),
+surfaced the moment the second compiler was invoked on the branch by manual dispatch.
+The lesson of #21 is not the include — it is that branch work went unrefereed by the
+second environment; the process fix is to dispatch CI on the branch after material
+pushes. Note: the explainer deck's "18 entries" claim is the Stage 0–6 ladder count;
+M-ladder rows (#19+) accrue here and the deck is extended to them when the M-stages
+are presented (deferred, tracked).
 
 ## The senior rule
 

@@ -1,5 +1,6 @@
 #include "murm/zub_density.h"
 
+#include <algorithm>
 #include <cmath>
 
 namespace at::murm {

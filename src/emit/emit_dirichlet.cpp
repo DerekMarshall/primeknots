@@ -1,5 +1,6 @@
 #include "emit/emit_dirichlet.h"
 
+#include <algorithm>
 #include <complex>
 #include <filesystem>
 #include <fstream>

@@ -1,5 +1,6 @@
 #include "murm/zub_empirical.h"
 
+#include <algorithm>
 #include <cmath>
 #include <stdexcept>
 
