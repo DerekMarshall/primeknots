@@ -44,7 +44,7 @@ def emit_args():
     cs = load(SNAP / "cs_partition.json")["params"]
     z = load(SNAP / "zeros.json")["params"]
     cache = str(ROOT / "data" / "cubic" / "s3_counts.txt")
-    return {
+    args = {
         "1": (["--bound", str(lm["prime_bound"]), "--graph-nodes", str(lg["graph_nodes"])],
               ["linking_matrix.json", "linking_graph.json"]),
         "2": (["--bound", str(bo["prime_bound"])], ["borromean.json"]),
@@ -60,6 +60,20 @@ def emit_args():
               ["zeros.json", "psi_reconstruction.json", "dyn_zeta.json"]),
         "6": (["--cubic-cache", cache], ["dw_s3.json"]),
     }
+    # M1 (murmurations): unlike stages 1-6, its snapshot is NOT reproducible from
+    # the repo alone — it is computed from the pinned Cremona ecdata (gitignored).
+    # So it is byte-checked only when the ecdata slices are present (locally); in
+    # CI it SKIPs, with the sha256-pinned manifest as the reproducibility anchor.
+    if (SNAP / "murmuration_curve.json").exists():
+        mp = load(SNAP / "murmuration_curve.json")["params"]
+        args["m1"] = (["--ecdata-dir", str(ROOT / "data" / "cremona"),
+                       "--primes", str(mp["n_primes"])], ["murmuration_curve.json"])
+    return args
+
+
+def ecdata_present():
+    ecdir = ROOT / "data" / "cremona"
+    return ecdir.is_dir() and any(p.name.startswith("allcurves.") for p in ecdir.iterdir())
 
 
 def norm(text):
@@ -108,6 +122,10 @@ def main():
     stages = emit_args()
     drift = []
     for stage, (args, files) in stages.items():
+        if stage == "m1" and not ecdata_present():
+            print("  SKIP m1 (murmuration_curve.json): ecdata absent — not repo-reproducible; "
+                  "re-fetch via oracle/fetch_ecdata.py at the pinned sha to byte-check it")
+            continue
         r = subprocess.run([str(AT), "emit", "--stage", stage, "--out", str(tmp)] + args,
                            capture_output=True, text=True)
         if r.returncode != 0:

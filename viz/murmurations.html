@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Murmurations of elliptic curves — Stage M1</title>
+  <link rel="stylesheet" href="common.css" />
+  <style>
+    .axis text { font: 10px ui-monospace, Menlo, monospace; fill: var(--muted); }
+    .axis line, .axis path { stroke: var(--border); }
+    .stat { font-family: ui-monospace, Menlo, monospace; font-size: 13px; margin: 3px 0; }
+    .stat b { color: var(--accent); } .ok { color: #0f9d58; font-weight: bold; } .warn { color: #d97706; font-weight: bold; }
+    .zero { stroke: var(--border); stroke-dasharray: 3 3; }
+    .series { fill: none; stroke-width: 1.5; }
+    table.collapse { border-collapse: collapse; font: 12px ui-monospace, Menlo, monospace; margin-top: 6px; }
+    table.collapse th, table.collapse td { border: 1px solid var(--border); padding: 3px 8px; text-align: right; }
+    table.collapse th { color: var(--muted); font-weight: normal; }
+    .preset { display:inline-block; margin-right:14px; }
+    .swatch { display:inline-block; width:11px; height:11px; border-radius:2px; vertical-align:middle; margin-right:5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Murmurations of elliptic curves</h1>
+    <p class="subtitle">Stage M1 — replicating He–Lee–Oliver–Pozdnyakov (arXiv:2204.10140), Figure 1. The mean of a<sub>p</sub> over rank-classed elliptic curves in a conductor window oscillates with p; even/odd rank oscillate in <em>antiphase</em>. a<sub>p</sub> is computed from scratch (good primes) and Atkin–Lehner-converted (bad primes); rank and conductor are oracle (Cremona ecdata). Renders emitted JSON only.</p>
+  </header>
+  <div id="err" class="error" hidden></div>
+  <main>
+    <section class="panel">
+      <h2>HLOP Figure 1 (top) — conductor <span id="lbl-top"></span>, ranks 0 &amp; 1</h2>
+      <div id="chart-top"></div>
+      <div class="legend">
+        <span><span class="swatch" style="background:#2563eb"></span>f₀ (rank 0)</span>
+        <span><span class="swatch" style="background:#dc2626"></span>f₁ (rank 1) — antiphase</span>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>HLOP Figure 1 (bottom) — conductor <span id="lbl-bot"></span>, ranks 0 &amp; 2</h2>
+      <div id="chart-bot"></div>
+      <div class="legend">
+        <span><span class="swatch" style="background:#2563eb"></span>f₀ (rank 0)</span>
+        <span><span class="swatch" style="background:#0f9d58"></span>f₂ (rank 2) — same parity, in phase</span>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Scale collapse in y = p/N, per rank (with antiphase null control)</h2>
+      <div id="collapse"></div>
+      <div class="stat" style="color:var(--muted)">Disjoint windows [2500,5000] vs [5000,10000] collapse onto one curve in y=p/N (ratio = RMS distance / sampling-noise floor F; pass if &lt; 3). The <b>null</b> pairs the wrong (antiphase) rank and must FAIL — a collapse that can't reject it measures nothing. Rank 2 is low power (small family). F assumes independent a<sub>p</sub> (anticonservative — the murmuration IS correlation); ratios are observed empirics, not proof.</div>
+    </section>
+    <section class="panel">
+      <h2>Family counts &amp; provenance</h2>
+      <div id="counts"></div>
+      <div class="params" id="params"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script>
+    const fail = (m) => { const e=document.getElementById("err"); e.hidden=false;
+      e.textContent="Could not load data: "+m+"  —  ./build/bin/at emit --stage m1 --out viz/data && python3 -m http.server -d viz"; };
+
+    fetch("data/murmuration_curve.json").then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
+      const top = d.panels.filter(p=>p.panel==="top");
+      const bot = d.panels.filter(p=>p.panel==="bottom");
+      document.getElementById("lbl-top").textContent = rangeLabel(top[0]);
+      document.getElementById("lbl-bot").textContent = rangeLabel(bot[0]);
+      drawMurm("#chart-top", top);
+      drawMurm("#chart-bot", bot);
+      drawCollapse(d.collapse);
+      drawCounts(d);
+    }).catch(e=>fail(e.message));
+
+    function rangeLabel(p){ return "["+p.N1+", "+p.N2+"]"; }
+
+    // Murmuration panel: avg (y) vs prime index n (x), one line per rank series.
+    function drawMurm(sel, series) {
+      const W=880, H=300, ml=52, mr=16, mt=12, mb=34;
+      const N = d3.max(series, s=>s.points.length);
+      const x = d3.scaleLinear().domain([0, N]).range([ml, W-mr]);
+      const yext = d3.extent(series.flatMap(s=>s.points.map(p=>p[2])));
+      const pad = (yext[1]-yext[0])*0.08 || 1;
+      const y = d3.scaleLinear().domain([yext[0]-pad, yext[1]+pad]).range([H-mb, mt]);
+      const svg = d3.select(sel).append("svg").attr("width",W).attr("height",H)
+        .attr("viewBox",`0 0 ${W} ${H}`).style("max-width","100%").style("height","auto");
+      // zero line
+      svg.append("line").attr("class","zero").attr("x1",ml).attr("x2",W-mr).attr("y1",y(0)).attr("y2",y(0));
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-mb})`).call(d3.axisBottom(x).ticks(10));
+      svg.append("g").attr("class","axis").attr("transform",`translate(${ml},0)`).call(d3.axisLeft(y).ticks(6));
+      svg.append("text").attr("class","axis").attr("x",(ml+W)/2).attr("y",H-3).attr("text-anchor","middle").text("prime index n (p = pₙ)");
+      svg.append("text").attr("class","axis").attr("transform",`translate(13,${H/2}) rotate(-90)`).attr("text-anchor","middle").text("mean aₚ over the family");
+      const line = d3.line().x((p,i)=>x(i)).y(p=>y(p[2]));
+      series.forEach(s=>{
+        svg.append("path").datum(s.points).attr("class","series").attr("stroke",s.color).attr("d",line);
+      });
+    }
+
+    function drawCollapse(rows) {
+      const fmt = d3.format(".3f");
+      let html = "<table class='collapse'><tr><th>rank</th><th>windows</th><th>|E_A|</th><th>|E_B|</th>"+
+        "<th>ratio D/F</th><th>collapse</th><th>null ratio</th><th>null</th></tr>";
+      rows.forEach(c=>{
+        const pass = c.pass ? "<span class='ok'>pass ✓</span>" : "<span class='warn'>no</span>";
+        const nul = c.null_fails_tolerance ? "<span class='ok'>fails ✓</span>"
+                    : (c.low_power ? "<span class='warn'>low power</span>" : "<span class='warn'>—</span>");
+        html += `<tr><td>${c.rank}</td><td>[${c.rangeA}] / [${c.rangeB}]</td><td>${c.family_A}</td><td>${c.family_B}</td>`+
+          `<td>${fmt(c.ratio)}</td><td>${pass}</td><td>${fmt(c.null_ratio)}</td><td>${nul}</td></tr>`;
+      });
+      html += "</table>";
+      document.getElementById("collapse").innerHTML = html;
+    }
+
+    function drawCounts(d) {
+      const fc = d.family_counts;
+      document.getElementById("counts").innerHTML =
+        `<div class="stat">family counts (isogeny classes), matching HLOP Example 1 exactly:</div>`+
+        `<div class="stat">E₀[7500,10000] = <b>${fc.E0_7500_10000}</b> · E₁[7500,10000] = <b>${fc.E1_7500_10000}</b> · `+
+        `E₀[5000,10000] = <b>${fc.E0_5000_10000}</b> · E₂[5000,10000] = <b>${fc.E2_5000_10000}</b></div>`;
+      document.getElementById("params").textContent =
+        `schema: ${d.schema}\ngenerated_by: ${d.generated_by}\nparams: ${JSON.stringify(d.params)}`;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "murmuration_curve/1",
+  "title": "murmuration_curve",
+  "description": "Stage M1: HLOP murmurations of elliptic curves. Per rank-classed conductor family, the unweighted arithmetic mean of a_p (eq. 1.1) at each prime, as points (p, y=p/N2, avg). The four HLOP Figure-1 panels, the REQUIRE-able published family counts, and per-rank scale-collapse results with antiphase null controls (riders R1/R2). a_p computed at good primes, Atkin-Lehner-converted at bad primes; rank and conductor are oracle (ecdata).",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "family_counts", "panels", "collapse"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "murmuration_curve/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["ordering", "statistic", "class", "source", "ecdata_pin", "n_primes", "y_axis", "provenance"],
+      "properties": {
+        "ordering": {"type": "string"},
+        "statistic": {"type": "string"},
+        "class": {"type": "string"},
+        "source": {"type": "string"},
+        "ecdata_pin": {"type": "string"},
+        "n_primes": {"type": "integer", "minimum": 1},
+        "y_axis": {"type": "string"},
+        "provenance": {"type": "string"}
+      }
+    },
+    "family_counts": {
+      "type": "object",
+      "required": ["E0_7500_10000", "E1_7500_10000", "E0_5000_10000", "E2_5000_10000"],
+      "additionalProperties": false,
+      "properties": {
+        "E0_7500_10000": {"type": "integer", "minimum": 0},
+        "E1_7500_10000": {"type": "integer", "minimum": 0},
+        "E0_5000_10000": {"type": "integer", "minimum": 0},
+        "E2_5000_10000": {"type": "integer", "minimum": 0}
+      }
+    },
+    "panels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["panel", "color", "rank", "N1", "N2", "family_size", "points"],
+        "additionalProperties": false,
+        "properties": {
+          "panel": {"type": "string"},
+          "color": {"type": "string"},
+          "rank": {"type": "integer", "minimum": 0},
+          "N1": {"type": "integer", "minimum": 1},
+          "N2": {"type": "integer", "minimum": 1},
+          "family_size": {"type": "integer", "minimum": 0},
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "prefixItems": [
+                {"type": "integer", "minimum": 2},
+                {"type": "number"},
+                {"type": "number"}
+              ],
+              "items": false,
+              "minItems": 3,
+              "maxItems": 3
+            }
+          }
+        }
+      }
+    },
+    "collapse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rank", "rangeA", "family_A", "rangeB", "family_B", "grid_points",
+                     "rms", "floor_F", "ratio", "tolerance", "pass",
+                     "null_pairing", "null_ratio", "null_fails_tolerance", "low_power"],
+        "additionalProperties": false,
+        "properties": {
+          "rank": {"type": "integer", "minimum": 0},
+          "rangeA": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2},
+          "family_A": {"type": "integer", "minimum": 0},
+          "rangeB": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2},
+          "family_B": {"type": "integer", "minimum": 0},
+          "grid_points": {"type": "integer", "minimum": 0},
+          "rms": {"type": "number"},
+          "floor_F": {"type": "number"},
+          "ratio": {"type": "number"},
+          "tolerance": {"type": "number"},
+          "pass": {"type": "boolean"},
+          "null_pairing": {"type": "string"},
+          "null_ratio": {"type": "number"},
+          "null_fails_tolerance": {"type": "boolean"},
+          "low_power": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

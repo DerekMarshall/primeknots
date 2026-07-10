@@ -79,6 +79,20 @@ def main() -> int:
             print(f"FAIL: {fname} violates {sname}: {e.message} (at {list(e.path)})")
             failures += 1
 
+    # M1 (murmurations): its fresh emit needs the gitignored ecdata, so schema-check
+    # the COMMITTED snapshot (present in CI) rather than re-emitting.
+    m1_file = Path(__file__).resolve().parent.parent / "viz/data/murmuration_curve.json"
+    if m1_file.exists():
+        m1_schema = schema_dir / "murmuration_curve.schema.json"
+        try:
+            jsonschema.validate(instance=json.loads(m1_file.read_text()),
+                                schema=json.loads(m1_schema.read_text()))
+            print("OK: (committed) murmuration_curve.json valid against murmuration_curve.schema.json")
+            checked += 1
+        except jsonschema.ValidationError as e:
+            print(f"FAIL: murmuration_curve.json violates schema: {e.message} (at {list(e.path)})")
+            failures += 1
+
     # Cross-field invariants the schema can't express.
     lm = json.loads((out / "linking_matrix.json").read_text())
     if not (lm["n"] == len(lm["primes"]) == len(lm["rows_base64"])):

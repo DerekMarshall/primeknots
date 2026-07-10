@@ -323,6 +323,26 @@ add_test(NAME m0.oracle_clean_skip_when_gp_absent
            -P ${CMAKE_CURRENT_SOURCE_DIR}/oracle_skip_check.cmake)
 set_tests_properties(m0.oracle_clean_skip_when_gp_absent PROPERTIES LABELS "m0;oracle")
 
+# --- M1 (murmurations: HLOP replication) ------------------------------------
+# Reads the pinned ecdata slices (gitignored); the tests SKIP (77) when the data
+# is absent, e.g. in CI — the dataset is the referee (like an oracle).
+add_executable(verify_m1
+  verify_main.cpp
+  m1/murmuration_tests.cpp)
+target_include_directories(verify_m1 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_m1 PRIVATE at_murm)
+target_compile_definitions(verify_m1 PRIVATE
+  AT_ECDATA_DIR="${CMAKE_SOURCE_DIR}/data/cremona")
+
+foreach(case anchor_family_counts theorem_scale_collapse theorem_antiphase)
+  add_test(NAME m1.${case} COMMAND verify_m1 --test-case=${case})
+  set_tests_properties(m1.${case} PROPERTIES
+    LABELS "m1"
+    SKIP_RETURN_CODE 77)
+endforeach()
+
 # --- deck: the explainer deck is an emitted artifact, validated like one -------
 # Every data-claim="ID" in docs/deck/index.html must have a CLAIMS.md row.
 if(AT_VALIDATE_PY)

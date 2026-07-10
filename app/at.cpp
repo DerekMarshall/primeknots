@@ -15,6 +15,7 @@
 #include "emit/emit_cs.h"
 #include "emit/emit_dw.h"
 #include "emit/emit_linking.h"
+#include "emit/emit_murmuration.h"
 #include "emit/emit_zeta.h"
 
 #ifndef AT_GIT_FALLBACK
@@ -119,8 +120,20 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "at emit: stage 6 -> %s/dw_s3.json\n", out.c_str());
             return 0;
         }
+        if (stage == "m1") {
+            // Murmurations M1: --ecdata-dir (pinned ecdata slices), --primes (prime
+            // count for the panels + collapse curves; default 300 for the snapshot).
+            const char* ecdata = opt(argc, argv, "--ecdata-dir", "data/cremona");
+            std::size_t nprimes = static_cast<std::size_t>(
+                std::strtoull(opt(argc, argv, "--primes", "300"), nullptr, 10));
+            at::emit::emit_m1(out, ecdata, nprimes, resolve_generated_by());
+            std::fprintf(stderr,
+                "at emit: stage m1 -> %s/murmuration_curve.json (n_primes=%zu)\n",
+                out.c_str(), nprimes);
+            return 0;
+        }
         std::fprintf(stderr,
-            "at emit: no emitter for stage '%s' (stages 1-6 are built)\n",
+            "at emit: no emitter for stage '%s' (stages 1-6, m1 are built)\n",
             stage.c_str());
         return 2;
     }

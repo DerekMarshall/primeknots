@@ -20,9 +20,18 @@ add_library(at_ell STATIC
   ell/curve.cpp
   ell/ap.cpp
   ell/ap_fast.cpp
-  ell/ap_cache.cpp)
+  ell/ap_cache.cpp
+  ell/ecdata.cpp)
 target_include_directories(at_ell PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_ell PUBLIC at_symbols Threads::Threads)
+
+# Stage M1 (murmurations) — family definition + per-prime averaging.
+# murm -> ell (ARCHITECTURE-M §1). No ordering/density concepts beyond HLOP's
+# conductor family.
+add_library(at_murm STATIC
+  murm/murmuration.cpp)
+target_include_directories(at_murm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(at_murm PUBLIC at_ell)
 
 # a_p cache generator hash (ARCHITECTURE-M §4): sha256 of the fast-path generator
 # source. A change to ell/ap_fast.cpp changes this, so the loader refuses caches
@@ -82,6 +91,7 @@ add_library(at_emit STATIC
   emit/emit_classgroups.cpp
   emit/emit_cs.cpp
   emit/emit_zeta.cpp
-  emit/emit_dw.cpp)
+  emit/emit_dw.cpp
+  emit/emit_murmuration.cpp)
 target_include_directories(at_emit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(at_emit PUBLIC at_linking at_redei at_classgroup at_cs at_zeta at_dw)
+target_link_libraries(at_emit PUBLIC at_linking at_redei at_classgroup at_cs at_zeta at_dw at_murm)
