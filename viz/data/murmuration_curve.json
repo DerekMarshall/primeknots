@@ -1,6 +1,6 @@
 {
   "schema": "murmuration_curve/1",
-  "generated_by": "f1a2151-dirty",
+  "generated_by": "81501a0",
   "params": {"ordering": "conductor", "statistic": "unweighted arithmetic mean of a_p (HLOP eq. 1.1)", "class": "rank", "source": "HLOP Figure 1 (arXiv:2204.10140)", "ecdata_pin": "2026-04-22 / 25cec5ec", "n_primes": 300, "y_axis": "p / N2", "provenance": "a_p computed at good primes + Atkin-Lehner-converted at bad primes (oracle sign, m0-pinning §3); rank and conductor are oracle (ecdata)"},
   "family_counts": {"E0_7500_10000": 4328, "E1_7500_10000": 5194, "E0_5000_10000": 8536, "E2_5000_10000": 1380},
   "panels": [
