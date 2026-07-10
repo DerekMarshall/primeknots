@@ -21,8 +21,14 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake g++ ninja-build python3-pip
-          python3 -m pip install --user jsonschema   # lets validate-json run (not an oracle)
+          sudo apt-get install -y cmake g++ ninja-build python3-venv
+          # Modern jsonschema in a gitignored .venv (matches the local setup, and is
+          # PEP 668-safe: `pip install --user` is blocked on ubuntu 24.04, and the apt
+          # `python3-jsonschema` is too old for draft-2020-12 — it raised a
+          # RefResolutionError, ERRATA #23). CMake's AT_VALIDATE_PY prefers .venv, so
+          # validate-json + freshness run with this interpreter.
+          python3 -m venv .venv
+          .venv/bin/pip install --quiet --upgrade jsonschema
 
       - name: Configure
         run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
