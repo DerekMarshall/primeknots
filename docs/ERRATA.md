@@ -33,6 +33,8 @@ quote), not an argument from authority.
 | 20 | M3 (murm.) | While hand-adjudicating the M3 trace formula at N=11 (P1 review), a wrong first-pass value of the Hurwitz class number **H(220)** was used | external referee (M3 pinning review) | **The P4 Hurwitz twin** — `mform::hurwitz(220)` (twinned direct-vs-decomposition + PARI `qfbhclassno`-verified) gave the correct value, exposing the slip before it entered a verified anchor cell. Corrected in-review; the N=11 cells (P∈{2,3,5} = −2,−1,1) now match M0's a_P exactly. The convention was solid before the terms consumed it — exactly P4's purpose |
 | 21 | infra/CI (murm.) | `std::max({…})` (initializer-list form) in `emit_dirichlet.cpp` **and** `verify/m2/dirichlet_tests.cpp` (M2) used without `<algorithm>` — the same latent missing-include class as #15 — plus two-arg `std::max` in `zub_density.cpp`/`zub_empirical.cpp` (M3) riding on transitive includes. Latent since M2 because the **`murmurations` branch had accrued M0–M3 without ever running CI**: `.github/workflows/ci.yml` triggers `on: push` only for `[main]`, so branch pushes never invoked the second compiler | coding agent (M2/M3) | **The first CI runs on the branch (`gh workflow run ci.yml --ref murmurations`)** — GCC/libstdc++ failed where Apple clang's libc++ had masked it; the parallel (`-j`) build stops at the first error, so the offenders surfaced over two passes (`emit_dirichlet.cpp:30`, then `dirichlet_tests.cpp:116` once the first was fixed). The systemic finding (branch never CI'd) is the real lesson: a second-environment referee that only guards `main` leaves branch work unrefereed until a manual dispatch. Fixed all four; process fix — dispatch CI on the branch (and read to a *clean* build, not just the first error) after material pushes (recorded in [[github-remote]]) |
 
+| 22 | infra/CI (murm.) | The committed **M2/M3 snapshots were not byte-portable across compilers**, so the freshness contract (§5, "committed == `at emit`") would fail on CI's GCC even after the build compiled. Two causes: GCC's default FP contraction (fma fusion) diverges from clang's by a last-ULP in `zub_density`'s `α·Σ… + β√y − γy` (M3 `density[117]`), and machine-epsilon cancellation noise in the parity-zero Gauss-sum components `even_im`/`odd_re` (M2), whose residual is not bit-portable | coding agent (M2/M3 emitters) | **A local GCC build (`g++-16`) driving the freshness comparison** — reproduced the drift the branch had never faced, and localized it: M3 uses no transcendentals, so `-ffp-contract=off` makes it *provably* bit-portable (IEEE `sqrt` + rationals); applied to exactly the M2/M3 TUs (M1 excluded — its freshness SKIPs in CI; stages 1–6 untouched, already stable), plus a sub-1e-12 → 0 clamp for the parity-zero components. M2 retains a residual libm (`sin/cos`) cross-implementation risk that only the ubuntu CI can referee |
+
 ## Tally by party — nobody was exempt
 
 | Party | Caught in |
@@ -41,7 +43,7 @@ quote), not an argument from authority.
 | Spec author (RESEARCH.md) | #8 (p=2 unlicensed), #10 (ψ midpoint) |
 | Human reviewer (riders/oracles) | #2 (R1 misclassification), #5 (ordinary-vs-narrow oracle), #9 (equal-parity), #11 (signature-mix, void by Stickelberger) |
 | External (LLM) referee | #3 (fabricated `D_{L/K₁}=(a₂)` citation), #20 (own H(220) slip) — *the same party made the genuine R1 catch in #2, caught the agent's deck errors #16–#17 and the M1 null-swap #19, and had its own #20 caught by the P4 twin* |
-| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution), #18 (oracle-dependent snapshot), #19 (M1 post-hoc null swap), #21 (missing headers again — branch un-CI'd) |
+| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution), #18 (oracle-dependent snapshot), #19 (M1 post-hoc null swap), #21 (missing headers again — branch un-CI'd), #22 (non-byte-portable snapshots) |
 
 ## Tally by mechanism — every catch was a computation or a citation
 
@@ -51,8 +53,9 @@ exhaustive sweep (1) · source-hypothesis reading (1) · anchor witness (2) ·
 Stickelberger's theorem (1) · exact-rational identity (1) · git reachability
 enumeration (1) · twin disagreement (1) · second-compiler build (1) · external
 referee review (deck + M1-deviation, from prose / citation trace) (3) · CI freshness
-guard (1) · twin class-number computation (P4 Hurwitz, #20) (1). **Arguments from
-authority: 0.**
+guard (1) · twin class-number computation (P4 Hurwitz, #20) (1) · second-compiler
+build (GCC — #15 build, #21 build, #22 freshness byte-identity) (via a local GCC
+install once the branch's CI gap was found). **Arguments from authority: 0.**
 
 Entries #16–#20 are catches of this project's own artifacts and process: two deck
 defects (a coverage conflation and a mis-attribution, both caught by the referee —
@@ -69,7 +72,12 @@ accrued M0–M3 without CI ever running (the workflow's `push` trigger is `main`
 surfaced the moment the second compiler was invoked on the branch by manual dispatch.
 The lesson of #21 is not the include — it is that branch work went unrefereed by the
 second environment; the process fix is to dispatch CI on the branch after material
-pushes. Note: the explainer deck's "18 entries" claim is the Stage 0–6 ladder count;
+pushes. #22 is the deeper half of the same gap: once the branch build passed, the
+freshness guard would still have failed because the M2/M3 float snapshots were not
+byte-portable across compilers (fma contraction + machine-epsilon parity noise) —
+found by installing GCC locally and driving freshness with it, then fixed at the root
+(`-ffp-contract=off` on the M2/M3 TUs; M3 thereby *provably* portable). Note: the
+explainer deck's "18 entries" claim is the Stage 0–6 ladder count;
 M-ladder rows (#19+) accrue here and the deck is extended to them when the M-stages
 are presented (deferred, tracked).
 

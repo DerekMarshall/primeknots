@@ -113,3 +113,22 @@ add_library(at_emit STATIC
   emit/emit_zubrilina.cpp)
 target_include_directories(at_emit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_emit PUBLIC at_linking at_redei at_classgroup at_cs at_zeta at_dw at_murm)
+
+# Cross-compiler float determinism for the committed M-stage snapshots (ARCHITECTURE
+# §5 freshness must hold on CI's GCC, not just local clang). GCC's default FP
+# contraction (fma fusion) diverges from clang's in the last ULP, breaking the
+# byte-identity freshness relies on. Disable contraction for EXACTLY the translation
+# units whose float output is committed and CI-byte-checked — M2 (Dirichlet) and M3
+# (Zubrilina). M3 uses no transcendentals, so with contraction off it is *provably*
+# bit-portable (IEEE sqrt + rational ops). M1 (murmuration.cpp) is deliberately
+# excluded: its snapshot is ecdata-derived and its freshness SKIPs in CI, so it never
+# faces the cross-compiler byte check. Stages 1–6 emitters are untouched (already
+# byte-stable across compilers — verified with a local GCC build).
+set_source_files_properties(
+  symbols/dirichlet.cpp
+  murm/dirichlet_murmuration.cpp
+  murm/zub_density.cpp
+  murm/zub_empirical.cpp
+  emit/emit_dirichlet.cpp
+  emit/emit_zubrilina.cpp
+  PROPERTIES COMPILE_OPTIONS "-ffp-contract=off")

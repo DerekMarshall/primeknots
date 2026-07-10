@@ -17,6 +17,12 @@ using namespace at::murm;
 
 namespace {
 std::string num(double x) {
+    // Parity forces even_im and odd_re to be exactly 0 (even χ → real Gauss sum, odd
+    // χ → imaginary); the computed values are machine-epsilon cancellation noise whose
+    // residual is not bit-portable across libm/compilers. Snap that sub-1e-12 noise to
+    // 0 so the committed snapshot is byte-identical on CI (freshness). Nothing
+    // legitimate in the M2 statistic/densities is that small (all are O(1e-2…1)).
+    if (x < 1e-12 && x > -1e-12) x = 0.0;
     std::ostringstream o;
     o << std::setprecision(12) << x;
     return o.str();
