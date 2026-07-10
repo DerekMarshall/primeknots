@@ -170,8 +170,15 @@ std::vector<EcCurve> load_ecdata_raw(const std::string& dir, u64 N1, u64 N2) {
 void write_extract(const std::string& path, const std::vector<EcCurve>& curves,
                    u64 lo, u64 hi) {
     std::ofstream f(path);
-    f << "# m1_extract v1 — derived from Cremona ecdata (Artistic License 2.0), "
-         "release 2026-04-22 / 25cec5ec; sha256 pinned in data/cremona/MANIFEST.json\n";
+    f << "# m1_extract v1 — DERIVED DATA (a Modified Version), not an original work.\n";
+    f << "# Source:  Cremona ecdata, https://github.com/JohnCremona/ecdata\n";
+    f << "#          release tag 2026-04-22, commit 25cec5ecfec8b9f016eb1631ac633194c2bed39f\n";
+    f << "# License: Artistic License 2.0 (ecdata's LICENSE) — redistribution of Modified\n";
+    f << "#          Versions is permitted with this notice retained. (c) J. Cremona and\n";
+    f << "#          contributors. Raw-slice sha256s pinned in data/cremona/MANIFEST.json.\n";
+    f << "# Derived by: `at ecdata-extract --lo " << lo << " --hi " << hi << "` (this repo).\n";
+    f << "# Contents: one primitive-isogeny-class representative per line — the rows Stage\n";
+    f << "#          M1 consumes; good-prime a_p is COMPUTED from the model, not stored.\n";
     f << "# range " << lo << " " << hi << "\n";
     f << "# LABEL N a1 a2 a3 a4 a6 RANK BAD(p:w,...|-)\n";
     for (const EcCurve& c : curves) {

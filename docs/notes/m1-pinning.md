@@ -88,8 +88,10 @@ primes, p₁ = 2 … p₁₀₀₀ = 7919** (indices 1 ≤ n ≤ 1000).
   — restoring reproducible-from-repo for CI (freshness/validate) at trivial size,
   instead of the SKIP-when-absent path. Provenance chain:
   - `data/cremona/m1_extract.txt` — git-tracked, sha256
-    `9c465d6b68fe438b90d12bafc458131adda2b85d086649588407b50ccf2a578e`, 30,366
-    isogeny classes, covered range [2500, 10000].
+    `6cce329632e095e723bb6a89fd3a4b3bfb50e3d264c05918499bb9f8df85bf97`, 30,366
+    isogeny classes, covered range [2500, 10000]. Carries a full license header
+    (source, release commit, generating command, Artistic-2.0 notice, derived
+    marker) — the manifest satisfies us, the header satisfies the license (R2).
   - derived by `at ecdata-extract --lo 2500 --hi 10000` from the raw slices
     `allcurves.00000-09999`/`.10000-19999` + `aplist.*` at ecdata release
     `2026-04-22 / 25cec5ec` (the sha256s pinned in `data/cremona/MANIFEST.json`).

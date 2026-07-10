@@ -29,6 +29,7 @@ quote), not an argument from authority.
 | 16 | deck | The Stage-0 deck slide claimed "verified exhaustively over all odd primes < 10⁷" — conflating three coverages: the reciprocity check was exhaustive only to 3×10⁴ (5.26M pairs); the 10⁷ bound applied only to the supplements and the twin | coding agent (deck author) | **External referee (deck review)** — the `deck` ctest passed because it verifies row *existence* + *numbers present*, and every number was real and in the ledger; it does not verify that a bound is *attributed* to the right object. Fixed by disaggregating slide + row; checker gap documented (CLAIMS.md header) |
 | 17 | deck | The Borromean slide credited `[13,61,937]=−1` to "Stevenhagen's worked value"; it is the standard Borromean triple of Morishita [M12] ([S22] is the *normalization* source, not the anchor's) | coding agent (deck author) | **External referee (deck review) → citation trace** — RESEARCH.md §10 ("the standard Borromean triple [M12]") and stage2-pinning line 181. Attribution by vibe, corrected against the source |
 | 18 | infra/CI | The committed `viz/data/zeros.json` snapshot embedded Odlyzko-oracle-dependent fields (per-zero `delta`, `max_odlyzko_dev`, `oracle:"odlyzko"`) — not reproducible from the repo alone, since the Odlyzko table is gitignored (absent in CI) | coding agent (committed the snapshot at 52e14c3 with the oracle present locally) | **The freshness guard's first CI run** — `zeros.json .aggregate.max_odlyzko_dev: type float≠NoneType`; the guard fired the moment it reached CI. Fixed by committing the *oracle-less* `zeros.json` (the Odlyzko cross-check stays in the suite, `anchor_zeros_match_odlyzko`); the freshness check emits stage 5 `--odlyzko ""` |
+| 19 | M1 (murm.) | A **pre-declared statistical control was changed after the results were seen**: the M1 scale-collapse null was declared a within-curve reversal REQUIREd to fail, but when the reversal did not robustly fail it was swapped for an antiphase/parity null — a post-hoc change to a pre-registered design (the M-ladder's first entry) | coding agent (M1 Phase 2) | **External referee (M1 review), from prose** — flagged the swap as a deviation; the git record could **not** corroborate the timing either way (the reversal null was intra-session, never committed). Resolution: reversal reinstated as a *reported* scaling-power measurement, antiphase relabeled the parity non-degeneracy control, deviation postscript (m1-pinning §P4); durable fix — **any pre-declared design (tolerance/null/threshold) is committed before its run** (RESEARCH-M §7, ARCHITECTURE-M) |
 
 ## Tally by party — nobody was exempt
 
@@ -37,8 +38,8 @@ quote), not an argument from authority.
 | Roadmap generator | #1 (O_x scope) |
 | Spec author (RESEARCH.md) | #8 (p=2 unlicensed), #10 (ψ midpoint) |
 | Human reviewer (riders/oracles) | #2 (R1 misclassification), #5 (ordinary-vs-narrow oracle), #9 (equal-parity), #11 (signature-mix, void by Stickelberger) |
-| External (LLM) referee | #3 (fabricated `D_{L/K₁}=(a₂)` citation) — *the same party made the genuine R1 catch in #2, and caught the agent's deck errors #16–#17* |
-| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution), #18 (oracle-dependent snapshot) |
+| External (LLM) referee | #3 (fabricated `D_{L/K₁}=(a₂)` citation) — *the same party made the genuine R1 catch in #2, caught the agent's deck errors #16–#17, and the M1 null-swap deviation #19* |
+| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution), #18 (oracle-dependent snapshot), #19 (M1 post-hoc null swap) |
 
 ## Tally by mechanism — every catch was a computation or a citation
 
@@ -47,14 +48,19 @@ coherence check (1) · CFT re-derivation (1) · verbatim quote (1) · parity arg
 exhaustive sweep (1) · source-hypothesis reading (1) · anchor witness (2) ·
 Stickelberger's theorem (1) · exact-rational identity (1) · git reachability
 enumeration (1) · twin disagreement (1) · second-compiler build (1) · external
-referee review + citation trace (2) · CI freshness guard (1). **Arguments from
-authority: 0.**
+referee review (deck + M1-deviation, from prose / citation trace) (3) · CI freshness
+guard (1). **Arguments from authority: 0.**
 
-Entries #16–#18 are catches of this project's own artifacts: two deck defects (a
-coverage conflation and a mis-attribution, both caught by the referee — one exactly
-where the machine checker is blind) and a published-data snapshot that embedded an
-oracle dependency it could not reproduce (caught by the freshness guard on its first
-CI run, a second environment — the same mechanism as #15).
+Entries #16–#19 are catches of this project's own artifacts and process: two deck
+defects (a coverage conflation and a mis-attribution, both caught by the referee —
+one exactly where the machine checker is blind), a published-data snapshot that
+embedded an oracle dependency it could not reproduce (caught by the freshness guard
+on its first CI run, a second environment — the same mechanism as #15), and the
+M-ladder's first entry, #19 — a *pre-declared control changed after the results were
+seen*, caught by the referee from prose, whose fix is now a process rule
+(commit-the-design-before-the-run; RESEARCH-M §7). Note: the explainer deck's
+"18 entries" claim is the Stage 0–6 ladder count; M-ladder rows (#19+) accrue here
+and the deck is extended to them when the M-stages are presented (deferred, tracked).
 
 ## The senior rule
 

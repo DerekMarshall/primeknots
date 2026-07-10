@@ -1,4 +1,12 @@
-# m1_extract v1 — derived from Cremona ecdata (Artistic License 2.0), release 2026-04-22 / 25cec5ec; sha256 pinned in data/cremona/MANIFEST.json
+# m1_extract v1 — DERIVED DATA (a Modified Version), not an original work.
+# Source:  Cremona ecdata, https://github.com/JohnCremona/ecdata
+#          release tag 2026-04-22, commit 25cec5ecfec8b9f016eb1631ac633194c2bed39f
+# License: Artistic License 2.0 (ecdata's LICENSE) — redistribution of Modified
+#          Versions is permitted with this notice retained. (c) J. Cremona and
+#          contributors. Raw-slice sha256s pinned in data/cremona/MANIFEST.json.
+# Derived by: `at ecdata-extract --lo 2500 --hi 10000` (this repo).
+# Contents: one primitive-isogeny-class representative per line — the rows Stage
+#          M1 consumes; good-prime a_p is COMPUTED from the model, not stored.
 # range 2500 10000
 # LABEL N a1 a2 a3 a4 a6 RANK BAD(p:w,...|-)
 2502a 2502 1 -1 0 -366 980 0 2:1,3:1,139:-1
