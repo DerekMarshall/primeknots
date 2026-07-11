@@ -17,6 +17,38 @@ The mathematical spec lives in `docs/RESEARCH.md`. The engineering spec lives in
 7. **Scope, stated up front.** (= RESEARCH-M §0 rule 7.) The M-stages M0–M4 replicate known mathematics (2022–2025); research mode (M5) produces at most a clean, pre-registered empirical fact. **No proofs are claimed anywhere in this project** — "verified" means numerically, over a range, twinned/refereed. The permanent repo name `primeknots` satisfies this rule (an origin homage, not a scope claim; m0-pinning §282).
 8. **No numerical constant is ever typed from memory.** Every floating constant is either **(a)** the true mathematical value transcribed from a *cited source* to ≥ 25 significant digits, source in a comment, letting the compiler round; or **(b)** *generated* — a checked-in script (`oracle/gen_constants.py`, PARI/GP or MPFR-class precision ≥ 50 digits) emits `src/core/constants.h`, and a ctest target (`constants.regen_matches`) regenerates and diffs it (the freshness pattern, applied to constants). **Derived pairs (hi/lo argument-reduction splits) are ALWAYS generated, never typed:** the split is computed at high precision (`hi = round-to-double(x)`, `lo = round-to-double(x − hi)`) and the generator asserts the defining identities (`hi == double(x)`, `hi + lo` reconstructs the source value to ≫ double precision). The reason (ERRATA #25, the CONSTANTS INCIDENT): a constant typed from memory is **invisible to twins** — twins share the constant, so a wrong value corrupts a computation and its twin identically; only an external referee or a high-precision generator can catch it.
 
+## Rule index (canonical)
+
+Two numbered rule-lists exist and their numbers collide. **Citation convention:** a
+bare "rule N" (in pinning notes, code comments, commit messages) means the **CLAUDE.md
+non-negotiable N** below; the epistemic rules of RESEARCH(.md/-M) §0 are cited
+**qualified** ("RESEARCH-M §0 rule N") or in-document. Rule 7 is the one number the two
+lists share (both = Scope). The deck's "Rule 1" is CLAUDE.md #1.
+
+| Cite as | File | One-line statement |
+|---|---|---|
+| rule 1 | CLAUDE.md | Never fit conventions to expected answers (the prime directive) |
+| rule 2 | CLAUDE.md | Dual implementation before trust (two independent impls, or an oracle) |
+| rule 3 | CLAUDE.md | Oracles referee, never replace; an absent oracle SKIPs visibly |
+| rule 4 | CLAUDE.md | Stage gates: build only on green; stage N depends only on stages ≤ N |
+| rule 5 | CLAUDE.md | Flag, don't smooth — record discrepancies in docs/notes, don't fit |
+| rule 6 | CLAUDE.md | No fabricated citations (unverified pointers marked UNVERIFIED) |
+| rule 7 | CLAUDE.md | Scope, stated up front — no proofs claimed (≡ RESEARCH-M §0 rule 7) |
+| rule 8 | CLAUDE.md | No numerical constant ever typed from memory (transcribe-cited or generate) |
+| RESEARCH.md §0 rule 1 | RESEARCH.md | Map, not source — the cited paper is normative |
+| RESEARCH.md §0 rule 2 | RESEARCH.md | "Provable" = numerically verified (twins/oracle), not formal proof |
+| RESEARCH.md §0 rule 3 | RESEARCH.md | [CONJECTURAL] = research-open; compute *around* it, not the object |
+| RESEARCH.md §0 rule 4 | RESEARCH.md | [PIN TO SOURCE] = don't improvise fiddly conventions |
+| RESEARCH-M §0 rule 5 | RESEARCH-M | Two modes (replication M0–M4 / research M5), never blurred |
+| RESEARCH-M §0 rule 6 | RESEARCH-M | Provenance labeling: every column `computed \| oracle` |
+| RESEARCH-M §0 rule 7 | RESEARCH-M | Scope, stated up front (≡ CLAUDE.md rule 7) |
+
+Collisions to be aware of (same number, different rule): 1, 2, 3, 4, 5, 6 all differ
+between the two lists; 7 is aligned; 8 is CLAUDE.md-only. Audit (M4-completion session):
+all existing bare citations in docs/notes already follow the convention (e.g.
+m0-pinning §221 "rule-6" = CLAUDE.md #6, no-fabricated-citations); RESEARCH-M §0
+rule 6 (provenance) is always cited qualified.
+
 ## Build, test, run
 
 ```bash
