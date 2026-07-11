@@ -10,6 +10,9 @@
 #include <cstring>
 #include <string>
 
+#include <sstream>
+#include <vector>
+
 #include "emit/emit_borromean.h"
 #include "emit/emit_classgroups.h"
 #include "emit/emit_cs.h"
@@ -20,10 +23,15 @@
 #include "emit/emit_murmuration.h"
 #include "emit/emit_zeta.h"
 #include "emit/emit_zubrilina.h"
+#include "murm/height_family.h"
+#include "murm/ne_cache.h"
+#include "oracle/pari.h"
 
 #ifndef AT_GIT_FALLBACK
 #define AT_GIT_FALLBACK "unknown"
 #endif
+
+using at::core::i64;
 
 namespace {
 // Provenance resolved at emit time: current `git describe`, so generated_by
@@ -165,6 +173,66 @@ int main(int argc, char** argv) {
         at::ell::write_extract(outf, curves, lo, hi);
         std::fprintf(stderr, "at ecdata-extract: %zu classes [%llu,%llu] -> %s\n",
                      curves.size(), lo, hi, outf.c_str());
+        return 0;
+    }
+
+    if (std::strcmp(argv[1], "ne-cache") == 0) {
+        // Generate the committed N/ε cache for the height family {H(E) ≤ X}
+        // (m4-pinning §P4/C3). The ONE place the CLI calls PARI: N and ε are
+        // oracle-provenance INPUT data. Run once per X; the cache is committed and
+        // the statistic/emit read it (repo-reproducible without live PARI).
+        i64 X = static_cast<i64>(std::strtoull(opt(argc, argv, "--X", "10000"), nullptr, 10));
+        std::string outf = opt(argc, argv, "--out", "data/m4/ne_cache.txt");
+
+        std::optional<std::string> gp = oracle::find_gp();
+        if (!gp) {
+            std::fprintf(stderr, "at ne-cache: PARI/GP `gp` not found on PATH (required to fill N/ε).\n");
+            return 3;
+        }
+        std::vector<at::murm::HeightCurve> fam = at::murm::height_family(X);
+        std::fprintf(stderr, "at ne-cache: X=%lld, %zu curves; querying PARI for N, ε...\n",
+                     static_cast<long long>(X), fam.size());
+
+        // Batch: one line per curve, `N eps`. ellglobalred[1] is the conductor;
+        // ellrootno is the global root number (the ε in the statistic's weighting).
+        std::ostringstream script;
+        script << "print(version);\n";
+        for (const at::murm::HeightCurve& e : fam)
+            script << "E=ellinit([0,0,0," << e.A << "," << e.B
+                   << "]);print(ellglobalred(E)[1],\" \",ellrootno(E))\n";
+        const std::string out = oracle::run_gp(*gp, script.str());
+
+        std::istringstream lines(out);
+        std::string vline;
+        std::getline(lines, vline);   // the version(...) vector, kept as provenance
+
+        std::vector<at::murm::NeRow> rows;
+        rows.reserve(fam.size());
+        std::string line;
+        for (const at::murm::HeightCurve& e : fam) {
+            if (!std::getline(lines, line)) {
+                std::fprintf(stderr, "at ne-cache: PARI output ended early (curve A=%lld B=%lld)\n",
+                             static_cast<long long>(e.A), static_cast<long long>(e.B));
+                return 4;
+            }
+            long long N = 0, eps = 0;
+            std::istringstream(line) >> N >> eps;
+            if (eps != 1 && eps != -1) {
+                std::fprintf(stderr, "at ne-cache: PARI ε not ±1 for A=%lld B=%lld: '%s'\n",
+                             static_cast<long long>(e.A), static_cast<long long>(e.B), line.c_str());
+                return 4;
+            }
+            rows.push_back({e.A, e.B, static_cast<i64>(N), static_cast<int>(eps)});
+        }
+
+        at::murm::NeCacheHeader h;
+        h.generator_hash = at::murm::ne_generator_hash();
+        h.pari_version = vline;
+        h.X = X;
+        h.count = static_cast<i64>(rows.size());
+        at::murm::write_ne_cache(outf, h, rows);
+        std::fprintf(stderr, "at ne-cache: wrote %zu rows -> %s (provenance: oracle on N, ε)\n",
+                     rows.size(), outf.c_str());
         return 0;
     }
 

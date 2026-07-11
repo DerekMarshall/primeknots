@@ -46,7 +46,8 @@ add_library(at_murm STATIC
   murm/zub_density.cpp
   murm/zub_empirical.cpp
   murm/height_family.cpp
-  murm/ss_density.cpp)
+  murm/ss_density.cpp
+  murm/ne_cache.cpp)
 target_include_directories(at_murm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 # murm -> {ell, mform}: M1/M2 averaging uses ell (a_p); M3's empirical convergence
 # assembles the newform trace formula (mform) over the family (ARCHITECTURE-M §1).
@@ -59,6 +60,13 @@ target_link_libraries(at_murm PUBLIC at_ell at_mform)
 file(SHA256 ${CMAKE_CURRENT_SOURCE_DIR}/ell/ap_fast.cpp AT_AP_GENERATOR_HASH)
 set_source_files_properties(ell/ap_cache.cpp PROPERTIES
   COMPILE_DEFINITIONS AP_GENERATOR_HASH="${AT_AP_GENERATOR_HASH}")
+
+# N/ε cache generator hash (m4-pinning §P4/C3): sha256 of the height-family
+# enumeration, which fixes the cache's (A,B) key set. A change there can change the
+# key set, so the loader refuses a cache written against the old enumeration.
+file(SHA256 ${CMAKE_CURRENT_SOURCE_DIR}/murm/height_family.cpp AT_NE_GENERATOR_HASH)
+set_source_files_properties(murm/ne_cache.cpp PROPERTIES
+  COMPILE_DEFINITIONS NE_GENERATOR_HASH="${AT_NE_GENERATOR_HASH}")
 
 add_library(at_linking STATIC
   linking/f2matrix.cpp
