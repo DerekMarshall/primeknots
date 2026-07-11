@@ -5,11 +5,13 @@
 #include <cmath>
 #include <complex>
 
+#include "core/constants.h"
+
 namespace at::zeta {
 namespace {
 
-constexpr double kPi = 3.14159265358979323846;
-constexpr double kTwoPi = 2.0 * kPi;
+using at::core::kPi;                        // generated (oracle/gen_constants.py), never typed
+constexpr double kTwoPi = 2.0 * kPi;        // derived (mult by 2 is exact) == double(2π)
 
 // Below this height, and inside the band where the Riemann-Siegel remainder
 // function Ψ is near its removable singularity (|cos 2πp| small), evaluate Z
@@ -21,6 +23,11 @@ constexpr double kSingCosMin = 0.10;
 
 // Complex log-Γ via Lanczos (g=7, n=9); accurate for Re(z) > 0.
 std::complex<double> clgamma(std::complex<double> z) {
+    // Lanczos approximation coefficients, g = 7, n = 9 — an APPROXIMATION (not a true
+    // math constant, so not in constants.h), transcribed from the standard published
+    // set (Godfrey 2001, "A note on the computation of the convergent Lanczos complex
+    // Gamma approximation"; = the Numerical Recipes 3e values). Validated end-to-end by
+    // the Stage-5 zero tests (anchor_first_zeros_published_values, anchor_zeros_match_odlyzko).
     static const double c[9] = {
         0.99999999999980993, 676.5203681218851, -1259.1392167224028,
         771.32342877765313, -176.61502916214059, 12.507343278686905,

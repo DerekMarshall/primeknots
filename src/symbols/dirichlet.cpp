@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "core/constants.h"
 #include "core/modpow.h"
 
 namespace at::symbols {
@@ -10,7 +11,7 @@ using at::core::modpow;
 using at::core::u128;
 
 namespace {
-const double kTwoPi = 6.28318530717958647692528676655900577;
+using at::core::kTwoPi;   // generated (oracle/gen_constants.py), never typed
 
 // e(t) = exp(2πi t).
 std::complex<double> e(double t) {

@@ -5,12 +5,14 @@
 #include <cmath>
 #include <thread>
 
+#include "core/constants.h"
 #include "core/primes.h"
 #include "symbols/dirichlet.h"
 
 namespace at::murm {
 
 using at::core::is_prime;
+using at::core::kTwoPi;   // generated (oracle/gen_constants.py), never typed
 using at::core::u64;
 using at::symbols::char_parity;
 using at::symbols::chi_value;
@@ -19,8 +21,6 @@ using at::symbols::index_table;
 using at::symbols::primitive_root;
 
 namespace {
-const double kTwoPi = 6.28318530717958647692528676655900577;
-
 u64 next_prime(u64 n) {
     if (n < 2) return 2;
     while (!is_prime(n)) ++n;

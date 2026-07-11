@@ -393,6 +393,25 @@ foreach(ocase oracle_hurwitz_vs_pari oracle_dim_s2new)
     LABELS "m3;oracle" SKIP_RETURN_CODE 77 RESOURCE_LOCK "gp")
 endforeach()
 
+# --- M4 (murmurations: Sawin–Sutherland height ordering) --------------------
+# Phase 1 is pinning-only; the sole M4 code so far is the C4 prerequisite — the
+# from-scratch Bessel J₁ (IEEE-only, no libm) the density TU will consume.
+add_executable(verify_m4
+  verify_main.cpp
+  m4/bessel_tests.cpp)
+target_include_directories(verify_m4 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_m4 PRIVATE at_core at_oracle)
+
+foreach(case anchor_generated_constants anchor_bessel_j1)
+  add_test(NAME m4.${case} COMMAND verify_m4 --test-case=${case})
+  set_tests_properties(m4.${case} PROPERTIES LABELS "m4")
+endforeach()
+add_test(NAME m4.twin_bessel_j1_vs_pari COMMAND verify_m4 --test-case=twin_bessel_j1_vs_pari)
+set_tests_properties(m4.twin_bessel_j1_vs_pari PROPERTIES
+  LABELS "m4;oracle" SKIP_RETURN_CODE 77 RESOURCE_LOCK "gp")
+
 # --- deck: the explainer deck is an emitted artifact, validated like one -------
 # Every data-claim="ID" in docs/deck/index.html must have a CLAIMS.md row.
 if(AT_VALIDATE_PY)
@@ -401,6 +420,20 @@ if(AT_VALIDATE_PY)
   set_tests_properties(deck.claims_sourced PROPERTIES
     LABELS "deck"
     SKIP_RETURN_CODE 77
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()
+
+# --- constants: the generated numerical-constants header must match its generator --
+# CONSTANTS INCIDENT remedy: the freshness pattern applied to src/core/constants.h.
+# `--verify` regenerates the header in-memory and diffs the committed copy; the
+# generator's high-precision identity assertions (hi+lo reconstructs π/2 to <1e-30;
+# hi == nearest-double(π/2)) execute on every run, so a bad split fails here. Pure
+# Python stdlib (decimal) — runs everywhere, no oracle/network.
+if(AT_VALIDATE_PY)
+  add_test(NAME constants.regen_matches
+           COMMAND ${AT_VALIDATE_PY} ${CMAKE_SOURCE_DIR}/oracle/gen_constants.py --verify)
+  set_tests_properties(constants.regen_matches PROPERTIES
+    LABELS "constants"
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 

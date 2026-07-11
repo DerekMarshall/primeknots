@@ -3,12 +3,13 @@
 #include <algorithm>
 #include <cmath>
 
+#include "core/constants.h"
 #include "zeta/riemann_siegel.h"
 
 namespace at::zeta {
 namespace {
 
-constexpr double kPi = 3.14159265358979323846;
+using at::core::kPi;   // generated (oracle/gen_constants.py), never typed
 
 // Refine a sign-change bracket [lo,hi] of Z to a zero, using the accurate
 // Euler-Maclaurin engine (the referee). Bisection: robust, ~50 halvings puts

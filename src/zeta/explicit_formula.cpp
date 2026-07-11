@@ -2,11 +2,12 @@
 
 #include <cmath>
 
+#include "core/constants.h"
 #include "core/primes.h"
 
 namespace at::zeta {
 namespace {
-constexpr double kPi = 3.14159265358979323846;
+using at::core::kPi;   // generated (oracle/gen_constants.py), never typed
 
 // If n is a prime power p^k (k≥1) return log p, else 0. Trivial trial division;
 // x range here is tiny (test points ≤ a few hundred).

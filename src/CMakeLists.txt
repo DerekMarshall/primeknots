@@ -3,7 +3,8 @@
 
 add_library(at_core STATIC
   core/modpow.cpp
-  core/primes.cpp)
+  core/primes.cpp
+  core/bessel.cpp)
 target_include_directories(at_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(at_symbols STATIC
@@ -125,6 +126,7 @@ target_link_libraries(at_emit PUBLIC at_linking at_redei at_classgroup at_cs at_
 # faces the cross-compiler byte check. Stages 1–6 emitters are untouched (already
 # byte-stable across compilers — verified with a local GCC build).
 set_source_files_properties(
+  core/bessel.cpp
   symbols/dirichlet.cpp
   murm/dirichlet_murmuration.cpp
   murm/zub_density.cpp

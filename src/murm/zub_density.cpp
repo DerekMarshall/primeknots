@@ -3,10 +3,12 @@
 #include <algorithm>
 #include <cmath>
 
+#include "core/constants.h"
+
 namespace at::murm {
 
 namespace {
-const double kPi = 3.14159265358979323846264338327950288;
+using at::core::kPi;   // generated (oracle/gen_constants.py), never typed
 
 std::vector<long long> primes_below(unsigned B) {
     std::vector<bool> comp(B, false);
