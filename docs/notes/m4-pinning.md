@@ -295,9 +295,20 @@ from bounded exploration and committed **before** the confirmation run they gove
   pointwise; B-truncation + eigenvalue-truncation) ≪ shape-invariant tolerance (0.02
   formula-side; empirical-side committed with step 3). `claim_class` = "empirical
   agreement with Conjecture 1 [SS25]" in the emitted `params` AND the viewer caption.
-- **Remaining (next chunk), the compute-heavy pipeline:** R3 dual-oracle overlap twin
-  (PARI N,ε vs the pinned ecdata over the height∩Cremona overlap, certified count) —
-  BEFORE the statistic consumes any oracle column; the empirical statistic (1) at a
-  committed scale X (a_p from M0, N/ε oracle-cached, averaged over u=p/N bins); the
-  separate-TU density D(u) (generated constants + in-house J₁); the shape-invariant
-  confirmation; emitter + `viz/height.html` + freshness. Deviations are deliverables.
+- **R3 DONE (step 2)** — `verify/m4/oracle_dual_overlap_NE`: over the Cremona-range
+  overlap [2500,4000] (**5676 classes**), PARI ellglobalred conductor == ecdata N
+  (5676/5676, exact) and PARI ellrootno == (−1)^{ecdata rank} (5676/5676, parity). The
+  oracle-consumption gate is cleared before the statistic trusts N/ε.
+- **STEP-3 EXPLORATION (bounded, live PARI; NOT the committed run):** the empirical
+  statistic (1) at X=3000 (396 height-ordered curves), ε·a_p (a_p from M0) binned by
+  **u = p/N(E)**, plotted density = (1/(Δ|fam|)) Σ_E (u_mid·log N/N) Σ_{p/N∈bin} ε a_p.
+  Even at this small scale it reproduces the density shape: **hump u≈0.463, post-hump
+  zero u≈0.67, trough u≈0.812** — matching the committed R2 targets {0.475, 0.645,
+  0.805} within ≈0.05. **COMMITTED empirical-side shape tolerance = 0.08** (finite-X
+  deviation + density-eval 0.056), frozen here before the confirmation run.
+- **Remaining (the committed run + emit):** the N/ε ORACLE CACHE (generator + reader
+  with generator-hash refusal + `provenance:oracle`, like M0's ap_cache) so the emit is
+  repo-reproducible; the statistic in `src/murm` (two-pass shape extraction, confirm vs
+  the committed R2 targets at tol 0.08, convergence-with-X reported); emitter +
+  `viz/sawin_sutherland.html` (claim_class in params AND caption) + freshness + schema.
+  Deviations are deliverables. No M5 stubs.
