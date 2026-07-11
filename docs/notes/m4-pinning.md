@@ -252,3 +252,39 @@ so no emitted byte depends on libm)**.
    `params.claim_class` (§C2) + `provenance:oracle` on N,ε (§C3); schema; validate-json.
    Snapshot committed with the emitter; **acceptance register = "empirical agreement
    with the CONJECTURED density"**, never "verified/proved".
+
+### R1 — the error budget (stated, not implied)
+
+The calibrated test carries its instrument error on the label — in the log and the
+emitted `params` — as the chain **instrument ≪ evaluation ≪ decision**:
+
+    J₁ accuracy 6.4e-12  (measured, PARI-besselj-twinned, incl. post-reduction args
+                          to 1.26e5; core/bessel + verify/m4)
+      ≪ density-evaluation tolerance  (M₂/D(u) truncation of the q,m double sum;
+                          measured & COMMITTED with the density TU, item 3)
+      ≪ shape-invariant tolerance     (the pass/fail band on hump/zero/trough
+                          locations; COMMITTED pre-run with item 4).
+
+Only the first number is fixed today (J₁ is built, C4). The other two are finalized
+from bounded exploration and committed **before** the confirmation run they govern
+(commit-before-run) — as M2/M3 did.
+
+### Phase-2 progress (this session)
+
+- **R4 DONE — certified family counts** (`murm/height_family`, verify/m4): direct ==
+  sieve at 7 cutoffs to 10⁶; anchors 14/166/1048/7130 at X=10²…10⁵ certified by a
+  third independent gp enumeration. This is the required-first foundation.
+- **Committed shape-invariant design (R2), structure frozen now:** the M4 density is
+  smooth (Bessel-J₁ sum, no √-cusp teeth), so the calibrated invariants are, from
+  [SS25] Fig. 1 over u=p/N ∈ (0,1]: (i) **D(0)=0** (the √u prefactor); (ii) a single
+  **positive hump** with peak near u≈0.4; (iii) a **zero crossing** near u≈0.6–0.7;
+  (iv) a **negative trough** near u≈0.85. The exact expected locations + tolerances
+  are set from the density TU's bounded exploration and committed before the
+  confirmation run. `claim_class` = "empirical agreement with Conjecture 1 [SS25]" in
+  the emitted `params` AND the viewer caption (words, not just metadata).
+- **Remaining (next chunk), the compute-heavy pipeline:** R3 dual-oracle overlap twin
+  (PARI N,ε vs the pinned ecdata over the height∩Cremona overlap, certified count) —
+  BEFORE the statistic consumes any oracle column; the empirical statistic (1) at a
+  committed scale X (a_p from M0, N/ε oracle-cached, averaged over u=p/N bins); the
+  separate-TU density D(u) (generated constants + in-house J₁); the shape-invariant
+  confirmation; emitter + `viz/height.html` + freshness. Deviations are deliverables.
