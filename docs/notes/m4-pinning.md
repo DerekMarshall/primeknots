@@ -299,16 +299,99 @@ from bounded exploration and committed **before** the confirmation run they gove
   overlap [2500,4000] (**5676 classes**), PARI ellglobalred conductor == ecdata N
   (5676/5676, exact) and PARI ellrootno == (−1)^{ecdata rank} (5676/5676, parity). The
   oracle-consumption gate is cleared before the statistic trusts N/ε.
-- **STEP-3 EXPLORATION (bounded, live PARI; NOT the committed run):** the empirical
-  statistic (1) at X=3000 (396 height-ordered curves), ε·a_p (a_p from M0) binned by
-  **u = p/N(E)**, plotted density = (1/(Δ|fam|)) Σ_E (u_mid·log N/N) Σ_{p/N∈bin} ε a_p.
-  Even at this small scale it reproduces the density shape: **hump u≈0.463, post-hump
-  zero u≈0.67, trough u≈0.812** — matching the committed R2 targets {0.475, 0.645,
-  0.805} within ≈0.05. **COMMITTED empirical-side shape tolerance = 0.08** (finite-X
-  deviation + density-eval 0.056), frozen here before the confirmation run.
+- **STEP-3 EXPLORATION — RECLASSIFIED as an unofficial confirmation-class peek (R0
+  below).** ⚠️ The X=3000 run evaluated the *real statistic* against the committed R2
+  targets — that is a **confirmation-class computation performed outside the
+  pre-registration protocol**, not a design-scoping exploration. The number that was
+  written here as "COMMITTED empirical-side shape tolerance = 0.08 (finite-X deviation +
+  density-eval 0.056)" was **set after seeing the peek's ≈0.05 residuals** and is
+  **QUARANTINED as post-hoc** (ERRATA #26). Its replacement is the *a-priori* tolerance
+  derived in **§R0(c)** below. The peek's outcomes are preserved in the exploration
+  register §R0(a); they are NOT the confirmation.
 - **Remaining (the committed run + emit):** the N/ε ORACLE CACHE (generator + reader
   with generator-hash refusal + `provenance:oracle`, like M0's ap_cache) so the emit is
   repo-reproducible; the statistic in `src/murm` (two-pass shape extraction, confirm vs
-  the committed R2 targets at tol 0.08, convergence-with-X reported); emitter +
-  `viz/sawin_sutherland.html` (claim_class in params AND caption) + freshness + schema.
-  Deviations are deliverables. No M5 stubs.
+  the committed R2 targets at the **§R0(c) derived tolerance τ = 0.06** at **X_confirm =
+  10⁴ (§R0b)**, convergence-with-X reported); emitter + `viz/sawin_sutherland.html`
+  (claim_class in params AND caption) + freshness + schema. Deviations are deliverables.
+  No M5 stubs.
+
+---
+
+## R0 — reclassification of the X=3000 peek  (2026-07-10 adjudication; ERRATA #26)
+
+The last-checkpoint X=3000 run computed the real statistic (1) and compared it to the
+committed R2 targets. That is **confirmation-class**, and it was run outside the
+pre-registration protocol; the empirical tolerance 0.08 was then written to sit just
+above its observed residuals. Treated here per the **ERRATA #19 precedent** (a
+pre-declared design set/changed after results were seen). Renaming it "bounded
+exploration" does **not** reclassify it — the computation it performed is what counts.
+
+**(a) Exploration register — the peek, logged as what it was.**
+> **Unofficial confirmation-class peek**, X=3000, 396 height-ordered curves, live-PARI
+> N/ε, bin width Δu=0.025, a_p from M0 (`ell::ap_charsum`), statistic (1) binned by
+> u=p/N. Extracted (two-pass): **hump u≈0.463, post-hump zero u≈0.67, trough u≈0.812**.
+> Deviations from the R2 targets {0.475, 0.645, 0.805}: {0.012, 0.025, 0.007}, max
+> **0.025**. This peek is a sanity signal only; it is **not** an M4 confirmation and its
+> residuals set **no** tolerance.
+
+**(b) Official confirmation scale — pre-named NOW, peek-untouched.**
+No committed statistic scale existed in the pinned design (P5 certifies *counts* to
+10⁶; the statistic had no pinned X). The peek touched only X=3000. Named here, before
+any data exists at it:
+- **X_confirm = 10⁴** — |fam| = **1048** (P5-certified, direct==sieve==gp); ≥ 10⁴ as
+  required; the peek never touched it. Feasibility measured: `ap_charsum` over primes
+  ≤ N is 51 ms/curve at N=3e3, 364 ms at N=1e4; the 1048-curve family (mean conductor
+  well below the 2X ceiling) is a ~5–20 min run — feasible.
+- **Convergence ladder** (all peek-untouched, monotone): X ∈ {4000, 6000, 8000, 10000}.
+  The reported empiric is the L²/pointwise distance to D and the R2-location deviations,
+  **decreasing in X**; X_confirm=10⁴ is the pass/fail gate.
+
+**(c) A-priori empirical tolerance — derived, not fit.** The 0.08 is quarantined. The
+location tolerance is re-derived from the R1 chain + binning + a Hasse/CLT sampling
+model, before X_confirm data exists (formula side + family counts only):
+
+  *Sampling-noise model.* The binned empirical density
+  D̂_b = (1/(Δu·|fam|)) Σ_{(E,p): p/N∈b} (u_mid·ln N(E)/N(E))·ε(E)·a_p(E). Modelling a_p
+  as zero-mean with the Hasse/Sato–Tate variance ⟨a_p²⟩≈p, and n_b ≈ |fam|·Δu·⟨N/ln N⟩
+  samples per bin, the bin-mean standard error collapses to
+
+      σ(u) ≈ sqrt( u³ · ln N̄ / (Δu · |fam|) ),   ln N̄ ≤ ln(2X)  (N ≤ |disc| ≤ 2X).
+
+  *Location jitter.* A value error σ shifts an extracted extremum through the
+  MACROSCOPIC curvature/slope of D (the binned estimator smooths over Δu, so the
+  micro-wiggle of the truncated Bessel sum is averaged out; |D′|,|D″| measured at
+  macroscopic spacing h∈{0.05,0.075} from the formula TU, conservative min):
+      extremum (D′≈0):  τ = sqrt(2σ/|D″|);   crossing (D′≠0):  τ = σ/|D′|.
+  At X_confirm=10⁴, |fam|=1048, Δu=0.025, ln(2X)=9.90:
+
+      pt      u       σ(u)    |D″| or |D′|    τ_samp
+      hump    0.475   0.201   |D″|≈866        0.022
+      zero    0.645   0.318   |D′|≈27         0.012
+      trough  0.805   0.444   |D″|≈965        0.030   ← governing
+
+  *Budget (R1 chain, numbers).* τ_bin = Δu = **0.025** (bin granularity floor);
+  τ_dens = **0.005** (R2 locations stable under B∈[200,5000] to < the 0.005 scan step —
+  measured, §"COMMITTED R2 targets"); τ_samp = **0.030** (governing, trough). J₁ 6.4e-12
+  is negligible below all three. Combined **linearly** (conservative — the three may
+  align): **τ = 0.060.** Quadrature (statistical) estimate: 0.040. **Committed
+  empirical-side location tolerance τ = 0.06** at X_confirm — tighter than the
+  quarantined 0.08, i.e. a *stronger* gate, and derived a priori.
+
+  *Model cross-check against the peek (validation, NOT a fit).* Same model at X=3000
+  (|fam|=396): τ_samp = 0.030·√(1048/396) = **0.049**; the peek's actual max deviation
+  was 0.025 < 0.049 — it sits *under* the a-priori band. The band was derived from the
+  formula side + counts, never from the peek residual.
+
+  *If the confirmation at X_confirm fails τ = 0.06:* that is a deliverable with full
+  witness (the empirical curve, per-point deviations, convergence trend) — **not** a
+  reason to revisit this derivation. The tolerance is frozen here, before the run.
+
+**(d) ERRATA.** The commit record (`e2dbadc`) introduced the peek outcomes AND the
+"COMMITTED … 0.08 (finite-X deviation + density-eval 0.056)" line in the *same* commit,
+and the tolerance's own stated derivation references the "finite-X deviation" it was fit
+around — so, unlike #19 (where git could not corroborate timing), here the record
+**corroborates** that 0.08 postdated the peek. Filed **ERRATA #26** (a post-hoc
+tolerance, softened by "bounded exploration" framing; caught by the human referee's R0
+directive reading the checkpoint). Remedy: this §R0 (peek → register; a-priori τ; the
+0.08 quarantined).
