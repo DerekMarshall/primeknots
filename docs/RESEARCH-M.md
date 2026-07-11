@@ -32,6 +32,25 @@ For a family 𝓕 of L-functions ordered by conductor N (or height), the murmura
 
 **Amendment — the oracle-provenance INPUT-DATA class (M4/C3, 2026-07-10).** Rule 6's provenance labeling covers *pinned-dataset* oracle inputs (ecdata: rank, conductor, root number, bad-prime a_p — a sha256-fixed release). Stage M4 introduces a genuinely new sub-class that this rule now names explicitly: a **live oracle (PARI) as a supplier of input data** the computed statistic *consumes*, because the height-ordered family runs outside any pinned dataset's conductor range (m4-pinning §P4). Concretely M4 takes each curve's **conductor N(E)** (`ellglobalred`/`ellinit`) and **root number ε(E)** (`ellrootno`) from PARI as input, then computes the a_p and the average from scratch. This is legitimate but carries a **residual risk the labeling must surface**: N and ε are *trusted*, not independently verified by us, so a systematic oracle error propagates silently into the statistic — unlike a *referee* oracle, whose disagreement would be caught. Conditions on using this class (M4 adopts all): (i) the field is `provenance: oracle` in every emitted column and the emitted `params` states the conditionality; (ii) a **dual-oracle overlap twin** exists — over the full curves that lie in BOTH the height family and Cremona's range, PARI's N and ε must match the pinned ecdata exactly, with a certified overlap count (this is the independent check that the live oracle is not lying); (iii) the from-scratch alternative (Tate's algorithm for N; local root-number formulas for ε) is recorded as a **deferred upgrade** (M0b-class), to be built if the residual risk ever needs retiring. The actual murmuration quantity (a_p) stays computed-provenance regardless.
 
+**Amendment — the ANALYTIC-RANK oracle class (M5/PR-2, 2026-07-11).** PR-2 (rank-split
+tail analysis) needs each curve's *rank*. [SS25] use "rank" in the BSD sense — loosely,
+invoking it "conjecturally" (p.4: *"curves of larger rank … smaller a_p … conjecturally,
+curves with rank 2 have root number +1"*); the paper gives no formal analytic-vs-MW
+distinction. This project **pins the classifier to the ANALYTIC rank** — the order of
+vanishing of L(E,s) at s=1 — and **never asserts the Mordell–Weil (algebraic) rank**
+(which would be BSD-conditional). Concretely: the class is **analytic-rank**, obtained
+from **PARI `ellanalyticrank(E)`** at a **named precision** (recorded in the cache
+header), a numerically-determined oracle input (a new sub-class: unlike N and ε — exact,
+unconditional PARI computations — the analytic rank is a *numerical* order-of-vanishing
+determination that can be precision-limited). Conditions (PR-2 adopts all): (i)
+`provenance: oracle (analytic rank, ellanalyticrank, prec=…)` on the column, params state
+the numerical-determination conditionality; (ii) **mandatory parity cross-check** — the
+analytic-rank parity must equal the cached ε's parity for **every** curve (ε=(−1)^{ord} is
+the functional-equation sign, a *theorem*, so a mismatch flags a numerical
+mis-determination, not a conjecture); a nonzero mismatch count aborts. (iii) every claim
+branch says **"analytic-rank-2"**, never "rank 2" unqualified; the equality with MW-rank-2
+is BSD and is *not* invoked. The a_p and the statistic stay computed-provenance.
+
 ## 3. Stage M1 — replicate the discovery [soft anchor]
 
 Reproduce HLOP [HLOP22]: average a_p over curves of given rank (and separately, given root number) in fixed conductor ranges, plotted against p. **[PIN TO SOURCE]:** the exact conductor ranges, rank classes, prime ranges, and averaging conventions from the paper's §3 (dataset construction) — the figures are the anchor, so the family definition must match theirs exactly, quoted into the log.
@@ -77,6 +96,18 @@ Candidate questions, each requiring its own PR document before any confirmation 
 ## 8. Order of battle and reuse map
 
 M0 → M1 → M2 → M3 → M4 → M5, gated as always. Reuse: `symbols/` (Legendre, everywhere), `classgroup/` (Hurwitz class numbers for M3), `zeta/` (Q3 only), the harness, CI, freshness, and the five test categories plus `prereg_`. Expected new load: data-scale engineering (M1's grid is ~10¹¹ Legendre evaluations naively; per-prime batching and the a_p cache in ARCHITECTURE-M §4 are the plan, and performance is a named workstream).
+
+**Deferred stages (named, not built):**
+- **M0b — fast a_p (sub-linear point counting).** The M0 a_p is O(p) per prime
+  (`ap_charsum` referee, `ap_fast` table path). This caps the height-family statistic:
+  PR-1's honest runtime estimate makes **X = 2¹⁸ infeasible (~22 days)** at O(p), and
+  [SS25] reach 2²⁸ only via Sutherland's sub-linear counting. M0b = baby-step–giant-step
+  (O(p^{1/2})) and/or Schoof–Elkies–Atkin / smalljac-class (O(p^{1/4})) a_p, with its own
+  pinning + twin against the frozen `ap_charsum`. Motivated by, and blocking, the upper
+  rungs of PR-1 and any X ≥ 2¹⁸ work. Not built.
+- **M0b (conductor/root-number from scratch) — the Tate twin** (already noted in the §2
+  M4/C3 amendment): Tate's algorithm for N + local root-number formulas for ε, to retire
+  the oracle-input residual risk on N, ε. Not built.
 
 ## 9. References (arXiv IDs verified 2026-07-09 against live records)
 

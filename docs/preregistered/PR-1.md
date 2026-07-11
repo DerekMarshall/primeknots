@@ -126,6 +126,12 @@ analysis-code hash matches, applies the decision rule to the committed extension
 and records PASS(H1)/FAIL(H0→PR-2) in a postscript here. A FAIL is a deliverable; the
 threshold is never adjusted post-hoc.
 
+*Forward-reference (output format, does NOT change any gated element above):* the 2¹⁶
+rung must **persist the per-curve bin partials** (keyed by (A,B)) and the (A,B)-keyed N/ε
+cache, so PR-2 can attach an analytic-rank column and re-aggregate subpopulations WITHOUT
+recomputing a_p (PR-2 Amendment 2). This is an emit-side requirement on the 2¹⁶ run only;
+the statistic, extractor, τ, holdout, and decision rule are untouched.
+
 ## Postscript (results — appended only after the confirmation rungs run)
 
 *(empty — no extension rung has run as of commit of this document)*
