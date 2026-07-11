@@ -466,3 +466,43 @@ and the rank-2 caveat (p.4), which is why the trend is not assumed:
 exceeds τ, [verdict per the fork]; convergence empirics + windowed-trough diagnostic
 attached." The ladder trend and the windowed trough are recorded below **after** this
 fork is committed.
+
+### Post-fork results — the rule applied (recorded after the fork commit `6d50db0`)
+
+**Ladder trough trend** (`at ss-run`, committed `data/m4/ss_empirical.txt`):
+
+    X       |fam|   hump_u   zero_u   trough_u   |trough−0.805|   τ_samp(X)
+    4000    522     0.4625   0.6676   0.8875     0.082            0.043
+    6000    664     0.4625   0.6696   0.9125     0.107            0.038
+    8000    870     0.4625   0.6726   0.8875     0.082            0.033
+    10000   1048    0.4625   0.6729   0.8875     0.082            0.030
+
+**Rule outcome = OPEN DEVIATION.** The trough deviation is **flat at ≈0.082** (X=6000
+rises to 0.107); it does **not** decrease across the ladder. The committed rule lists
+"flat / non-monotone" explicitly as OPEN DEVIATION — so the miss is **NOT** attributed to
+the SS finite-X downward bias by this data. (Consistent with SS's own caveat that the
+bias need not decrease in X; and my ladder 2¹²–2¹³·³ is well below their 2¹⁶–2²⁸.) The
+hump (0.4625, dev 0.0125) and zero (≈0.673, dev ≈0.028) are within τ at **every** scale
+and stable — the murmuration's defining oscillation is solidly reproduced.
+
+**Localization discriminant (windowed trough, u∈[0.7,0.9], same extractor), X=10⁴:**
+global-argmin trough = **0.8875**, windowed trough = **0.8875** — *identical*. The
+predicted tail-drag signature (windowed≈0.805 while global≈0.888) **did NOT appear**:
+even excluding the far tail (u>0.9), the empirical density is genuinely deepest at
+≈0.887 (the bin nearest the target, u=0.812, is only −2.04 vs −3.47 at 0.887). So the
+displacement is **not** a far-tail-argmin artifact — it is a real rightward shift of the
+empirical trough, which the simple downward-bias mechanism does not by itself explain.
+This makes the OPEN-DEVIATION verdict robust, not a technicality.
+
+**Note on the quarantined peek.** The peek's trough (0.812) was closer to 0.805 than the
+confirmation's (0.887); the peek used the *buggy* running-max extractor (later fixed to
+the two-pass one; summary/ERRATA), so its trough is not comparable and remains
+quarantined. The confirmation uses the committed two-pass extractor on both sides.
+
+**⇒ `claim_class` = "partial agreement with the CONJECTURED density (Conjecture 1
+[SS25]): the hump and first zero-crossing agree within the a-priori τ=0.06 at X=10⁴; the
+trough location is an OPEN DEVIATION (displaced ≈0.082, flat over X∈[4000,10⁴], not a
+tail artifact, not demonstrated to be the finite-X bias by this range)."** The murmuration
+is present and its primary invariants replicate; one invariant is an openly-flagged
+deviation. Not "empirical agreement with Conjecture 1" (the fork did not resolve to
+finite-X bias). No proof is claimed (rule 7).

@@ -11,6 +11,7 @@
 #include <string>
 
 #include <sstream>
+#include <thread>
 #include <vector>
 
 #include "emit/emit_borromean.h"
@@ -21,10 +22,12 @@
 #include "emit/emit_dw.h"
 #include "emit/emit_linking.h"
 #include "emit/emit_murmuration.h"
+#include "emit/emit_sawin_sutherland.h"
 #include "emit/emit_zeta.h"
 #include "emit/emit_zubrilina.h"
 #include "murm/height_family.h"
 #include "murm/ne_cache.h"
+#include "murm/ss_empirical.h"
 #include "oracle/pari.h"
 
 #ifndef AT_GIT_FALLBACK
@@ -156,6 +159,15 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "at emit: stage m3 -> %s/zubrilina_murmuration.json\n", out.c_str());
             return 0;
         }
+        if (stage == "m4") {
+            // Sawin–Sutherland height murmuration: the COMPUTED empirical statistic (1)
+            // overlaid on the CONJECTURED density D(u). Consumes the committed run
+            // data/m4/ss_empirical.txt (the ~19-min statistic is never re-run here).
+            const char* run_path = opt(argc, argv, "--ss-run", "data/m4/ss_empirical.txt");
+            at::emit::emit_m4(out, run_path, resolve_generated_by());
+            std::fprintf(stderr, "at emit: stage m4 -> %s/sawin_sutherland_murmuration.json\n", out.c_str());
+            return 0;
+        }
         std::fprintf(stderr,
             "at emit: no emitter for stage '%s' (stages 1-6, m1-m3 are built)\n",
             stage.c_str());
@@ -233,6 +245,50 @@ int main(int argc, char** argv) {
         at::murm::write_ne_cache(outf, h, rows);
         std::fprintf(stderr, "at ne-cache: wrote %zu rows -> %s (provenance: oracle on N, ε)\n",
                      rows.size(), outf.c_str());
+        return 0;
+    }
+
+    if (std::strcmp(argv[1], "ss-run") == 0) {
+        // THE M4 confirmation run (m4-pinning step 3): the empirical statistic (1)
+        // over the height family, a_p COMPUTED from scratch, N/ε from the committed
+        // oracle cache. Heavy (~minutes); run once, the result is committed as
+        // data/m4/ss_empirical.txt and consumed cheaply by `at emit` + the confirmation
+        // test. The committed DESIGN (X_confirm, ladder, τ, R2 targets) is fixed in
+        // m4-pinning §R0 / §"COMMITTED R2 targets" — pre-registered, not tuned here.
+        const char* cache = opt(argc, argv, "--cache", "data/m4/ne_cache.txt");
+        std::string outf = opt(argc, argv, "--out", "data/m4/ss_empirical.txt");
+        int threads = static_cast<int>(std::strtoull(
+            opt(argc, argv, "--threads", "0"), nullptr, 10));
+        if (threads <= 0) {
+            unsigned hc = std::thread::hardware_concurrency();
+            threads = hc ? static_cast<int>(hc) : 4;
+        }
+
+        at::murm::NeCacheHeader hdr;
+        std::vector<at::murm::NeRow> rows = at::murm::read_ne_cache(cache, hdr);
+        std::fprintf(stderr, "at ss-run: %zu curves from %s (X=%lld); %d threads; computing a_p...\n",
+                     rows.size(), cache, static_cast<long long>(hdr.X), threads);
+
+        at::murm::SSRun run;
+        run.generator_hash = at::murm::ss_generator_hash();
+        run.du = 0.025;                                   // committed bin width (§R0)
+        run.tol = 0.06;                                   // a-priori empirical tolerance (§R0c)
+        run.r2_hump = 0.475; run.r2_zero = 0.645; run.r2_trough = 0.805;  // committed R2 (formula side)
+        run.X_confirm = 10000.0;                          // pre-named confirmation scale (§R0b)
+        run.ladder = {4000.0, 6000.0, 8000.0, 10000.0};   // peek-untouched convergence ladder
+
+        at::murm::SSPartials P = at::murm::ss_empirical_partials(rows, run.du, threads);
+        for (double X : run.ladder) {
+            at::murm::SSEmpirical e = at::murm::ss_aggregate(P, X);
+            run.shapes.push_back({X, e.n_curves, e.shape});
+            if (X == run.X_confirm) run.confirm = e;
+            std::fprintf(stderr,
+                "  X=%.0f  |fam|=%lld  hump=%.3f zero=%.3f trough=%.3f\n",
+                X, static_cast<long long>(e.n_curves), e.shape.hump_u, e.shape.zero_u, e.shape.trough_u);
+        }
+        at::murm::write_ss_run(outf, run);
+        std::fprintf(stderr, "at ss-run: wrote %s (X_confirm=%.0f, τ=%.2f)\n",
+                     outf.c_str(), run.X_confirm, run.tol);
         return 0;
     }
 

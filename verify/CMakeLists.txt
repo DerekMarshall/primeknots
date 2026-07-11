@@ -402,6 +402,7 @@ add_executable(verify_m4
   m4/height_tests.cpp
   m4/ss_density_tests.cpp
   m4/ne_cache_tests.cpp
+  m4/ss_empirical_tests.cpp
   m4/overlap_tests.cpp)
 target_include_directories(verify_m4 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
@@ -414,7 +415,8 @@ target_compile_definitions(verify_m4 PRIVATE
 foreach(case anchor_generated_constants anchor_bessel_j1
          twin_height_family_count anchor_height_family_count theorem_height_family_reduced
          anchor_ss_local_factors theorem_ss_density_shape
-         anchor_ne_cache_committed anchor_ne_cache_stale_hash_refused)
+         anchor_ne_cache_committed anchor_ne_cache_stale_hash_refused
+         theorem_ss_height_murmuration twin_ap_fast_vs_charsum_m4)
   add_test(NAME m4.${case} COMMAND verify_m4 --test-case=${case})
   set_tests_properties(m4.${case} PROPERTIES LABELS "m4")
 endforeach()

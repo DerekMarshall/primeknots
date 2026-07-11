@@ -47,7 +47,9 @@ add_library(at_murm STATIC
   murm/zub_empirical.cpp
   murm/height_family.cpp
   murm/ss_density.cpp
-  murm/ne_cache.cpp)
+  murm/ne_cache.cpp
+  murm/ss_empirical.cpp
+  murm/ss_run_io.cpp)
 target_include_directories(at_murm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 # murm -> {ell, mform}: M1/M2 averaging uses ell (a_p); M3's empirical convergence
 # assembles the newform trace formula (mform) over the family (ARCHITECTURE-M §1).
@@ -67,6 +69,14 @@ set_source_files_properties(ell/ap_cache.cpp PROPERTIES
 file(SHA256 ${CMAKE_CURRENT_SOURCE_DIR}/murm/height_family.cpp AT_NE_GENERATOR_HASH)
 set_source_files_properties(murm/ne_cache.cpp PROPERTIES
   COMPILE_DEFINITIONS NE_GENERATOR_HASH="${AT_NE_GENERATOR_HASH}")
+
+# Empirical-run generator hash (m4-pinning step 3): sha256 of the STATISTIC source
+# (murm/ss_empirical.cpp — the numbers in the committed run). Applied to the IO TU
+# (ss_run_io.cpp), so editing the format/reader/diagnostic does not invalidate a
+# committed run; only a change to the statistic itself does.
+file(SHA256 ${CMAKE_CURRENT_SOURCE_DIR}/murm/ss_empirical.cpp AT_SS_GENERATOR_HASH)
+set_source_files_properties(murm/ss_run_io.cpp PROPERTIES
+  COMPILE_DEFINITIONS SS_GENERATOR_HASH="${AT_SS_GENERATOR_HASH}")
 
 add_library(at_linking STATIC
   linking/f2matrix.cpp
@@ -121,7 +131,8 @@ add_library(at_emit STATIC
   emit/emit_dw.cpp
   emit/emit_murmuration.cpp
   emit/emit_dirichlet.cpp
-  emit/emit_zubrilina.cpp)
+  emit/emit_zubrilina.cpp
+  emit/emit_sawin_sutherland.cpp)
 target_include_directories(at_emit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(at_emit PUBLIC at_linking at_redei at_classgroup at_cs at_zeta at_dw at_murm)
 
@@ -144,4 +155,5 @@ set_source_files_properties(
   murm/ss_density.cpp
   emit/emit_dirichlet.cpp
   emit/emit_zubrilina.cpp
+  emit/emit_sawin_sutherland.cpp
   PROPERTIES COMPILE_OPTIONS "-ffp-contract=off")

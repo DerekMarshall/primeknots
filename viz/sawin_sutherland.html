@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sawin–Sutherland height murmuration — Stage M4</title>
+  <link rel="stylesheet" href="common.css" />
+  <style>
+    .axis text { font: 10px ui-monospace, Menlo, monospace; fill: var(--muted); }
+    .axis line, .axis path { stroke: var(--border); }
+    .stat { font-family: ui-monospace, Menlo, monospace; font-size: 13px; margin: 3px 0; }
+    .stat b { color: var(--accent); } .ok { color: #0f9d58; font-weight: bold; }
+    .miss { color: #dc2626; font-weight: bold; }
+    .density { fill: none; stroke: #0f9d58; stroke-width: 1.6; stroke-dasharray: 5 3; }
+    .emp { fill: none; stroke: #2563eb; stroke-width: 1.8; }
+    .zero { stroke: var(--border); stroke-dasharray: 3 3; }
+    .target { stroke: #d97706; stroke-width: 1.1; stroke-dasharray: 2 2; }
+    .targettxt { font: 10px ui-monospace, Menlo, monospace; fill: #d97706; }
+    .empdot { fill: #64748b; opacity: 0.45; }
+    .claim { border-left: 3px solid #d97706; padding: 6px 12px; margin: 8px 0;
+             background: var(--panel, rgba(217,119,6,0.06)); font-size: 13px; line-height: 1.5; }
+    table.conv { border-collapse: collapse; font: 12px ui-monospace, Menlo, monospace; margin-top: 6px; }
+    table.conv th, table.conv td { border: 1px solid var(--border); padding: 3px 9px; text-align: right; }
+    table.conv th { color: var(--muted); font-weight: normal; }
+    .swatch { display:inline-block; width:11px; height:11px; border-radius:2px; vertical-align:middle; margin-right:5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>The Sawin–Sutherland height murmuration</h1>
+    <p class="subtitle">Stage M4 — Sawin &amp; Sutherland (arXiv:2504.12295), Conjecture 1. Elliptic curves E<sub>A,B</sub>: y²=x³+Ax+B ordered by <em>naive height</em> H=max(4|A|³,27B²), with the root-number-weighted average of a<sub>p</sub>(E) taken over <b>u = p/N(E)</b> (the prime-to-<em>conductor</em> ratio, not p/X). The empirical curve is the <em>computed</em> statistic — a<sub>p</sub> from scratch (point counts, twinned against the frozen referee); only the conductor N and root number ε are oracle-supplied (PARI, certified vs Cremona over 5676 classes). It is overlaid on the <b>conjectured</b> density D(u), the in-house Bessel-J₁ sum of eq. (2). Renders emitted JSON only.</p>
+  </header>
+  <div id="err" class="error" hidden></div>
+  <main>
+    <section class="panel">
+      <h2>Empirical statistic (1) vs the conjectured density D(u)</h2>
+      <div id="chart"></div>
+      <div class="legend">
+        <span><span class="swatch" style="background:#64748b"></span>empirical D̂(u) bins</span>
+        <span><span class="swatch" style="background:#2563eb"></span>empirical (line)</span>
+        <span><span class="swatch" style="background:#0f9d58"></span>conjectured density D(u)</span>
+        <span><span class="swatch" style="background:#d97706"></span>committed R2 targets (hump/zero/trough)</span>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Shape invariants, the trough deviation, and convergence</h2>
+      <div id="claim" class="claim"></div>
+      <div id="stats"></div>
+      <div id="conv"></div>
+      <div class="params" id="params"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script>
+    const fail = (m) => { const e=document.getElementById("err"); e.hidden=false;
+      e.textContent="Could not load data: "+m+"  —  ./build/bin/at emit --stage m4 --out viz/data && python3 -m http.server -d viz"; };
+
+    fetch("data/sawin_sutherland_murmuration.json").then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
+      drawChart(d); drawClaim(d); drawStats(d); drawConv(d); drawParams(d);
+    }).catch(e=>fail(e.message));
+
+    function drawChart(d) {
+      const W=880,H=380,ml=48,mr=16,mt=12,mb=34;
+      const ally=d.empirical.map(p=>p.emp).concat(d.density.map(p=>p.d));
+      const x=d3.scaleLinear().domain([0,1]).range([ml,W-mr]);
+      const y=d3.scaleLinear().domain([d3.min(ally)-0.3, d3.max(ally)+0.3]).range([H-mb,mt]);
+      const svg=d3.select("#chart").append("svg").attr("width",W).attr("height",H)
+        .attr("viewBox",`0 0 ${W} ${H}`).style("max-width","100%").style("height","auto");
+      svg.append("line").attr("class","zero").attr("x1",ml).attr("x2",W-mr).attr("y1",y(0)).attr("y2",y(0));
+      // committed R2 target markers
+      const tg=d.shape.targets, names={hump:"hump",zero:"zero",trough:"trough"};
+      Object.keys(names).forEach(k=>{
+        svg.append("line").attr("class","target").attr("x1",x(tg[k])).attr("x2",x(tg[k])).attr("y1",mt).attr("y2",H-mb);
+        svg.append("text").attr("class","targettxt").attr("x",x(tg[k])+3).attr("y",mt+11).text(names[k]+" "+tg[k]);
+      });
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-mb})`).call(d3.axisBottom(x).ticks(10));
+      svg.append("g").attr("class","axis").attr("transform",`translate(${ml},0)`).call(d3.axisLeft(y).ticks(8));
+      svg.append("text").attr("class","axis").attr("x",(ml+W)/2).attr("y",H-3).attr("text-anchor","middle").text("u = p / N(E)");
+      // empirical bins (dots) + connecting line
+      svg.append("g").selectAll("circle").data(d.empirical).enter().append("circle")
+        .attr("class","empdot").attr("r",2.0).attr("cx",p=>x(p.u)).attr("cy",p=>y(p.emp));
+      svg.append("path").datum(d.empirical).attr("class","emp")
+        .attr("d",d3.line().x(p=>x(p.u)).y(p=>y(p.emp)));
+      // conjectured density D(u)
+      svg.append("path").datum(d.density).attr("class","density")
+        .attr("d",d3.line().x(p=>x(p.u)).y(p=>y(p.d)));
+    }
+
+    function drawClaim(d) {
+      // The claim class + the miss, IN WORDS (m4-pinning confirmation §).
+      document.getElementById("claim").innerHTML =
+        `<b>Claim class.</b> ${d.params.claim_class}`;
+    }
+
+    function drawStats(d) {
+      const fmt=d3.format(".3f"), s=d.shape;
+      const row=(k,label)=>{
+        const ok=s.within_tol[k];
+        return `<span class="${ok?'ok':'miss'}">${label}: empirical u=${fmt(s.empirical[k])} `+
+               `vs target ${fmt(s.targets[k])} — dev ${fmt(s.dev[k])} ${ok?'✓ within τ':'✗ exceeds τ'}</span>`;
+      };
+      document.getElementById("stats").innerHTML =
+        `<div class="stat">X_confirm = ${d.params.X_confirm}, <b>${d.params.n_curves}</b> curves, `+
+        `bin Δu=${d.params.du}, a-priori τ=${d.params.tol}</div>`+
+        `<div class="stat">${row('hump','hump')}</div>`+
+        `<div class="stat">${row('zero','zero-crossing')}</div>`+
+        `<div class="stat">${row('trough','trough')}</div>`+
+        `<div class="stat">localization: windowed[0.7,0.9] trough u=${fmt(s.windowed_trough_u)} `+
+        `— ${s.windowed_trough_u.toFixed(3)===s.empirical.trough.toFixed(3)?'equals':'differs from'} the global trough `+
+        `(${fmt(s.empirical.trough)}) ⇒ ${s.windowed_note}</div>`+
+        `<div class="stat" style="color:var(--muted)">${d.params.downward_bias_note}</div>`;
+    }
+
+    function drawConv(d) {
+      const fmt=d3.format(".4f");
+      let h="<table class='conv'><tr><th>X</th><th>curves</th><th>hump u</th><th>zero u</th><th>trough u</th><th>|trough−target|</th></tr>";
+      d.convergence.points.forEach(p=>{ h+=`<tr><td>${p.X}</td><td>${p.n_curves}</td><td>${fmt(p.hump)}</td><td>${fmt(p.zero)}</td><td>${fmt(p.trough)}</td><td>${fmt(p.dev_trough)}</td></tr>`; });
+      h+="</table>";
+      document.getElementById("conv").innerHTML =
+        `<div class="stat" style="color:var(--muted);margin-top:8px">${d.convergence.note}</div>`+h;
+    }
+
+    function drawParams(d) {
+      document.getElementById("params").textContent =
+        `schema: ${d.schema}\ngenerated_by: ${d.generated_by}\nparams: ${JSON.stringify(d.params)}`;
+    }
+  </script>
+</body>
+</html>

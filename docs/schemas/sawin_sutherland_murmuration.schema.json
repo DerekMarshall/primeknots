@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sawin_sutherland_murmuration/1",
+  "title": "sawin_sutherland_murmuration",
+  "description": "Stage M4: the Sawin–Sutherland height-ordered elliptic-curve murmuration (arXiv:2504.12295, Conjecture 1). The COMPUTED empirical statistic (1) — root-number-weighted a_p averaged over u=p/N(E) for E ordered by naive height, a_p from scratch (ell::ap_fast, twinned) with N,ε oracle-provenance (PARI, R3-certified) — overlaid on the CONJECTURED density D(u) (the in-house Bessel-J₁ sum of eq. (2)), with committed R2 shape targets, the two-pass hump/zero/trough, the pre-registered windowed-trough diagnostic, and the convergence ladder. claim_class states, in words, the honest register: partial agreement (hump+zero within τ; trough an open deviation). No proof is claimed.",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "empirical", "density", "shape", "convergence"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "sawin_sutherland_murmuration/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["family", "statistic", "source", "external_data", "provenance",
+                   "claim_class", "X_confirm", "n_curves", "du", "tol",
+                   "density_trunc_B", "u_axis", "downward_bias_note"],
+      "additionalProperties": false,
+      "properties": {
+        "family": {"type": "string"},
+        "statistic": {"type": "string"},
+        "source": {"type": "string"},
+        "external_data": {"type": "string"},
+        "provenance": {"type": "string"},
+        "claim_class": {"type": "string"},
+        "X_confirm": {"type": "number"},
+        "n_curves": {"type": "integer", "minimum": 1},
+        "du": {"type": "number"},
+        "tol": {"type": "number"},
+        "density_trunc_B": {"type": "integer", "minimum": 1},
+        "u_axis": {"type": "string"},
+        "downward_bias_note": {"type": "string"}
+      }
+    },
+    "empirical": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["u", "emp", "count"],
+        "additionalProperties": false,
+        "properties": {
+          "u": {"type": "number"}, "emp": {"type": "number"},
+          "count": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "density": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["u", "d"],
+        "additionalProperties": false,
+        "properties": {"u": {"type": "number"}, "d": {"type": "number"}}
+      }
+    },
+    "shape": {
+      "type": "object",
+      "required": ["targets", "empirical", "dev", "within_tol", "windowed_trough_u", "windowed_note"],
+      "additionalProperties": false,
+      "properties": {
+        "targets": {
+          "type": "object",
+          "required": ["hump", "zero", "trough"],
+          "additionalProperties": false,
+          "properties": {"hump": {"type": "number"}, "zero": {"type": "number"}, "trough": {"type": "number"}}
+        },
+        "empirical": {
+          "type": "object",
+          "required": ["hump", "zero", "trough"],
+          "additionalProperties": false,
+          "properties": {"hump": {"type": "number"}, "zero": {"type": "number"}, "trough": {"type": "number"}}
+        },
+        "dev": {
+          "type": "object",
+          "required": ["hump", "zero", "trough"],
+          "additionalProperties": false,
+          "properties": {"hump": {"type": "number"}, "zero": {"type": "number"}, "trough": {"type": "number"}}
+        },
+        "within_tol": {
+          "type": "object",
+          "required": ["hump", "zero", "trough"],
+          "additionalProperties": false,
+          "properties": {"hump": {"type": "boolean"}, "zero": {"type": "boolean"}, "trough": {"type": "boolean"}}
+        },
+        "windowed_trough_u": {"type": "number"},
+        "windowed_note": {"type": "string"}
+      }
+    },
+    "convergence": {
+      "type": "object",
+      "required": ["note", "points"],
+      "additionalProperties": false,
+      "properties": {
+        "note": {"type": "string"},
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["X", "n_curves", "hump", "zero", "trough", "dev_trough"],
+            "additionalProperties": false,
+            "properties": {
+              "X": {"type": "number"}, "n_curves": {"type": "integer"},
+              "hump": {"type": "number"}, "zero": {"type": "number"},
+              "trough": {"type": "number"}, "dev_trough": {"type": "number"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

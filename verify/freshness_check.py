@@ -68,6 +68,14 @@ def emit_args():
         # parameters. The emit builds a ~3.4e7 Hurwitz sieve, so this file is the
         # slowest to re-emit (a few seconds).
         "m3": ([], ["zubrilina_murmuration.json"]),
+        # M4 (Sawin–Sutherland height murmuration): the ~19-min statistic is NOT re-run
+        # here — emit reads the committed COMPUTED run (data/m4/ss_empirical.txt, a repo
+        # artifact) and recomputes only the cheap D(u) overlay (in-house Bessel-J₁ +
+        # generated constants, -ffp-contract=off → byte-portable). So it is byte-checked
+        # everywhere including CI. The run file's generator-hash must match HEAD's
+        # statistic source (it does — both from the committed murm/ss_empirical.cpp).
+        "m4": (["--ss-run", str(ROOT / "data" / "m4" / "ss_empirical.txt")],
+               ["sawin_sutherland_murmuration.json"]),
     }
     # M1 (murmurations): reproducible from the repo via the committed derived extract
     # (data/cremona/m1_extract.txt, R2), so it is byte-checked everywhere including CI

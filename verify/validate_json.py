@@ -112,6 +112,20 @@ def main() -> int:
             print(f"FAIL: zubrilina_murmuration.json violates schema: {e.message} (at {list(e.path)})")
             failures += 1
 
+    # M4 (Sawin–Sutherland): emit reads the committed COMPUTED run and a schema-checkable
+    # snapshot is committed; validate that snapshot (same pattern as M1/M3).
+    m4_file = Path(__file__).resolve().parent.parent / "viz/data/sawin_sutherland_murmuration.json"
+    if m4_file.exists():
+        m4_schema = schema_dir / "sawin_sutherland_murmuration.schema.json"
+        try:
+            jsonschema.validate(instance=json.loads(m4_file.read_text()),
+                                schema=json.loads(m4_schema.read_text()))
+            print("OK: (committed) sawin_sutherland_murmuration.json valid against sawin_sutherland_murmuration.schema.json")
+            checked += 1
+        except jsonschema.ValidationError as e:
+            print(f"FAIL: sawin_sutherland_murmuration.json violates schema: {e.message} (at {list(e.path)})")
+            failures += 1
+
     # Cross-field invariants the schema can't express.
     lm = json.loads((out / "linking_matrix.json").read_text())
     if not (lm["n"] == len(lm["primes"]) == len(lm["rows_base64"])):

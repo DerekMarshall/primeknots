@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 // Stage M4 — the Sawin–Sutherland murmuration density D(u), the FORMULA side of the
 // separate-TU protocol (m4-pinning §P3, Conjecture 1 / eq. (2) of [SS25]). Authored
@@ -41,5 +42,12 @@ double ss_density(double u, long long m_bound, long long q_bound);
 // are the R2 calibrated targets (m4-pinning §P3). Scanned at step `du`, bound B.
 struct SSShape { double hump_u, hump_v, zero_u, trough_u, trough_v; };
 SSShape ss_shape(long long B, double du);
+
+// The neutral two-pass shape extractor used by BOTH sides (a generic peak-finder, not
+// a density formula — sharing it does not couple the formula/empirical TUs): global
+// hump + global trough (pass 1), then the FIRST +→− zero crossing past the hump
+// (pass 2, linearly interpolated), so an early low-u wiggle is never mistaken for the
+// post-hump zero. `us` ascending, `ds` the sampled curve.
+SSShape extract_shape(const std::vector<double>& us, const std::vector<double>& ds);
 
 }  // namespace at::murm

@@ -149,11 +149,7 @@ double ss_density(double u, long long m_bound, long long q_bound) {
     return 2.0 * kPi * su * sum;
 }
 
-SSShape ss_shape(long long B, double du) {
-    // Sample the curve once, then extract globally (two-pass: the zero crossing must
-    // be the one AFTER the GLOBAL hump, not the early low-u wiggle).
-    std::vector<double> us, ds;
-    for (double u = du; u <= 1.0 + 1e-9; u += du) { us.push_back(u); ds.push_back(ss_density(u, B, B)); }
+SSShape extract_shape(const std::vector<double>& us, const std::vector<double>& ds) {
     SSShape s{0, -1e18, -1, 0, 1e18};
     for (std::size_t i = 0; i < us.size(); ++i) {
         if (ds[i] > s.hump_v) { s.hump_v = ds[i]; s.hump_u = us[i]; }
@@ -165,6 +161,14 @@ SSShape ss_shape(long long B, double du) {
             break;
         }
     return s;
+}
+
+SSShape ss_shape(long long B, double du) {
+    // Sample the curve once, then extract globally (two-pass: the zero crossing must
+    // be the one AFTER the GLOBAL hump, not the early low-u wiggle).
+    std::vector<double> us, ds;
+    for (double u = du; u <= 1.0 + 1e-9; u += du) { us.push_back(u); ds.push_back(ss_density(u, B, B)); }
+    return extract_shape(us, ds);
 }
 
 }  // namespace at::murm
