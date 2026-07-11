@@ -370,13 +370,28 @@ model, before X_confirm data exists (formula side + family counts only):
       zero    0.645   0.318   |D′|≈27         0.012
       trough  0.805   0.444   |D″|≈965        0.030   ← governing
 
-  *Budget (R1 chain, numbers).* τ_bin = Δu = **0.025** (bin granularity floor);
-  τ_dens = **0.005** (R2 locations stable under B∈[200,5000] to < the 0.005 scan step —
-  measured, §"COMMITTED R2 targets"); τ_samp = **0.030** (governing, trough). J₁ 6.4e-12
-  is negligible below all three. Combined **linearly** (conservative — the three may
-  align): **τ = 0.060.** Quadrature (statistical) estimate: 0.040. **Committed
-  empirical-side location tolerance τ = 0.06** at X_confirm — tighter than the
-  quarantined 0.08, i.e. a *stronger* gate, and derived a priori.
+  *Two axes, kept separate (the units matter).* The error sources live on **two
+  different axes** and are only combined after everything is on the location (u) axis:
+  - **Value-space** (errors in D's *value*, units of density): the instrument chain
+    **J₁ accuracy 6.4e-12 → density-evaluation tolerance 0.056** (the max |D_{B=500} −
+    D_{B=5000}| pointwise, from the q,m truncation + eigenvalue truncation). This is the
+    §R1 "instrument ≪ evaluation" chain — and it is entirely in *value* space.
+  - **u-space** (errors in the extracted *location*, units of u): a value-space error δD
+    enters this axis ONLY through the per-feature conversion by the macroscopic
+    curvature/slope — τ = sqrt(2δD/|D″|) at an extremum, τ = δD/|D′| at the crossing.
+    Applied per feature: the density-eval 0.056 converts to a location footprint of
+    **τ_dens ≈ 0.005** (equivalently measured directly: the R2 locations are stable
+    under B∈[200,5000] to < the 0.005 scan step); J₁'s 6.4e-12 converts to ~1e-7,
+    negligible. So the value-space chain enters the budget as **0.005**, never as
+    **0.056** — the "≪" chain compares like with like only after this conversion.
+
+  *Budget (all on the u/location axis now).* τ_bin = Δu = **0.025** (bin granularity
+  floor, intrinsically u-space); τ_dens = **0.005** (the converted density-eval
+  footprint, above); τ_samp = **0.030** (governing, trough — the sampling σ(u) put
+  through the same curvature conversion, per the table). Combined **linearly**
+  (conservative — the three may align): **τ = 0.060.** Quadrature (statistical) estimate:
+  0.040. **Committed empirical-side location tolerance τ = 0.06** at X_confirm — tighter
+  than the quarantined 0.08, i.e. a *stronger* gate, and derived a priori.
 
   *Model cross-check against the peek (validation, NOT a fit).* Same model at X=3000
   (|fam|=396): τ_samp = 0.030·√(1048/396) = **0.049**; the peek's actual max deviation
@@ -506,3 +521,36 @@ tail artifact, not demonstrated to be the finite-X bias by this range)."** The m
 is present and its primary invariants replicate; one invariant is an openly-flagged
 deviation. Not "empirical agreement with Conjecture 1" (the fork did not resolve to
 finite-X bias). No proof is claimed (rule 7).
+
+### C3 — a shape-effect empiric, and a hypothesis that died in public
+
+Two things the ladder shows that are worth recording as their own empiric (emitted in the
+JSON's `convergence` block):
+
+**(1) The zero-crossing deviation is monotone increasing AND sub-bin (interpolated).**
+Unlike the trough (bin-quantized: the global argmin lands on a bin center, 0.8875 or
+0.9125), the zero crossing is linearly interpolated between bins, so its deviation has
+sub-bin resolution:
+
+    X       zero_u      dev(zero) = |zero_u − 0.645|
+    4000    0.667642    0.0226
+    6000    0.669584    0.0246
+    8000    0.672637    0.0276
+    10000   0.672894    0.0279   (monotone ↑)
+
+Jointly with the rightward-displaced trough, this is the **shape-effect reading of
+[SS25]'s documented deficit**: the downward bias is not a constant vertical offset (that
+would leave the crossing and trough locations fixed) but an **effect that grows with u on
+the descending branch** — pushing the +→− crossing steadily rightward and displacing /
+flattening the trough. That is a coherent shape-level interpretation of the deficit SS
+describe; it is offered as a *reading*, not a claim (the finite-X question stays OPEN per
+the fork — a growing-in-u bias at fixed X says nothing yet about the X→∞ limit).
+
+**(2) The referee's tail-argmin hypothesis was REFUTED — in public, by the pre-registered
+discriminant.** The hypothesis (mine, at the confirmation): "the far tail (u→1) drags the
+GLOBAL argmin off a local trough that actually sits near 0.805." The committed
+windowed[0.7,0.9] discriminant (§ above) returned **0.8875 = the global trough exactly** —
+so excluding the far tail did NOT recover a trough near the target. **Hypothesis refuted.**
+The displacement is a real rightward shift of the empirical trough, not an argmin artifact.
+Hypotheses die in public here, the referee's own included — recorded so the refutation is
+part of the ledger, not quietly dropped.

@@ -54,7 +54,7 @@
     },
     "shape": {
       "type": "object",
-      "required": ["targets", "empirical", "dev", "within_tol", "windowed_trough_u", "windowed_note"],
+      "required": ["targets", "empirical", "dev", "within_tol", "windowed_trough_u", "windowed_note", "refuted_hypothesis"],
       "additionalProperties": false,
       "properties": {
         "targets": {
@@ -82,7 +82,8 @@
           "properties": {"hump": {"type": "boolean"}, "zero": {"type": "boolean"}, "trough": {"type": "boolean"}}
         },
         "windowed_trough_u": {"type": "number"},
-        "windowed_note": {"type": "string"}
+        "windowed_note": {"type": "string"},
+        "refuted_hypothesis": {"type": "string"}
       }
     },
     "convergence": {
@@ -95,12 +96,13 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["X", "n_curves", "hump", "zero", "trough", "dev_trough"],
+            "required": ["X", "n_curves", "hump", "zero", "trough", "dev_zero", "dev_trough"],
             "additionalProperties": false,
             "properties": {
               "X": {"type": "number"}, "n_curves": {"type": "integer"},
               "hump": {"type": "number"}, "zero": {"type": "number"},
-              "trough": {"type": "number"}, "dev_trough": {"type": "number"}
+              "trough": {"type": "number"}, "dev_zero": {"type": "number"},
+              "dev_trough": {"type": "number"}
             }
           }
         }

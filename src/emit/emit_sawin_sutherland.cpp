@@ -107,16 +107,27 @@ void emit_m4(const std::string& out_dir, const std::string& run_path,
       << ", \"windowed_trough_u\": " << num(win_trough)
       << ", \"windowed_note\": \"same two-pass extractor restricted to u∈[0.7,0.9]; equal "
          "to the global trough ⇒ the displacement is real, not a far-tail-argmin artifact\""
+      << ", \"refuted_hypothesis\": \"the referee's tail-argmin hypothesis (the far tail "
+         "u→1 drags the global argmin off a local trough near 0.805) was REFUTED by this "
+         "pre-registered windowed discriminant: windowed==global, so excluding the tail "
+         "does NOT recover a trough near the target — the displacement is real\""
       << "},\n";
 
-    // Convergence ladder (the reported empiric behind the fork verdict).
-    f << "  \"convergence\": {\"note\": \"trough deviation is FLAT across X (does not "
-         "decay) ⇒ open deviation, not finite-X bias, by this range\", \"points\": [";
+    // Convergence ladder (the reported empiric behind the fork verdict) + the C3
+    // shape-effect empiric: dev(zero) is monotone-increasing AND sub-bin (interpolated),
+    // dev(trough) is flat + bin-quantized. Jointly ⇒ a bias growing in u on the
+    // descending branch (a reading of [SS25]'s deficit; the finite-X limit stays OPEN).
+    f << "  \"convergence\": {\"note\": \"dev(trough) is FLAT across X (does not decay) ⇒ "
+         "open deviation, not finite-X bias by this range; dev(zero) is MONOTONE-increasing "
+         "and interpolated (sub-bin) — jointly the signature of a downward bias growing in "
+         "u on the descending branch (a shape reading of [SS25]'s deficit, not a claim on "
+         "the X→∞ limit)\", \"points\": [";
     for (std::size_t i = 0; i < run.shapes.size(); ++i) {
         const SSScaleShape& sc = run.shapes[i];
         f << (i ? "," : "") << "{\"X\": " << num(sc.X) << ", \"n_curves\": " << sc.n_curves
           << ", \"hump\": " << num(sc.shape.hump_u) << ", \"zero\": " << num(sc.shape.zero_u)
           << ", \"trough\": " << num(sc.shape.trough_u)
+          << ", \"dev_zero\": " << num(std::abs(sc.shape.zero_u - run.r2_zero))
           << ", \"dev_trough\": " << num(std::abs(sc.shape.trough_u - run.r2_trough)) << "}";
     }
     f << "]}\n}\n";

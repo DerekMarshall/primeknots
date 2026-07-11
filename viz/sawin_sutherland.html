@@ -109,13 +109,14 @@
         `<div class="stat">localization: windowed[0.7,0.9] trough u=${fmt(s.windowed_trough_u)} `+
         `— ${s.windowed_trough_u.toFixed(3)===s.empirical.trough.toFixed(3)?'equals':'differs from'} the global trough `+
         `(${fmt(s.empirical.trough)}) ⇒ ${s.windowed_note}</div>`+
+        `<div class="stat miss">refuted hypothesis: ${s.refuted_hypothesis}</div>`+
         `<div class="stat" style="color:var(--muted)">${d.params.downward_bias_note}</div>`;
     }
 
     function drawConv(d) {
       const fmt=d3.format(".4f");
-      let h="<table class='conv'><tr><th>X</th><th>curves</th><th>hump u</th><th>zero u</th><th>trough u</th><th>|trough−target|</th></tr>";
-      d.convergence.points.forEach(p=>{ h+=`<tr><td>${p.X}</td><td>${p.n_curves}</td><td>${fmt(p.hump)}</td><td>${fmt(p.zero)}</td><td>${fmt(p.trough)}</td><td>${fmt(p.dev_trough)}</td></tr>`; });
+      let h="<table class='conv'><tr><th>X</th><th>curves</th><th>hump u</th><th>zero u</th><th>|zero−target|</th><th>trough u</th><th>|trough−target|</th></tr>";
+      d.convergence.points.forEach(p=>{ h+=`<tr><td>${p.X}</td><td>${p.n_curves}</td><td>${fmt(p.hump)}</td><td>${fmt(p.zero)}</td><td>${fmt(p.dev_zero)}</td><td>${fmt(p.trough)}</td><td>${fmt(p.dev_trough)}</td></tr>`; });
       h+="</table>";
       document.getElementById("conv").innerHTML =
         `<div class="stat" style="color:var(--muted);margin-top:8px">${d.convergence.note}</div>`+h;
