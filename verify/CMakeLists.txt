@@ -400,11 +400,13 @@ add_executable(verify_m4
   verify_main.cpp
   m4/bessel_tests.cpp
   m4/height_tests.cpp
-  m4/ss_density_tests.cpp)
+  m4/ss_density_tests.cpp
+  m4/overlap_tests.cpp)
 target_include_directories(verify_m4 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
   ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(verify_m4 PRIVATE at_murm at_core at_oracle)
+target_compile_definitions(verify_m4 PRIVATE AT_ECDATA_DIR="${CMAKE_SOURCE_DIR}/data/cremona")
 
 foreach(case anchor_generated_constants anchor_bessel_j1
          twin_height_family_count anchor_height_family_count theorem_height_family_reduced
@@ -412,6 +414,10 @@ foreach(case anchor_generated_constants anchor_bessel_j1
   add_test(NAME m4.${case} COMMAND verify_m4 --test-case=${case})
   set_tests_properties(m4.${case} PROPERTIES LABELS "m4")
 endforeach()
+# R3 dual-oracle overlap twin: needs gp (SKIPs 77 if absent) + ecdata; RESOURCE_LOCK gp.
+add_test(NAME m4.oracle_dual_overlap_NE COMMAND verify_m4 --test-case=oracle_dual_overlap_NE)
+set_tests_properties(m4.oracle_dual_overlap_NE PROPERTIES
+  LABELS "m4;oracle" SKIP_RETURN_CODE 77 RESOURCE_LOCK "gp" TIMEOUT 180)
 add_test(NAME m4.twin_bessel_j1_vs_pari COMMAND verify_m4 --test-case=twin_bessel_j1_vs_pari)
 set_tests_properties(m4.twin_bessel_j1_vs_pari PROPERTIES
   LABELS "m4;oracle" SKIP_RETURN_CODE 77 RESOURCE_LOCK "gp")
