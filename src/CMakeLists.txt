@@ -45,7 +45,8 @@ add_library(at_murm STATIC
   murm/dirichlet_murmuration.cpp
   murm/zub_density.cpp
   murm/zub_empirical.cpp
-  murm/height_family.cpp)
+  murm/height_family.cpp
+  murm/ss_density.cpp)
 target_include_directories(at_murm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 # murm -> {ell, mform}: M1/M2 averaging uses ell (a_p); M3's empirical convergence
 # assembles the newform trace formula (mform) over the family (ARCHITECTURE-M §1).
@@ -132,6 +133,7 @@ set_source_files_properties(
   murm/dirichlet_murmuration.cpp
   murm/zub_density.cpp
   murm/zub_empirical.cpp
+  murm/ss_density.cpp
   emit/emit_dirichlet.cpp
   emit/emit_zubrilina.cpp
   PROPERTIES COMPILE_OPTIONS "-ffp-contract=off")

@@ -274,14 +274,27 @@ from bounded exploration and committed **before** the confirmation run they gove
 - **R4 DONE — certified family counts** (`murm/height_family`, verify/m4): direct ==
   sieve at 7 cutoffs to 10⁶; anchors 14/166/1048/7130 at X=10²…10⁵ certified by a
   third independent gp enumeration. This is the required-first foundation.
-- **Committed shape-invariant design (R2), structure frozen now:** the M4 density is
-  smooth (Bessel-J₁ sum, no √-cusp teeth), so the calibrated invariants are, from
-  [SS25] Fig. 1 over u=p/N ∈ (0,1]: (i) **D(0)=0** (the √u prefactor); (ii) a single
-  **positive hump** with peak near u≈0.4; (iii) a **zero crossing** near u≈0.6–0.7;
-  (iv) a **negative trough** near u≈0.85. The exact expected locations + tolerances
-  are set from the density TU's bounded exploration and committed before the
-  confirmation run. `claim_class` = "empirical agreement with Conjecture 1 [SS25]" in
-  the emitted `params` AND the viewer caption (words, not just metadata).
+- **FORMULA TU DONE (step 1)** — `murm/ss_density` builds D(u) from the Conjecture-1
+  integrand: in-house J₁ + generated constants + Lemma 3/4 local factors (rational +
+  Chebyshev U_ν; the level-1 eigenvalue sums vanish for weight <12 and are truncated
+  above — bounded, folded into the density-eval tolerance). **It reproduces [SS25]
+  Fig. 1**: the numerically-extracted hump/zero/trough and amplitudes fall in the
+  figure's band (hump ≈0.4–0.5/≈+4, zero ≈0.65, trough ≈0.8–0.9/≈−4). The eyeballed
+  figure values are the **sanity band only, never the test** (transcribed-from-a-picture
+  is the constants failure mode, CLAUDE.md rule 8).
+- **COMMITTED R2 invariant targets (extracted numerically from D(u), NOT eyeballed;
+  verify/m4 `theorem_ss_density_shape`):**
+      hump  u = 0.475  (D ≈ +3.96)
+      zero  u = 0.645  (first +→− crossing after the hump)
+      trough u = 0.805 (D ≈ −3.40)
+  Stable across truncation B∈[200,5000] to < the 0.005 scan step. Formula-side test
+  tolerance 0.02; the EMPIRICAL-side tolerance (larger, from finite-X noise) is
+  committed with step 3/4 before that run.
+- **R1 error budget (numbers now fixed for the first two links):** J₁ accuracy
+  **6.4e-12** (PARI-twinned) ≪ density-evaluation tolerance **0.056** (max|D₅₀₀−D₅₀₀₀|
+  pointwise; B-truncation + eigenvalue-truncation) ≪ shape-invariant tolerance (0.02
+  formula-side; empirical-side committed with step 3). `claim_class` = "empirical
+  agreement with Conjecture 1 [SS25]" in the emitted `params` AND the viewer caption.
 - **Remaining (next chunk), the compute-heavy pipeline:** R3 dual-oracle overlap twin
   (PARI N,ε vs the pinned ecdata over the height∩Cremona overlap, certified count) —
   BEFORE the statistic consumes any oracle column; the empirical statistic (1) at a
