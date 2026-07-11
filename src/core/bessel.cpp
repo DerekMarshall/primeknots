@@ -72,7 +72,7 @@ double j1_asymptotic(double ax) {
     // P = Σ_k (−1)^k a_{2k} x^{−2k}, Q = Σ_k (−1)^k a_{2k+1} x^{−(2k+1)}, with the
     // coefficients GENERATED in-code from the DLMF 10.17.4 recurrence (4ν²=4):
     //   a_j = a_{j−1}·(4 − (2j−1)²)/(8j),  a_0 = 1
-    // — never typed as decimals (CLAUDE.md #7). The series is asymptotic (divergent);
+    // — never typed as decimals (CLAUDE.md rule 8). The series is asymptotic (divergent);
     // truncate at the optimal (smallest) term, giving ~1e-12 for x ≥ 15.
     const double xi = 1.0 / ax;
     double P = 1.0, Q = 0.0;   // k = 0 terms: P += a_0 = 1; Q has no k=0 (odd index ≥ 1)
