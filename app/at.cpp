@@ -10,8 +10,14 @@
 #include <cstring>
 #include <string>
 
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <fstream>
+#include <map>
 #include <sstream>
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include "emit/emit_borromean.h"
@@ -249,14 +255,27 @@ int main(int argc, char** argv) {
     }
 
     if (std::strcmp(argv[1], "ss-run") == 0) {
-        // THE M4 confirmation run (m4-pinning step 3): the empirical statistic (1)
-        // over the height family, a_p COMPUTED from scratch, N/ε from the committed
-        // oracle cache. Heavy (~minutes); run once, the result is committed as
-        // data/m4/ss_empirical.txt and consumed cheaply by `at emit` + the confirmation
-        // test. The committed DESIGN (X_confirm, ladder, τ, R2 targets) is fixed in
-        // m4-pinning §R0 / §"COMMITTED R2 targets" — pre-registered, not tuned here.
+        // THE murmuration confirmation run (m4-pinning step 3): the empirical statistic
+        // (1) over the height family, a_p COMPUTED from scratch, N/ε from the committed
+        // oracle cache. Heavy (~minutes at 10⁴, ~12 h at 2¹⁶); run once, the result is
+        // committed and consumed cheaply by `at emit` + the confirmation/prereg tests.
+        // The committed DESIGN (τ, R2 targets, Δu) is fixed in m4-pinning §R0 and PR-1 —
+        // pre-registered, not tuned here. --X selects the confirmation scale: 10⁴ (M4,
+        // default) or an X-extension rung (PR-1: 65536, ...).
+        //
+        // PR-1 R2/R3 (X-extension rungs only, via --partials/--checkpoint): the per-curve
+        // partials are persisted keyed by (A,B) so PR-2 re-aggregates subpopulations with
+        // NO a_p recompute; a chunked checkpoint gives crash-safety, is byte-identical to
+        // a single pass at fixed thread count (twin_ss_partials_chunked_vs_single), and is
+        // NEVER inspected mid-run — the shape is extracted exactly once, at completion.
+        i64 X = static_cast<i64>(std::strtoull(opt(argc, argv, "--X", "10000"), nullptr, 10));
         const char* cache = opt(argc, argv, "--cache", "data/m4/ne_cache.txt");
         std::string outf = opt(argc, argv, "--out", "data/m4/ss_empirical.txt");
+        std::string partials_path = opt(argc, argv, "--partials", "");     // "" ⇒ don't persist (M4)
+        std::string default_ckpt = partials_path.empty() ? "" : partials_path + ".ckpt";
+        std::string ckpt_path = opt(argc, argv, "--checkpoint", default_ckpt.c_str());
+        std::size_t chunk = static_cast<std::size_t>(std::strtoull(
+            opt(argc, argv, "--chunk", "512"), nullptr, 10));
         int threads = static_cast<int>(std::strtoull(
             opt(argc, argv, "--threads", "0"), nullptr, 10));
         if (threads <= 0) {
@@ -266,29 +285,156 @@ int main(int argc, char** argv) {
 
         at::murm::NeCacheHeader hdr;
         std::vector<at::murm::NeRow> rows = at::murm::read_ne_cache(cache, hdr);
-        std::fprintf(stderr, "at ss-run: %zu curves from %s (X=%lld); %d threads; computing a_p...\n",
-                     rows.size(), cache, static_cast<long long>(hdr.X), threads);
+        if (hdr.X < X) {
+            std::fprintf(stderr, "at ss-run: cache X=%lld < requested --X %lld "
+                         "(regenerate the N/ε cache at the larger scale)\n",
+                         static_cast<long long>(hdr.X), static_cast<long long>(X));
+            return 4;
+        }
+        const std::size_t C = rows.size();
+        std::fprintf(stderr, "at ss-run: %zu curves from %s (cache X=%lld); confirm X=%lld; "
+                     "%d threads; computing a_p...\n", C, cache,
+                     static_cast<long long>(hdr.X), static_cast<long long>(X), threads);
 
         at::murm::SSRun run;
         run.generator_hash = at::murm::ss_generator_hash();
         run.du = 0.025;                                   // committed bin width (§R0)
         run.tol = 0.06;                                   // a-priori empirical tolerance (§R0c)
         run.r2_hump = 0.475; run.r2_zero = 0.645; run.r2_trough = 0.805;  // committed R2 (formula side)
-        run.X_confirm = 10000.0;                          // pre-named confirmation scale (§R0b)
-        run.ladder = {4000.0, 6000.0, 8000.0, 10000.0};   // peek-untouched convergence ladder
+        run.X_confirm = static_cast<double>(X);           // pre-named confirmation scale (§R0b / PR-1)
+        // Ladder = the M4 peek-untouched rungs that are ≤ X, plus X itself. For X=10⁴ this
+        // is exactly {4000,6000,8000,10000} (M4). For an extension rung the ≤10⁴ points are
+        // FREE consistency re-derivations (same curves, same order ⇒ same M4 shape).
+        for (double m4x : {4000.0, 6000.0, 8000.0, 10000.0})
+            if (m4x <= run.X_confirm) run.ladder.push_back(m4x);
+        if (run.ladder.empty() || run.ladder.back() != run.X_confirm)
+            run.ladder.push_back(run.X_confirm);
 
-        at::murm::SSPartials P = at::murm::ss_empirical_partials(rows, run.du, threads);
-        for (double X : run.ladder) {
-            at::murm::SSEmpirical e = at::murm::ss_aggregate(P, X);
-            run.shapes.push_back({X, e.n_curves, e.shape});
-            if (X == run.X_confirm) run.confirm = e;
+        const bool do_checkpoint = !partials_path.empty() && chunk > 0 && !ckpt_path.empty();
+        const auto t_start = std::chrono::steady_clock::now();
+        auto elapsed_s = [&]() {
+            return std::chrono::duration_cast<std::chrono::seconds>(
+                       std::chrono::steady_clock::now() - t_start).count();
+        };
+
+        at::murm::SSPartials P;
+        if (!do_checkpoint) {
+            // Single-pass (M4 path; also the fast small-X path). Nothing persisted.
+            P = at::murm::ss_empirical_partials(rows, run.du, threads);
+        } else {
+            // ---- chunked pass with crash-safety checkpoint (PR-1 R3) ----
+            const int NB = static_cast<int>(std::lround(1.0 / run.du));
+            P.du = run.du; P.NB = NB;
+            P.A.resize(C); P.B.resize(C); P.N.resize(C);
+            P.num.assign(C, std::vector<double>(NB, 0.0));
+            P.cnt.assign(C, std::vector<i64>(NB, 0));
+            std::map<std::pair<i64, i64>, std::size_t> where;
+            for (std::size_t c = 0; c < C; ++c) {
+                P.A[c] = rows[c].A; P.B[c] = rows[c].B; P.N[c] = rows[c].N;
+                where[{rows[c].A, rows[c].B}] = c;
+            }
+            std::vector<char> done(C, 0);
+            std::size_t n_done = 0;
+
+            // Resume: load completed (A,B) curves from a compatible checkpoint.
+            {
+                std::ifstream probe(ckpt_path);
+                if (probe.good()) {
+                    probe.close();
+                    try {
+                        at::murm::SSPartialsMeta cm;
+                        at::murm::SSPartials Pc =
+                            at::murm::read_ss_partials(ckpt_path, cm, /*allow_incomplete=*/true);
+                        const bool compat =
+                            cm.generator_hash == std::string(at::murm::ss_generator_hash()) &&
+                            cm.X == run.X_confirm && cm.du == run.du &&
+                            cm.NB == NB && cm.threads == threads;
+                        if (compat) {
+                            for (std::size_t j = 0; j < Pc.A.size(); ++j) {
+                                auto it = where.find({Pc.A[j], Pc.B[j]});
+                                if (it == where.end()) continue;   // stale row; ignore
+                                const std::size_t c = it->second;
+                                if (done[c]) continue;
+                                P.num[c] = Pc.num[j]; P.cnt[c] = Pc.cnt[j];
+                                done[c] = 1; ++n_done;
+                            }
+                            std::fprintf(stderr, "at ss-run: RESUMED %zu/%zu curves from checkpoint %s\n",
+                                         n_done, C, ckpt_path.c_str());
+                        } else {
+                            std::fprintf(stderr, "at ss-run: checkpoint %s incompatible "
+                                         "(hash/X/du/NB/threads); ignoring, fresh start\n",
+                                         ckpt_path.c_str());
+                        }
+                    } catch (const std::exception& e) {
+                        std::fprintf(stderr, "at ss-run: checkpoint %s unreadable (%s); fresh start\n",
+                                     ckpt_path.c_str(), e.what());
+                    }
+                }
+            }
+
+            at::murm::SSPartialsMeta meta;
+            meta.generator_hash = at::murm::ss_generator_hash();
+            meta.X = run.X_confirm; meta.du = run.du; meta.NB = NB;
+            meta.threads = threads; meta.ne_cache = cache;
+
+            for (std::size_t start = 0; start < C; start += chunk) {
+                std::vector<at::murm::NeRow> crows;
+                std::vector<std::size_t> orig;
+                const std::size_t stop = std::min(start + chunk, C);
+                for (std::size_t c = start; c < stop; ++c)
+                    if (!done[c]) { crows.push_back(rows[c]); orig.push_back(c); }
+                if (!crows.empty()) {
+                    at::murm::SSPartials cp =
+                        at::murm::ss_empirical_partials(crows, run.du, threads);
+                    for (std::size_t j = 0; j < orig.size(); ++j) {
+                        const std::size_t c = orig[j];
+                        P.num[c] = cp.num[j]; P.cnt[c] = cp.cnt[j];
+                        done[c] = 1;
+                    }
+                    n_done += crows.size();
+
+                    // Overwrite the checkpoint with ALL done curves (complete=0), atomically
+                    // via tmp+rename so a crash mid-write leaves the previous good file. This
+                    // dump carries a_p work only — NO shape is computed here (R3 no-peeking).
+                    at::murm::SSPartials Pdone;
+                    Pdone.du = run.du; Pdone.NB = NB;
+                    for (std::size_t c = 0; c < C; ++c)
+                        if (done[c]) {
+                            Pdone.A.push_back(P.A[c]); Pdone.B.push_back(P.B[c]); Pdone.N.push_back(P.N[c]);
+                            Pdone.num.push_back(P.num[c]); Pdone.cnt.push_back(P.cnt[c]);
+                        }
+                    at::murm::SSPartialsMeta cmeta = meta;
+                    cmeta.complete = false;
+                    cmeta.n_curves = static_cast<i64>(Pdone.A.size());
+                    const std::string tmp = ckpt_path + ".tmp";
+                    at::murm::write_ss_partials(tmp, Pdone, cmeta);
+                    std::rename(tmp.c_str(), ckpt_path.c_str());
+                }
+                std::fprintf(stderr, "  checkpoint: %zu/%zu curves done  (%llds elapsed)\n",
+                             n_done, C, static_cast<long long>(elapsed_s()));
+            }
+
+            // Final partials: complete=1, all curves in canonical order. Committed artifact.
+            meta.complete = true;
+            meta.n_curves = static_cast<i64>(C);
+            at::murm::write_ss_partials(partials_path, P, meta);
+            std::remove(ckpt_path.c_str());
+            std::fprintf(stderr, "at ss-run: wrote %s (%zu curves, %llds a_p) — partials for PR-2\n",
+                         partials_path.c_str(), C, static_cast<long long>(elapsed_s()));
+        }
+
+        // ---- aggregate ONCE, at completion, by the committed extractor ----
+        for (double Xl : run.ladder) {
+            at::murm::SSEmpirical e = at::murm::ss_aggregate(P, Xl);
+            run.shapes.push_back({Xl, e.n_curves, e.shape});
+            if (Xl == run.X_confirm) run.confirm = e;
             std::fprintf(stderr,
-                "  X=%.0f  |fam|=%lld  hump=%.3f zero=%.3f trough=%.3f\n",
-                X, static_cast<long long>(e.n_curves), e.shape.hump_u, e.shape.zero_u, e.shape.trough_u);
+                "  X=%.0f  |fam|=%lld  hump=%.4f zero=%.6f trough=%.4f\n",
+                Xl, static_cast<long long>(e.n_curves), e.shape.hump_u, e.shape.zero_u, e.shape.trough_u);
         }
         at::murm::write_ss_run(outf, run);
-        std::fprintf(stderr, "at ss-run: wrote %s (X_confirm=%.0f, τ=%.2f)\n",
-                     outf.c_str(), run.X_confirm, run.tol);
+        std::fprintf(stderr, "at ss-run: wrote %s (X_confirm=%.0f, τ=%.2f, %llds total)\n",
+                     outf.c_str(), run.X_confirm, run.tol, static_cast<long long>(elapsed_s()));
         return 0;
     }
 

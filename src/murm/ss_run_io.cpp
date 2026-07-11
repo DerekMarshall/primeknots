@@ -1,4 +1,6 @@
 #include <fstream>
+#include <iomanip>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -108,6 +110,104 @@ SSRun read_ss_run(const std::string& path) {
     for (const SSScaleShape& s : r.shapes)
         if (s.X == r.X_confirm) { r.confirm.n_curves = s.n_curves; r.confirm.shape = s.shape; }
     return r;
+}
+
+// -------- per-curve bin partials I/O (PR-1 R2) — same non-hash-bound TU -----------
+void write_ss_partials(const std::string& path, const SSPartials& P,
+                       const SSPartialsMeta& meta) {
+    std::ofstream os(path);
+    if (!os) throw std::runtime_error("write_ss_partials: cannot open " + path);
+    // max_digits10 (=17) round-trips every IEEE double exactly → the reader reconstructs
+    // the partials bit-for-bit, so a re-aggregation matches the in-memory shape.
+    os << std::setprecision(std::numeric_limits<double>::max_digits10);
+    os << "# ss_partials v" << meta.format_version
+       << " — per-curve bin partials of COMPUTED statistic (1) of [SS25] (height murmuration).\n"
+       << "# num[c][b] = Σ_{(E,p): p/N∈bin_b} (u_mid·lnN/N)·ε·a_p   (ε folded in).\n"
+       << "# a_p COMPUTED from scratch (ell::ap_fast, twinned vs frozen ell::ap_charsum);\n"
+       << "# N, ε are oracle-provenance INPUT (ne_cache below, R3-certified oracle_dual_overlap_NE).\n"
+       << "# Persisted so PR-2 re-aggregates subpopulations with NO a_p recompute (add the\n"
+       << "# analytic-rank column, re-sum). Regenerate if the statistic source changes.\n"
+       << "# provenance computed(a_p)+oracle(N,eps)\n"
+       << "# format_version " << meta.format_version << "\n"
+       << "# generator_hash " << meta.generator_hash << "\n"
+       << "# X " << meta.X << "\n"
+       << "# du " << meta.du << "\n"
+       << "# NB " << meta.NB << "\n"
+       << "# n_curves " << meta.n_curves << "\n"
+       << "# threads " << meta.threads << "\n"
+       << "# complete " << (meta.complete ? 1 : 0) << "\n"
+       << "# ne_cache " << meta.ne_cache << "\n"
+       << "# part A B N  num[0..NB-1]  cnt[0..NB-1]\n";
+    for (std::size_t c = 0; c < P.A.size(); ++c) {
+        os << "part " << P.A[c] << ' ' << P.B[c] << ' ' << P.N[c];
+        for (int b = 0; b < P.NB; ++b) os << ' ' << P.num[c][b];
+        for (int b = 0; b < P.NB; ++b) os << ' ' << P.cnt[c][b];
+        os << '\n';
+    }
+    if (!os) throw std::runtime_error("write_ss_partials: write failed for " + path);
+}
+
+SSPartials read_ss_partials(const std::string& path, SSPartialsMeta& out_meta,
+                            bool allow_incomplete) {
+    std::ifstream is(path);
+    if (!is) throw std::runtime_error("read_ss_partials: cannot open " + path);
+    SSPartialsMeta m;
+    bool saw_fmt = false, saw_hash = false, saw_nb = false, saw_complete = false;
+    int complete_flag = 0;
+    SSPartials P;
+    std::string line;
+    while (std::getline(is, line)) {
+        if (line.empty()) continue;
+        if (line[0] == '#') {
+            std::istringstream ms(line.substr(1));
+            std::string key; ms >> key;
+            if (key == "format_version") { ms >> m.format_version; saw_fmt = true; }
+            else if (key == "generator_hash") { ms >> m.generator_hash; saw_hash = true; }
+            else if (key == "X") ms >> m.X;
+            else if (key == "du") { ms >> m.du; P.du = m.du; }
+            else if (key == "NB") { ms >> m.NB; P.NB = m.NB; saw_nb = true; }
+            else if (key == "n_curves") ms >> m.n_curves;
+            else if (key == "threads") ms >> m.threads;
+            else if (key == "complete") { ms >> complete_flag; m.complete = (complete_flag != 0); saw_complete = true; }
+            else if (key == "ne_cache") ms >> m.ne_cache;
+            continue;
+        }
+        std::istringstream rs(line);
+        std::string tag; rs >> tag;
+        if (tag != "part") continue;
+        if (!saw_nb) throw std::runtime_error("read_ss_partials: `part` row before NB header in " + path);
+        i64 A, B, N;
+        rs >> A >> B >> N;
+        std::vector<double> num(m.NB, 0.0);
+        std::vector<i64> cnt(m.NB, 0);
+        bool ok = true;
+        for (int b = 0; b < m.NB && ok; ++b) if (!(rs >> num[b])) ok = false;
+        for (int b = 0; b < m.NB && ok; ++b) if (!(rs >> cnt[b])) ok = false;
+        if (!ok) {
+            // A truncated final line = crash mid-write of the checkpoint. Only tolerable
+            // when resuming (allow_incomplete); a "complete" file must never be truncated.
+            if (allow_incomplete) break;
+            throw std::runtime_error("read_ss_partials: truncated `part` row in " + path);
+        }
+        P.A.push_back(A); P.B.push_back(B); P.N.push_back(N);
+        P.num.push_back(std::move(num)); P.cnt.push_back(std::move(cnt));
+    }
+    if (!(saw_fmt && saw_hash && saw_nb && saw_complete))
+        throw std::runtime_error("read_ss_partials: missing header field(s) in " + path);
+    if (m.format_version != kSSPartialsFormatVersion)
+        throw std::runtime_error("read_ss_partials: unsupported format version");
+    if (m.generator_hash != ss_generator_hash())
+        throw std::runtime_error(
+            "read_ss_partials: REFUSED — stale partials: generator hash " + m.generator_hash +
+            " != current " + ss_generator_hash() + " (regenerate with `at ss-run`)");
+    if (!m.complete && !allow_incomplete)
+        throw std::runtime_error(
+            "read_ss_partials: REFUSED — incomplete (checkpoint) partials never fed to "
+            "analysis (R3 no-peeking); pass allow_incomplete only to RESUME the run");
+    if (m.complete && static_cast<i64>(P.A.size()) != m.n_curves)
+        throw std::runtime_error("read_ss_partials: row count != header n_curves in " + path);
+    out_meta = m;
+    return P;
 }
 
 }  // namespace at::murm

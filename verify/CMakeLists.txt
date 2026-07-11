@@ -428,6 +428,25 @@ add_test(NAME m4.twin_bessel_j1_vs_pari COMMAND verify_m4 --test-case=twin_besse
 set_tests_properties(m4.twin_bessel_j1_vs_pari PROPERTIES
   LABELS "m4;oracle" SKIP_RETURN_CODE 77 RESOURCE_LOCK "gp")
 
+# --- M5 (research mode: PR-1 X-extension infrastructure) --------------------
+# rule-2 twins for the checkpoint/persistence path the 2¹⁶ run relies on (PR-1 R2/R3),
+# locked before the ~12 h run. The prereg_ss_x_extension confirmation test is added here
+# once the 2¹⁶ rung has run (it consumes the committed extension run under data/m5).
+add_executable(verify_m5
+  verify_main.cpp
+  m5/ss_extension_tests.cpp)
+target_include_directories(verify_m5 PRIVATE
+  ${CMAKE_SOURCE_DIR}/third_party
+  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(verify_m5 PRIVATE at_murm at_core)
+target_compile_definitions(verify_m5 PRIVATE
+  AT_M5_DATA_DIR="${CMAKE_SOURCE_DIR}/data/m5")
+
+foreach(case twin_ss_partials_chunked_vs_single twin_ss_partials_file_roundtrip)
+  add_test(NAME m5.${case} COMMAND verify_m5 --test-case=${case})
+  set_tests_properties(m5.${case} PROPERTIES LABELS "m5")
+endforeach()
+
 # --- deck: the explainer deck is an emitted artifact, validated like one -------
 # Every data-claim="ID" in docs/deck/index.html must have a CLAIMS.md row.
 if(AT_VALIDATE_PY)

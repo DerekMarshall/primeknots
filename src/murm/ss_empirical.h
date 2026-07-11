@@ -86,4 +86,32 @@ const char* ss_generator_hash();
 void write_ss_run(const std::string& path, const SSRun& run);
 SSRun read_ss_run(const std::string& path);          // throws on format/generator-hash mismatch
 
+// -------- per-curve bin partials, persisted for two consumers (PR-1 R2) ----------
+// The a_p work is the heavy step (~hours at X=2¹⁶). Persisting the per-curve partials
+// keyed by (A,B) lets a convergence ladder AND PR-2's subpopulation re-aggregation
+// re-sum WITHOUT recomputing a_p (PR-2 Amendment 2: attach an analytic-rank column,
+// re-aggregate; no a_p recompute). Same generator-hash guard as the run (the numbers
+// are the statistic's output). The `complete` flag distinguishes a finished, committed
+// dump (complete=1, safe to analyze) from a crash-safety CHECKPOINT (complete=0, which
+// read_ss_partials REFUSES unless allow_incomplete — the R3 no-peeking discipline).
+constexpr uint32_t kSSPartialsFormatVersion = 1;
+
+struct SSPartialsMeta {
+    uint32_t format_version = kSSPartialsFormatVersion;
+    std::string generator_hash;   // SS (statistic) hash — sha256 of murm/ss_empirical.cpp
+    double X = 0;                 // family cutoff H(E) ≤ X
+    double du = 0;
+    int NB = 0;
+    i64 n_curves = 0;
+    int threads = 0;              // a_p summation order is thread-count-fixed (reproducibility)
+    bool complete = false;        // false ⇒ crash-safety checkpoint, never analyzed (R3)
+    std::string ne_cache;         // provenance: which N/ε cache fed this (oracle, R3-certified)
+};
+
+void write_ss_partials(const std::string& path, const SSPartials& P, const SSPartialsMeta& meta);
+// Throws on missing header / format / generator-hash mismatch. If !allow_incomplete,
+// also throws when meta.complete==false (a checkpoint is never fed to analysis — R3).
+SSPartials read_ss_partials(const std::string& path, SSPartialsMeta& out_meta,
+                            bool allow_incomplete = false);
+
 }  // namespace at::murm
