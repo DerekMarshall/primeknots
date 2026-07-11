@@ -395,3 +395,74 @@ around — so, unlike #19 (where git could not corroborate timing), here the rec
 tolerance, softened by "bounded exploration" framing; caught by the human referee's R0
 directive reading the checkpoint). Remedy: this §R0 (peek → register; a-priori τ; the
 0.08 quarantined).
+
+---
+
+## The confirmation run at X_confirm=10⁴ — FORK COMMITTED BEFORE THE LADDER IS READ (2026-07-11)
+
+`at ss-run` produced the empirical statistic at X_confirm=10⁴ (1048 curves, a_p from
+scratch via `ell::ap_fast`, N/ε from the R3-certified oracle cache, Δu=0.025, the
+committed two-pass extractor). **The confirmation point (already observed):**
+
+    invariant   empirical u   R2 target   |dev|     vs τ=0.06
+    hump        0.463         0.475       0.012     ✓
+    zero        0.673         0.645       0.028     ✓
+    trough      0.888         0.805       0.083     ✗  (exceeds τ)
+
+**2 of 3 committed shape invariants agree within the a-priori τ; the trough misses.**
+The τ=0.06 budget (§R0c) covered instrument+binning+*sampling* noise — it did **not**
+budget the *systematic* downward bias SS document (a distinct error mode). The empirical
+tail stays deeply negative near u→1 where D(u) returns toward 0, flattening the
+trough→tail region so the global argmin drifts right into a noisy deep plateau. This is
+the miss, reported as a deliverable — **τ and the extractor are NOT touched** (that would
+be the #26 sin again).
+
+**THE FORK — committed now, before the convergence ladder's trough trend is read.** The
+verdict on the trough miss is decided by a rule fixed in advance, not chosen to fit the
+trend (interpreting a convergence post-hoc is the same class as setting τ post-peek):
+- **Pre-named ladder** (peek-untouched, §R0b): X ∈ {4000, 6000, 8000, 10000}.
+- **Per-scale noise band:** τ_samp(X) = 0.030·√(1048 / |fam(X)|) (the §R0c model at
+  scale X; larger at smaller X).
+- **DECISION RULE.** The trough miss is attributed to **"finite-X downward bias"**
+  ⟺ |trough_u(X) − 0.805| **decreases monotonically across the ladder** (or is
+  non-increasing within the per-scale τ_samp band). **Any other pattern — flat,
+  non-monotone, or increasing beyond the band — is verdict "UNEXPLAINED — OPEN
+  DEVIATION,"** and the emitted `claim_class` reads **"partial agreement, open
+  deviation"** rather than "empirical agreement with Conjecture 1." *The caption
+  follows the fork, not the hope.* (SS's own note below makes the monotone case genuinely
+  uncertain at my X-range — see the quote: the rank-2 proportion **increases** over
+  2¹⁶–2²⁸, and my ladder 2¹²–2¹³·³ sits *below* that range, so a decreasing trend is
+  not a foregone conclusion.)
+
+**LOCALIZATION DISCRIMINANT — committed before it is computed.** Extract the trough with
+the **same two-pass extractor restricted to u ∈ [0.7, 0.9]** (around the target, away
+from the biased tail). Report **both** numbers as emitted empirics: the *global-argmin*
+trough (the committed R2 test's input, stays ✗) and the *windowed* trough (diagnostic).
+**Predicted discriminant:** if the tail bias is the cause, the windowed trough sits near
+0.805 while the global sits at 0.888 — demonstrating the diagnosis rather than narrating
+it. The windowed number is **diagnostic evidence filed with the deliverable, never a
+replacement test**; the committed verdict stays global-extractor ✗.
+
+**SS25 downward-bias passage — quoted verbatim (the diagnosis leans on it, so it is
+pinned).** [SS25] p.3 (bottom, after Fig. 1) → p.4 (top):
+> "An interesting feature is that part of the discrepancy between the purple and green
+> dots comes from a persistent downward bias, where (1) is slightly less than its
+> predicted limiting value. As part of the proof of Theorem 2, we prove a variant
+> statement without the limit as P goes to ∞. Graphs of the left-hand side and
+> right-hand side of this statement do not show the downward bias, suggesting it is
+> genuinely a property of the primes. This downward bias seems to decay as X goes to ∞,
+> suggesting it will go away in the limit, though it may decay more slowly than other
+> sources of discrepancy between (1) and the right-hand side of (2)."
+
+and the rank-2 caveat (p.4), which is why the trend is not assumed:
+> "…while the proportion of curves with naive height ≤ X that have rank 2 is expected to
+> decrease to 0 as X → ∞, it actually increases for the range of X we consider (from
+> 2¹⁶ to 2²⁸)… Hence, to use curves of rank ≥ 2 to explain the downward bias, one would
+> have to explain why the bias decreases over this range, rather than increasing as one
+> might expect."
+
+**THE ARTIFACT CARRIES THE MISS.** Emitted `params` + viewer caption state, in words:
+"2 of 3 committed shape invariants within τ=0.06 at X=10⁴; trough deviation 0.083
+exceeds τ, [verdict per the fork]; convergence empirics + windowed-trough diagnostic
+attached." The ladder trend and the windowed trough are recorded below **after** this
+fork is committed.
