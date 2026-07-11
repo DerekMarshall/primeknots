@@ -14,6 +14,50 @@ Cremona) — flagged as the crux for the gate.
 
 ---
 
+## C2 — CLAIM CLASS: what SS25 PROVES vs what it CONJECTURES  [blocks Phase 2]
+
+**Verbatim (abstract, p.1):** "We consider a variant problem where the elliptic curves
+are ordered by naive height, and the pth coefficients are averaged over p/N in a fixed
+interval. **We give a conjecture for the murmuration density in this case, as an
+explicit but complicated sum of Bessel functions.** This conjecture is motivated by a
+theorem about a variant problem where we sum the nth coefficients for n with no small
+prime factors against a smooth weight function. We test this conjecture for elliptic
+curves of naive height up to 2²⁸ and find good agreement with the data. **The theorem
+is proved using the Voronoi summation formula** … This is the first work to give an
+explicit formula for the murmuration density of a family of elliptic curves, in any
+ordering."
+
+So the register is unambiguous in the source:
+- **CONJECTURED — Conjecture 1 (eq. (2)):** the explicit density for the *actual*
+  height-ordered elliptic-curve murmuration, statistic (1) (a prime sum). Labeled
+  **"Conjecture 1"** in the paper. This is what M4's empirical curve is compared to.
+- **PROVEN — Theorem 2 (p.2):** the *variant* — the sum over n with **no prime factors
+  ≤ P**, weighted by a smooth W(n/N(E)), in the P→∞ then X→∞ limit, equals
+  ∫ W(u)·(the same Bessel-sum integrand) du. Labeled **"Theorem 2"**, proved via Voronoi
+  summation. This is NOT the prime-sum murmuration; it is the smooth-weight,
+  no-small-factor variant that *motivates* Conjecture 1.
+
+**⇒ The explicit density of the height-ordered EC murmuration is CONJECTURAL, not
+proven.** RESEARCH-M §6 overclaimed it ("[SS25] proves an explicit murmuration density
+… ordered by naive height", "a proven anchor") — filed as **ERRATA #24** (spec-author
+overclaim) and corrected in RESEARCH-M; §6 now reads in the honest register.
+
+**M4 acceptance language (honest register, replacing "verify against their density"):**
+M4 demonstrates **empirical agreement between the height-ordered statistic (1) and the
+CONJECTURED density (Conjecture 1)** — an empirical replication of a conjecture, not a
+proof-check. Optionally (Phase 2, if computable at our scale) an **empirical check of
+Theorem 2** — the proven variant — as convergence of the smooth-weight/no-small-factor
+average to ∫W·D; that is the only part with a proof behind it, and even there our check
+is empirical (a limit statement). Nothing in M4 is labeled *proved* (RESEARCH-M §11:
+"No proofs are claimed anywhere in this project"; only cited literature is).
+
+**Emitted-artifact requirement (Phase 2):** `params` MUST carry a `claim_class` field
+naming this — e.g. `"empirical agreement with the CONJECTURED density (Z-... Conj 1);
+Theorem 2 is the proven variant (not the prime-sum murmuration)"` — so the public JSON
+cannot be read as a proof-verification.
+
+---
+
 ## P1 — the height and the family
 
 **Family (quoted, p.1):** "For integers A, B, let E_{A,B} be the curve with equation
@@ -153,11 +197,19 @@ table (the family is far too large / outside tables).
   algorithm. Out of M4 scope unless the paper forces it; large surface area, its own
   pinning + twins.
 
-**Recommendation for the gate (Derek to rule):** (a) with the §2 amendment + the
-overlap spot-check + (if cheap) a from-scratch Tate conductor twin. This keeps the
-actual murmuration quantity (a_p) from-scratch while treating N, ε as oracle-supplied
-metadata — the M1-continuous reading. But this is the **named decision** of M4; I do
-not resolve it unilaterally.
+**RESOLVED (C3, Derek's ruling 2026-07-10): option (a) with riders.**
+- **§2 amendment** naming the *oracle-provenance input-data* class + its residual risk
+  (a live oracle supplying trusted input, not refereeing) — written into RESEARCH-M §2.
+- **Dual-oracle overlap twin (Phase 2, REQUIREd):** over every curve in BOTH the height
+  family AND Cremona's range, PARI's N and ε must equal the pinned ecdata **exactly**,
+  with a **certified overlap count**. This is the independent check that the live oracle
+  is not lying; a `twin_`/`oracle_`-class test.
+- **Provenance + conditionality in emitted `params`:** N, ε columns labeled
+  `provenance: oracle`; params states the input-data conditionality (alongside the
+  §C2 `claim_class`).
+- **Tate twin = deferred upgrade:** from-scratch conductor (Tate) + local root numbers
+  recorded as an M0b-class future stage; not built in M4.
+The actual murmuration quantity a_p stays computed-provenance.
 
 ## P5 — certified counts
 
@@ -177,15 +229,26 @@ enumeration:**
 
 ## Phase 2 — PRE-REGISTERED (built only after the pinning review signs off)
 
-Still local (push-on-green per the M-branch authorization; no merge to main). No M5
-stubs. Design fixed here, numeric tolerances committed before the confirmation run:
-1. **a_p from-scratch** (M0) over the height family; **N, ε per the P4 ruling**.
-2. **Family counts** certified (P5, two enumerations agree) before any averaging.
+Still local until CI-green, then **push on CI-green** (M-branch authorization; CI now
+runs on branch pushes, C1); no merge to main. No M5 stubs. Design fixed here, numeric
+tolerances committed before the confirmation run. **Prerequisites already cleared before
+Phase 2:** C1 (CI branch trigger), C2 (claim class + RESEARCH-M fix + ERRATA #24), C3
+(§2 amendment + P4 resolution), **C4 (from-scratch Bessel J₁, twinned vs PARI `besselj`,
+so no emitted byte depends on libm)**.
+1. **a_p from-scratch** (M0) over the height family; **N, ε oracle-provenance** (PARI),
+   with the **dual-oracle overlap twin** (C3): PARI vs pinned ecdata over the full
+   height∩Cremona overlap, N and ε exact, certified count — REQUIREd before trusting
+   the oracle inputs.
+2. **Family counts** certified (P5, two independent enumerations agree) before averaging.
 3. **Empirical statistic (1)** assembled: ε-weighted a_p averaged over p/N ∈ (C₁,C₂),
-   over height-ordered curves; **separate-TU** from the D(u) formula side (P3).
+   over height-ordered curves; **separate-TU** from the D(u) formula side (P3), which
+   consumes the C4 in-house J₁.
 4. **Shape-invariant test** (P3) — committed peak/zero/trough locations + tolerances
    (no √-cusp teeth exist); the reported empiric is the L² / pointwise distance to D,
    decreasing with X. The persistent **downward bias** SS note (p.3–4, (1) sits below
    the RHS, decaying in X, possibly rank-2 related) is reported, not fitted away.
-5. **Emitter + viewer + freshness**, byte-portable (the J₁ cross-libm hazard, P3);
-   schema; validate-json. Snapshot committed with the emitter.
+   Optionally the **Theorem 2** empirical convergence (the proven variant, §C2).
+5. **Emitter + viewer + freshness**, byte-portable (in-house J₁, no libm bytes);
+   `params.claim_class` (§C2) + `provenance:oracle` on N,ε (§C3); schema; validate-json.
+   Snapshot committed with the emitter; **acceptance register = "empirical agreement
+   with the CONJECTURED density"**, never "verified/proved".
