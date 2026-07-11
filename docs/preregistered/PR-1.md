@@ -92,6 +92,45 @@ climbing. It is more sensitive than the quantized trough but is recorded as supp
 evidence only — the pass/fail gate is the trough rule above (the same discipline as M3:
 teeth gate, L2 supporting).
 
+## Partial-ladder clause — what ONE rung licenses (amended 2026-07-11, before Rung 1 data; R1)
+
+The VERDICT language above ("consistent with SS finite-X bias" / "persistent deviation")
+is a statement about **d(X) across the feasible ladder** — it needs ≥ 2 extension rungs
+(a *trend*), because "non-increasing" and "moved ≥ 1 bin at the largest rung" are
+ladder properties, not single-point ones. The first rung (2¹⁶) runs alone, on an
+overnight budget; this clause fixes — **before any 2¹⁶ number exists** — exactly what
+that single rung may and may not license, so no post-hoc reading can inflate one point
+into the verdict. Let d(X) = |trough_u(X) − 0.805|; the X=10⁴ anchor is d=0.0825
+(trough_u=0.8875).
+
+> **A single rung is EVIDENCE-GRADE only, never verdict-grade.** Reading the {10⁴, 2¹⁶}
+> pair yields exactly one of two *directional interim readings* — each says "keep going,"
+> in a different direction — and **neither is the H1/H0 verdict:**
+>
+> - **Reading A — "consistent with finite-X, escalate":** d(2¹⁶) ≤ 0.0575 (trough moved
+>   ≥ one full bin, Δu=0.025, toward 0.805) **and** d(2¹⁶) < d(10⁴). Licenses:
+>   **run the next rung (2¹⁷)** to see whether the trend continues. Does **NOT** license
+>   the H1 ("finite-X bias") verdict — one downward step is not a decaying trend; the
+>   verdict waits for the ladder.
+> - **Reading B — "consistent with persistent, proceed to PR-2":** anything else (flat
+>   within the Δu quantization floor, or d increased). Licenses: **begin PR-2** (the
+>   rank-split tail analysis), which is the H0 escalation path and does not itself need
+>   H1's ladder. Does **NOT** license the H0 ("persistent deviation") verdict as
+>   *final* — a fuller ladder (adding 2¹⁷ when budget allows) still gets appended, and
+>   the verdict is pronounced there.
+>
+> **The asymmetry is deliberate and pre-committed:** one rung can send us *sideways to
+> PR-2* (Reading B — the rank-split is worth doing on 2¹⁶-persistence evidence alone,
+> and PR-2 has its own pre-registered gate), but one rung can **never** send us to a
+> *finite-X "done"* (Reading A must be confirmed up the X-ladder first). This encodes
+> that the burden for declaring the deviation *explained-away-as-finite-X* is strictly
+> higher than the burden for opening the mechanistic follow-up.
+
+The `prereg_ss_x_extension` test records **which interim reading fires** and pins the
+observed d(2¹⁶); it does **not** emit a verdict from one rung. A FAIL-to-recover
+(Reading B) is a deliverable that *advances* the program (to PR-2), exactly as the
+committed decision rule intends — it is never a threshold to renegotiate.
+
 ## Runtime estimate per rung (stated up front — the ladder is NOT silently shrunk)
 
 Calibration: X=10⁴ ran in **250 s** (1048 curves, 12 threads). Cost model
@@ -122,15 +161,37 @@ prerequisite, out of PR-1 scope.
 
 `at ss-run --X <rung>` per rung (each writes its own committed run file / cache),
 extractor + τ + Δu unchanged; a `prereg_ss_x_extension` test loads THIS doc, checks the
-analysis-code hash matches, applies the decision rule to the committed extension shapes,
-and records PASS(H1)/FAIL(H0→PR-2) in a postscript here. A FAIL is a deliverable; the
-threshold is never adjusted post-hoc.
+analysis-code hash matches, applies the decision rule (and, for a lone rung, the
+partial-ladder clause) to the committed extension shapes, and records the interim
+reading / verdict in a postscript here. A FAIL-to-recover is a deliverable; the threshold
+is never adjusted post-hoc.
 
-*Forward-reference (output format, does NOT change any gated element above):* the 2¹⁶
-rung must **persist the per-curve bin partials** (keyed by (A,B)) and the (A,B)-keyed N/ε
-cache, so PR-2 can attach an analytic-rank column and re-aggregate subpopulations WITHOUT
-recomputing a_p (PR-2 Amendment 2). This is an emit-side requirement on the 2¹⁶ run only;
-the statistic, extractor, τ, holdout, and decision rule are untouched.
+**Execution discipline for Rung 1, pre-committed (R2, R3 — before any 2¹⁶ number):**
+
+- **R2 — one cache, two consumers.** The 2¹⁶ run builds the a_p work and the N/ε cache
+  **once** over the **full 5042-curve family**, with the standard committed-artifact
+  headers: the statistic `generator_hash` (SS), **provenance: oracle** on the N/ε column
+  (PARI `ellglobalred`/`ellrootno`, R3-class dual-oracle-overlap certified — the M4
+  `oracle_dual_overlap_NE` twin), and the thread count (a_p summation order is
+  thread-count-fixed; recorded for reproducibility). The **per-curve bin partials are
+  persisted keyed by (A,B)** so PR-2 attaches only an **analytic-rank column** and
+  re-aggregates subpopulations with **no a_p recomputation** (PR-2 Amendment 2). PR-2's
+  mandatory **parity cross-check** (analytic-rank parity == cached ε parity; ε=(−1)^ord
+  is the functional-equation sign, a theorem, so a mismatch is a numerical
+  mis-determination) runs over **all 5042 curves** (not a sample); **any nonzero mismatch
+  aborts and is itself a deliverable.** None of this touches the statistic, extractor, τ,
+  holdout, or decision rule; it is emit-side I/O in the non-hash-bound TUs
+  (`app/at.cpp`, `murm/ss_run_io.cpp`), so `SS_GENERATOR_HASH` is unchanged.
+
+- **R3 — checkpoint without peeking.** The ~12 h run writes chunked intermediate partials
+  to a **checkpoint file for crash-safety only** (resume skips completed (A,B) curves).
+  Chunking by curves is **byte-identical** to a single pass at fixed thread count (each
+  prime sits at a maxN-independent index → same thread → same accumulation order; locked
+  by the `twin_ss_partials_chunked_vs_single` test). **Shape statistics are computed
+  exactly ONCE, at completion, by the committed `extract_shape`.** Intermediate dumps are
+  **quarantined from all analysis** — no mid-run inspection of any trough/zero/hump
+  (the R0 lesson, scheduled edition: a confirmation is defined by the single completion
+  computation, not by anything glimpsed while it ran).
 
 ## Postscript (results — appended only after the confirmation rungs run)
 
