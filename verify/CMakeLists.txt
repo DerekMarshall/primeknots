@@ -398,13 +398,15 @@ endforeach()
 # from-scratch Bessel J₁ (IEEE-only, no libm) the density TU will consume.
 add_executable(verify_m4
   verify_main.cpp
-  m4/bessel_tests.cpp)
+  m4/bessel_tests.cpp
+  m4/height_tests.cpp)
 target_include_directories(verify_m4 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
   ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(verify_m4 PRIVATE at_core at_oracle)
+target_link_libraries(verify_m4 PRIVATE at_murm at_core at_oracle)
 
-foreach(case anchor_generated_constants anchor_bessel_j1)
+foreach(case anchor_generated_constants anchor_bessel_j1
+         twin_height_family_count anchor_height_family_count theorem_height_family_reduced)
   add_test(NAME m4.${case} COMMAND verify_m4 --test-case=${case})
   set_tests_properties(m4.${case} PROPERTIES LABELS "m4")
 endforeach()
