@@ -54,6 +54,7 @@ arXiv:2504.12295.
 | E1-32 | M4+PR-1 test SS Conjecture 1 (1048 at ≤10⁴, 5042 at ≤2¹⁶); hump+zero within τ, trough an open deviation flat 10⁴→2¹⁶ | sawin_..._murmuration.json, ss_x_extension_murmuration.json; PR-1.md; test `prereg_ss_x_extension` |
 | E1-33 | Our trough deviation is unresolved (does not decay on our range); PR-2 tests a candidate, outcome pending | PR-1.md postscript; docs/preregistered/PR-2.md |
 | E1-34 | "Verified" = numerically, over a range, cross-checked; no formal proof claimed | CLAUDE.md rule 7 / RESEARCH-M §0 rule 7 |
+| E1-37 | Discovery steps = averaging + PCA of coefficients; corroborated by Sutherland's Sept-2023 talk (scale-invariant p/N, root-number split) | HLOP §3.2 (Averaging), §3.4 (PCA); A. Sutherland, murmurations talk (Sept 2023): slides drive.google.com/file/d/17VR0FPH8kNTL3nPXKrY4zu4m6C2Ml_9G, video youtube.com/watch?v=AFupZY06FPY |
 
 ## E2 — primeknots (arithmetic-topology ladder)
 

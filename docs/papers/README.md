@@ -52,6 +52,7 @@ fetch time (2026-07-12), not recalled (rule 6).
 |---|---|---|
 | D. Wachs — *BSD Invariants and Murmurations of Elliptic Curves* (4 Mar 2026) | **Confound + novelty-narrowing:** BSD invariants (Tamagawa, analytic \|Ш\|, real period) modulate murmuration profiles *within fixed rank* (conductor-ordered) — so PR-2's rank-2 result is a "carried by", not "caused by", claim | arXiv:2603.04604 |
 | D. Wachs — *Murmurations of Elliptic Curves over Function Fields* (14 Mar 2026) | **Context only** (nothing gated changes): function-field F_q(t), rank-0/1; \|Ш\| modulation as an exact composition effect — thematic support for the confound above | arXiv:2603.13802 |
+| A. Sutherland — talk on murmurations (Sept 2023) | Corroborates the discovery narrative (E1: scale-invariant `p/N`, root-number split); source for the **parity-independent unsigned-average bias** at `p≡1 mod 24`, `p≡□ mod 5,7` (PR-3 draft). PDF gitignored, NOT committed | slides [drive.google.com](https://drive.google.com/file/d/17VR0FPH8kNTL3nPXKrY4zu4m6C2Ml_9G), video [youtube.com/watch?v=AFupZY06FPY](https://www.youtube.com/watch?v=AFupZY06FPY) |
 
 Normative M-stage sources (M0–M4): the M-ladder above (HLOP arXiv:2204.10140 [M1],
 LOP arXiv:2307.00256 [M2], Zubrilina arXiv:2310.07681 = Invent. math. 2025 [M3],

@@ -127,7 +127,11 @@ the coefficients were **averaged and visualized**; the methods "did not explain 
 mathematical source" of the phenomenon. <!-- claim:E1-22 --> HLOP state that, to their
 knowledge, this oscillating behaviour "has never been reported in the literature."
 <!-- claim:E1-23 --> The honest one-line version is: *humans investigating what a
-rank-classifier had latched onto found a wave in the averages* — not "an AI saw it."
+rank-classifier had latched onto found a wave in the averages* — not "an AI saw it." The
+concrete data-scientific steps were **averaging and principal-component analysis** of the
+coefficients (HLOP §3.2, §3.4); Sutherland's Sept-2023 talk on the phenomenon corroborates
+this account and is where the scale-invariant `p/N` view and the root-number split are laid
+out. <!-- claim:E1-37 -->
 
 ## Proven, conjectured, still open
 
