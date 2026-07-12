@@ -1,4 +1,4 @@
-<!-- EXPLAINER E2 — DRAFT for external read-through. NOT linked from README yet.
+<!-- EXPLAINER E2. Linked from README; content accuracy (rule 1) is referee-owned.
      Register: docs/explainers/CLAIMS-E.md. Rule 1: simplifications are understatements
      or special cases, never inversions. Analogies are labelled. The arithmetic-topology
      DICTIONARY is an analogy; the individual theorems it organizes are genuine theorems

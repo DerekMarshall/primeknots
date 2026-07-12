@@ -1,4 +1,5 @@
-<!-- EXPLAINER E1 — DRAFT for external read-through. NOT linked from README yet.
+<!-- EXPLAINER E1. Linked from README; content accuracy (rule 1) is referee-owned, the
+     structural claim-sourcing is checked by verify/explainers_check.py.
      Register: docs/explainers/CLAIMS-E.md (one row per <!-- claim:ID --> marker).
      Rule 1: every simplification is an understatement or special case of the pinned
      source, never an inversion. Analogies are labelled. Numbers come from emitted
@@ -72,11 +73,12 @@ conductor in a band `[N₁, N₂]`, the plain average of the trace at the `n`-th
 
 <!-- claim:E1-11 --> Plotted against the primes, `f_0` and `f_1` trace out two distinct,
 largely *opposing* waves; a rank-0 band and a rank-2 band do the same. <!-- claim:E1-12 -->
-In their worked example the bands are not small: using the LMFDB database, the rank-0 and
-rank-1 classes with conductor in `[7500, 10000]` contain **4328** and **5194** curves
-respectively; the rank-0 and rank-2 classes in `[5000, 10000]` contain **8536** and **1380**.
-<!-- claim:E1-13 --> The pattern is a **population-level** fact about such an average — it is
-not a device for reading one individual curve's rank off its coefficients.
+In their worked example the bands are not small (the counts are of **isogeny-class
+representatives**, HLOP's unit of enumeration): using the LMFDB database, the rank-0 and
+rank-1 classes with conductor in `[7500, 10000]` contain **4328** and **5194** isogeny
+classes respectively; the rank-0 and rank-2 classes in `[5000, 10000]` contain **8536** and
+**1380**. <!-- claim:E1-13 --> The pattern is a **population-level** fact about such an
+average — it is not a device for reading one individual curve's rank off its coefficients.
 <!-- claim:E1-14 -->
 
 ## Why it is a *density*, not just a wiggle
@@ -87,20 +89,33 @@ decisively, it is **scale-invariant in the ratio `p / N`** (prime over conductor
 slide the family to larger conductors, the picture does not wash out but converges, when
 drawn against `p/N`, toward a *continuous-looking* limit function. <!-- claim:E1-15 -->
 Sutherland made exactly this observation, and it is what lets one speak of a **murmuration
-density** — a fixed curve `M(y)` in the variable `y = p/N` that the averages approach.
-<!-- claim:E1-16 --> This is why our own plots use `p/N` on the horizontal axis rather than
-`p` itself. <!-- claim:E1-17 -->
+density** — a fixed curve `M(y)` in a "prime-over-scale" variable `y` that the averages
+approach. <!-- claim:E1-16 --> This is why our own plots put that ratio, not `p` itself, on
+the horizontal axis. <!-- claim:E1-17 -->
+
+A precision worth stating, because three closely-related variables appear in the literature
+and in our own artifacts and they are *not* interchangeable. Zubrilina's proved density is a
+function of **`y := P/X`** — prime over the *family's level scale* `X` — and she pins this
+"NOT `P/N`." Sawin–Sutherland instead bin by **`u = p/N(E)`** — prime over the *individual
+curve's conductor* `N(E)`. Our Stage-M1 replication uses **`p/N₂`** — prime over the band's
+*upper* conductor. All three are "prime over a conductor scale," and all three make the
+oscillation scale-invariant; but which denominator you pick is part of the statistic's
+definition, not a cosmetic axis label. <!-- claim:E1-35 -->
 
 ## Ordering sensitivity
 
-The density is not unique — it depends on **how you enumerate the family**. Zubrilina's
-proved case is for square-free levels, and she notes that allowing *all* levels appears to
-give a *slightly different* density that nonetheless shares its key properties.
-<!-- claim:E1-18 --> More sharply, Sawin and Sutherland order elliptic curves not by
-conductor but by **naive height** `H = max(4|A|³, 27B²)`, and get a *different* conjectured
-density for that ordering. <!-- claim:E1-19 --> The ordering is a real degree of freedom, not
-a bookkeeping choice — which is precisely the axis our own Stage-M4 and PR-1 work lives on
-(the height ordering). <!-- claim:E1-20 -->
+The density is not unique — it depends on **how you enumerate the family**, and dramatically
+so. Zubrilina's proved case is for square-free levels, and she notes that allowing *all*
+levels appears to give a *slightly different* density that nonetheless shares its key
+properties. <!-- claim:E1-18 --> Far more sharply, she reports that the elliptic-curve
+murmuration "is very sensitive to the ordering by conductor, and **disappears almost
+entirely** when the curves are ordered by naive height, `j`-invariant, or discriminant."
+<!-- claim:E1-19 --> That is the striking part: the strong conductor-ordered wave nearly
+vanishes under **naive height** `H = max(4|A|³, 27B²)`. Sawin and Sutherland nonetheless
+isolate a **subtler** height-ordered density that survives (their Conjecture 1) — and it is
+exactly this fainter, height-ordered signal that our own Stage-M4 and PR-1 work measures,
+which is why the deviations we chase there are small and hard-won rather than the bold
+opposing waves of the conductor picture. <!-- claim:E1-20 -->
 
 ## How it was found (per the authors, not the folklore)
 
@@ -123,13 +138,15 @@ rank-classifier had latched onto found a wave in the averages* — not "an AI sa
 - **Conjectured.** The Sawin–Sutherland density for elliptic curves ordered by **height** is
   **Conjecture 1** of their paper; only a variant (their Theorem 2) is proven, via a
   different limiting statement. <!-- claim:E1-26 -->
-- **Partly open.** Zubrilina's theorem is for **square-free** levels; by modularity its
-  weight-2 case covers elliptic curves of square-free conductor (weighted by root number). She
-  notes the **all-levels** density appears *slightly different* and is not established in the
-  same closed form, and the original HLOP pictures split by **rank** over full conductor bands
-  rather than by root number — related through parity but not the identical object. And the
-  precise behaviour of the **height-ordered** density's *tail* is where our own results flag a
-  deviation (below). <!-- claim:E1-27 -->
+- **Open — even the conductor-ordered elliptic-curve case.** Zubrilina proves the density for
+  *modular forms*; she is explicit that this does **not** settle elliptic curves: "Murmurations
+  for elliptic curves over ℚ are not explained by these results, as they constitute a **very
+  sparse subset** of weight 2 modular forms," and indeed "the best fit curve to approximate the
+  data of elliptic curve murmurations does not match" the modular-form density. The average
+  over the full modular-form family does not determine the average over the sparse elliptic-curve
+  subfamily. <!-- claim:E1-27 --> The **height-ordered** elliptic-curve density is a separate
+  conjecture (above), and the behaviour of its *tail* is where our own results flag a deviation
+  (below). <!-- claim:E1-36 -->
 
 Throughout: murmurations give **statistical** information about rank across a family. They do
 not "crack" the Birch–Swinnerton-Dyer conjecture, which is about the rank of an *individual*
@@ -143,8 +160,10 @@ two independent implementations of each load-bearing step, external oracles only
 referees) and renders each stage as a JSON artifact with a static viewer:
 
 - **Stage M1** replicates the original HLOP picture: the unweighted average of `a_p`,
-  conductor-ordered, rank-split, on Cremona's database (`viz/data/murmuration_curve.json`,
-  primes up to the 300th, plotted against `p/N`). <!-- claim:E1-29 -->
+  conductor-ordered, rank-split, on Cremona's database (`viz/data/murmuration_curve.json`).
+  Our emitted run uses the first **300** primes and plots against **`p/N₂`** (prime over the
+  band's upper conductor); HLOP's own Figure 1 ran to the 1000th prime over the bands
+  `[7500,10000]` and `[5000,10000]`. <!-- claim:E1-29 -->
 - **Stage M2** replicates the Dirichlet-character murmuration of Lee–Oliver–Pozdnyakov
   (`dirichlet_murmuration.json`). <!-- claim:E1-30 -->
 - **Stage M3** replicates **Zubrilina's proved density** for weight-2 modular forms and

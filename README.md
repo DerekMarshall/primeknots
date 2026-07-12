@@ -86,6 +86,7 @@ absent, e.g. in CI.
 
 ## Layout & specs
 
+- **Explainers** (prerequisite-free, prose): [`E1 — murmurations`](docs/explainers/E1-murmurations.md), [`E2 — primeknots`](docs/explainers/E2-primeknots.md), [`E3 — method`](docs/explainers/E3-method.md); every claim sourced in [`CLAIMS-E.md`](docs/explainers/CLAIMS-E.md).
 - [`docs/RESEARCH.md`](docs/RESEARCH.md) — the mathematics, stage by stage, with normative sources.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — modules, types, the JSON/viewer contract, acceptance criteria.
 - [`docs/notes/`](docs/notes/) — per-stage pinning logs and resolved discrepancies.
