@@ -30,7 +30,7 @@ Fetched by `oracle/fetch_papers_m.py` (title-page verified; manifest written to
 |---|---|---|
 | `hlop-2204.10140.pdf` | He, Lee, Oliver, Pozdnyakov — *Murmurations of elliptic curves* [HLOP22] (M1 normative) | arXiv:2204.10140 |
 | `lop-2307.00256.pdf` | Lee, Oliver, Pozdnyakov — *Murmurations of Dirichlet characters* [LOP23] (M2 normative) | arXiv:2307.00256 |
-| `zubrilina-2310.07681.pdf` | N. Zubrilina — *Murmurations* [Z25] (M3 normative) | arXiv:2310.07681 |
+| `zubrilina-2310.07681.pdf` | N. Zubrilina — *Murmurations* [Z25] (M3 normative); published **Invent. math. (2025)**, DOI [10.1007/s00222-025-01347-8](https://doi.org/10.1007/s00222-025-01347-8) | arXiv:2310.07681 |
 | `sawin-sutherland-2504.12295.pdf` | Sawin, Sutherland — *Murmurations for elliptic curves ordered by height* [SS25] (M4 normative) | arXiv:2504.12295 |
 | `cowan-2408.12723.pdf` | A. Cowan — *Murmurations and ratios conjectures* [C24] (Q3 context) | arXiv:2408.12723 |
 | `sarnak-letter-2726.pdf` | P. Sarnak — letter on murmurations and root numbers [Sar23] (framing) | publications.ias.edu/sarnak/paper/2726 |
@@ -39,3 +39,21 @@ Reproducibility pin for these is arXiv ID + version + title-page check, not a
 byte-exact sha256 (arXiv re-renders PDFs). The primary M-stage dataset, Cremona's
 `ecdata`, is fetched by `oracle/fetch_ecdata.py` into `data/cremona/` against a
 sha256-pinned commit — see `data/cremona/README.md`.
+
+### Context-class (M5 / PR-2 literature pass) — cited, NOT fetched
+
+Newer works consulted for the M5 (research-mode) pre-registrations; **not** repo
+dependencies (not fetched by `fetch_papers_m.py`, no committed PDF), listed for
+provenance of the citations in `docs/preregistered/PR-2.md`. Both **postdate the
+project's assistant knowledge cutoff (Jan 2026)** and were **verified on arXiv** at
+fetch time (2026-07-12), not recalled (rule 6).
+
+| Work | Bearing on PR-2 | Source |
+|---|---|---|
+| D. Wachs — *BSD Invariants and Murmurations of Elliptic Curves* (4 Mar 2026) | **Confound + novelty-narrowing:** BSD invariants (Tamagawa, analytic \|Ш\|, real period) modulate murmuration profiles *within fixed rank* (conductor-ordered) — so PR-2's rank-2 result is a "carried by", not "caused by", claim | arXiv:2603.04604 |
+| D. Wachs — *Murmurations of Elliptic Curves over Function Fields* (14 Mar 2026) | **Context only** (nothing gated changes): function-field F_q(t), rank-0/1; \|Ш\| modulation as an exact composition effect — thematic support for the confound above | arXiv:2603.13802 |
+
+Normative M-stage sources (M0–M4): the M-ladder above (HLOP arXiv:2204.10140 [M1],
+LOP arXiv:2307.00256 [M2], Zubrilina arXiv:2310.07681 = Invent. math. 2025 [M3],
+Sawin–Sutherland arXiv:2504.12295 [M4], Cowan arXiv:2408.12723 context, Sarnak letter
+framing). M0 (fast a_p / height family) rests on Cremona `ecdata`, not a paper.

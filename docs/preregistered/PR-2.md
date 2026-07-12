@@ -8,21 +8,75 @@ deviation postscript.**
 
 ---
 
+## Step 0 preamble amendments (2026-07-12, before f2 — non-gated elements, logged)
+
+Per the orchestrator's PR-2 STEP 0, three preamble amendments were made BEFORE any f2 /
+split curve was computed (legal for non-gated elements; the gated elements — split
+variable, statistic, extractor, τ, holdout, per-axis thresholds, decision rule — are
+untouched): **0a** the SS25 rank passage pinned VERBATIM (below) with the hypothesis
+reconciled against it; **0b** a two-paper literature pass (§"Literature pass"); **0c** the
+`docs/papers/README` M-ladder + 2026-preprint hygiene rider. This log is the amendment
+record required by the doc's own change-discipline.
+
 ## Hypothesis (from [SS25], cited — not from our exploration)
 
-[SS25] name their own open question for the downward bias (p.4, verbatim):
-> "A possible explanation for (1) is related to elliptic curves of rank ≥ 2. Curves of
+**0a — VERBATIM PIN.** [SS25] p.3–4, the downward-bias paragraph and the rank paragraph
+that follows it, word-for-word from `docs/papers/sawin-sutherland-2504.12295.pdf` (the "…"
+elision in every prior version of this doc — and in the referee's gloss — is now removed;
+the two caveats it hid are load-bearing):
+
+> "An interesting feature is that part of the discrepancy between the purple and green dots
+> comes from a persistent downward bias, where (1) is slightly less than its predicted
+> limiting value. As part of the proof of Theorem 2, we prove a variant statement without
+> the limit as P goes to ∞. Graphs of the left-hand side and right-hand side of this
+> statement do not show the downward bias, suggesting it is genuinely a property of the
+> primes. This downward bias seems to decay as X goes to ∞, suggesting it will go away in
+> the limit, though it may decay more slowly than other sources of discrepancy between (1)
+> and the right-hand side of (2).
+>
+> A possible explanation for (1) is related to elliptic curves of rank ≥ 2. Curves of
 > larger rank have been observed since work of Birch and Swinnerton-Dyer [4] to have
 > smaller a_p values on average. Since, conjecturally, more curves have rank 2 than any
-> other rank > 1, and, conjecturally, curves with rank 2 have root number +1 … this could
-> push the average of a_p times the root number downwards."
+> other rank > 1, and, conjecturally, curves with rank 2 have root number +1, with both
+> conjectures empirically checked in a range that includes our dataset, this could push the
+> average of a_p times the root number downwards. (On the other hand, it is not obvious
+> that this effect is not already accounted for by Theorem 2.) However, while the
+> proportion of curves with naive height ≤ X that have rank 2 is expected to decrease to 0
+> as X → ∞, it actually increases for the range of X we consider (from 2¹⁶ to 2²⁸), as can
+> be seen in [2]. Hence, to use curves of rank ≥ 2 to explain the downward bias, one would
+> have to explain why the bias decreases over this range, rather than increasing as one
+> might expect."
+
+**Reconciliation of our hypothesis against the verbatim** (the prior "possibly rank-2
+related" phrasings — ours and the referee's — were gloss; the actual statement is a hedged
+PROPOSED explanation carrying two explicit open problems):
+
+1. **SS25 write "rank ≥ 2" / "rank 2" UNQUALIFIED** (analytic vs Mordell–Weil), invoking
+   both sub-claims "conjecturally." Amendment 1's pinning to the **analytic rank** is our
+   deliberate, unconditional-classifier operationalization of their informal "rank"; we
+   never assert MW rank (that equality is BSD). This is consistent with — not a
+   contradiction of — the source, which simply does not distinguish.
+2. **Caveat (a), verbatim: "it is not obvious that this effect is not already accounted for
+   by Theorem 2."** So even a positive PR-2 result (deficit carried by analytic-rank-2)
+   does **not** establish rank as an *independent* cause — it may be folded into the proven
+   density variant. Our claim wording is therefore "**carried by**" (a descriptive
+   statement about which curves the deficit lives on), never "**caused by**."
+3. **Caveat (b), the increase/decrease puzzle, verbatim:** the rank-2 *proportion*
+   **increases** over 2¹⁶–2²⁸ (per [SS25] ref. [2]) while the bias is expected to *decay* —
+   so a rank-2 explanation must explain why the bias decreases despite the fraction rising.
+   **Our Rung-1 finding sharpens exactly here:** at X=2¹⁶ (the BOTTOM of SS25's range) the
+   trough deficit is **flat/persistent** (does not decay) — the direction consistent with a
+   rising rank-2 proportion. PR-2 asks, at this one anchor point, whether the
+   analytic-rank-2 subpopulation is where that persistent deficit lives.
 
 M4 found the tail deficit as a displaced trough (u≈0.8875, dev 0.0825) + a downward bias
-growing in u on the descending branch (the monotone interpolated zero-drift, C3). This is
-a candidate for the SS mechanism.
+growing in u on the descending branch (the C3 zero-drift); PR-1 Rung 1 found it PERSISTENT
+at 2¹⁶. This is a candidate for the SS mechanism, tested under the two caveats above.
 
 > **H1:** removing the analytic-rank-2 subpopulation materially reduces the tail deficit
-> (the trough recovers toward 0.805) — the deficit is carried by analytic-rank-2 curves.
+> (the trough recovers toward 0.805) — the deficit is **carried by** analytic-rank-2 curves
+> (a descriptive claim about the carrier subpopulation; NOT a causal/independent-effect
+> claim, per caveat (a) and the §"Literature pass" confound).
 > **H0:** it does not — the deficit is not explained by analytic-rank-2 over-representation
 > at this X.
 
@@ -95,6 +149,59 @@ the **M0b fast-a_p stage** (RESEARCH-M §8, deferred) is the prerequisite. PR-2 
 2¹⁶ on PR-1's persisted a_p; it does not itself require M0b, but records M0b as the path
 to a higher-power rerun.
 
+## Literature pass (step 0b — two-fetch minimum, 2026-07-12)
+
+Both papers below are **March 2026 preprints, past this project's assistant knowledge
+cutoff (Jan 2026)** — their content was **fetched from arXiv and verified**, not recalled
+(rule 6). Same author (Dane Wachs). Deliverable: what each changes for PR-2's hypothesis,
+thresholds, or novelty — *including "nothing," where that is the finding*.
+
+**[Wachs-BSD] D. Wachs, "BSD Invariants and Murmurations of Elliptic Curves,"
+arXiv:2603.04604 (4 Mar 2026).** Cremona dataset (3,064,705 curves, conductor ≤ 499,998),
+**conductor-ordered**. Findings: (i) BSD invariants (real period, Tamagawa product,
+analytic |Ш|, regulator, torsion) do **not** themselves murmur in sliding conductor
+windows; (ii) **within a fixed rank**, curves stratified by Tamagawa product / analytic
+|Ш| / real period show **significantly different murmuration profiles** (p < 0.001 vs
+permutation null, scale-invariant across conductor ranges); (iii) the |Ш| modulation
+**survives controlling for L(1), real period, and conductor** — a **pure mean shift** in
+the Frobenius-trace distribution (variance/skew/kurtosis unchanged), **concentrating at
+small primes**; (iv) curves with |Ш| ≥ 4 have displaced low-lying L-zeros, tied to the
+modulation via the explicit formula.
+- **Hypothesis / CONFOUND (material):** the analytic-rank-2 subpopulation differs from
+  rank-0 not only in rank but in its Tamagawa/|Ш|/period distribution, and [Wachs-BSD]
+  shows those independently modulate the murmuration *within fixed rank*. So a positive
+  PR-2 (deficit carried by analytic-rank-2) is **consistent with the carrier being a
+  rank-correlated |Ш|/Tamagawa effect that PR-2 neither computes nor controls.** This is a
+  named, published instance of caveat (a) (§Hypothesis) and it **hardens our wording to
+  "carried by," never "caused by"**; PR-2 does not disentangle rank from its correlated BSD
+  invariants.
+- **Thresholds:** **no change.** (Note only: [Wachs-BSD]'s mean shift concentrates at
+  *small* primes ≈ small u, whereas our value-space contrast sits on the descending branch
+  u∈[0.7,0.9] ≈ *large* p/N — different u-region, so not obviously the same effect;
+  recorded, not a threshold change.)
+- **Novelty:** a rank **leave-out on the HEIGHT-ordered SS25 family** remains novel relative
+  to [Wachs-BSD] (which is conductor-ordered and stratifies *within* fixed rank). But the
+  novelty claim is now **narrower and cites [Wachs-BSD]**: PR-2 establishes *where the
+  deficit lives* (a subpopulation statement), not rank causation, precisely because
+  finer-than-rank BSD structure is documented.
+
+**[Wachs-FF] D. Wachs, "Murmurations of Elliptic Curves over Function Fields,"
+arXiv:2603.13802 (14 Mar 2026).** Function-field F_q(t) family (E_D: y²=x³+x+D(t), D monic
+squarefree deg 5; 534,745 curves over q=7,11,13), rank-0 vs rank-1. |Ш| modulation is a
+**composition effect** (|Ш| = L(1/q) exactly there; different |Ш| strata are different
+mixtures of cyclotomic L-polynomial types → different mean traces), with an exact
+reweighting identity.
+- **Changes for PR-2: nothing direct.** Different base field, and rank-0/1 (not the ℚ
+  height-ordered rank-≥2 deficit we test). Recorded as **context**: in a setting where the
+  mechanism is exactly computable it confirms |Ш| modulation of murmurations is real and can
+  be a pure mixture/composition effect — thematically reinforcing the [Wachs-BSD] confound,
+  but bearing on neither our thresholds nor our specific hypothesis.
+
+**Net:** the pass **narrows the novelty statement** (cite [Wachs-BSD]; no rank-causation
+claim) and **adds one named confound** (within-rank BSD modulation). It changes **no gated
+element** (split variable, statistic, extractor, τ, holdout, per-axis thresholds, decision
+rule all stand). The claim branches below are updated to cite it.
+
 ## Looks the drafting generated: ZERO
 
 This draft computes no statistic. The hypothesis is [SS25]'s (cited) applied to the M4
@@ -119,9 +226,13 @@ and records the branch.
 - **H1 (deficit carried by analytic-rank-2):** leave-out trough recovers within τ (and,
   if resolvable, the S₂ contrast is downward beyond tolerance) → *"empirical evidence, on a
   from-scratch height-ordered family we control end to end, that the murmuration tail
-  deficit at H≤2¹⁶ is carried by the **analytic-rank-2** subpopulation — a citable data
+  deficit at H≤2¹⁶ is **carried by** the **analytic-rank-2** subpopulation — a citable data
   point on the open question [SS25] pose (p.4)."* Pre-registered finding; not a proof; MW
-  rank not asserted.
+  rank not asserted. **Novelty/limitation (step 0b):** novel as a rank leave-out on the
+  HEIGHT-ordered family (cf. [Wachs-BSD], conductor-ordered / within-fixed-rank). It is a
+  **carrier** claim, **not causal**: per SS25 caveat (a) and [Wachs-BSD]'s within-rank
+  Tamagawa/|Ш| modulation, the analytic-rank-2 stratum differs in correlated BSD invariants
+  that PR-2 does not control, so this does **not** attribute the deficit to rank itself.
 - **H0 (null):** removing S₂ leaves the trough displaced (recovery < one bin) →
   *"the tail deficit at H≤2¹⁶ is **not** explained by analytic-rank-2 over-representation"*
   — a citable null constraining the proposed mechanism.
