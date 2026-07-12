@@ -461,6 +461,18 @@ if(AT_VALIDATE_PY)
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
+# --- explainers: docs/explainers/ validated like the deck (structural claim sourcing) --
+# Every <!-- claim:ID --> marker in E*.md must have a CLAIMS-E.md row, and vice versa.
+# Content accuracy (register rule 1) is referee-owned, as for the deck.
+if(AT_VALIDATE_PY)
+  add_test(NAME explainers.claims_sourced
+           COMMAND ${AT_VALIDATE_PY} ${CMAKE_SOURCE_DIR}/verify/explainers_check.py)
+  set_tests_properties(explainers.claims_sourced PROPERTIES
+    LABELS "explainers"
+    SKIP_RETURN_CODE 77
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()
+
 # --- constants: the generated numerical-constants header must match its generator --
 # CONSTANTS INCIDENT remedy: the freshness pattern applied to src/core/constants.h.
 # `--verify` regenerates the header in-memory and diffs the committed copy; the
