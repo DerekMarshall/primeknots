@@ -15,6 +15,7 @@
 #include <cmath>
 #include <fstream>
 #include <map>
+#include <numeric>
 #include <sstream>
 #include <thread>
 #include <utility>
@@ -427,12 +428,25 @@ int main(int argc, char** argv) {
             meta.X = run.X_confirm; meta.du = run.du; meta.NB = NB;
             meta.threads = threads; meta.ne_cache = cache;
 
+            // Process CHEAPEST-FIRST (conductor N ascending). The earliest checkpoint then
+            // lands within minutes (reaper-resilience: bank progress before a reap), and each
+            // sorted chunk builds QR tables only up to its own tight maxN (lower overhead than
+            // canonical order, where most chunks hit the ~4M-conductor tail). Byte-identity is
+            // unaffected: a curve's partials are independent of its chunk-mates at fixed thread
+            // count, and ss_aggregate sums P in CANONICAL order regardless of compute order.
+            std::vector<std::size_t> order(C);
+            std::iota(order.begin(), order.end(), std::size_t{0});
+            std::sort(order.begin(), order.end(),
+                      [&](std::size_t a, std::size_t b) { return rows[a].N < rows[b].N; });
+
             for (std::size_t start = 0; start < C; start += chunk) {
                 std::vector<at::murm::NeRow> crows;
                 std::vector<std::size_t> orig;
                 const std::size_t stop = std::min(start + chunk, C);
-                for (std::size_t c = start; c < stop; ++c)
+                for (std::size_t k = start; k < stop; ++k) {
+                    const std::size_t c = order[k];
                     if (!done[c]) { crows.push_back(rows[c]); orig.push_back(c); }
+                }
                 if (!crows.empty()) {
                     at::murm::SSPartials cp =
                         at::murm::ss_empirical_partials(crows, run.du, threads);
