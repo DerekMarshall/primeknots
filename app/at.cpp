@@ -33,6 +33,7 @@
 #include "emit/emit_zubrilina.h"
 #include "murm/height_family.h"
 #include "murm/ne_cache.h"
+#include "murm/rank_cache.h"
 #include "murm/ss_empirical.h"
 #include "oracle/pari.h"
 
@@ -473,6 +474,108 @@ int main(int argc, char** argv) {
         at::murm::write_ss_run(outf, run);
         std::fprintf(stderr, "at ss-run: wrote %s (X_confirm=%.0f, τ=%.2f, %llds total)\n",
                      outf.c_str(), run.X_confirm, run.tol, static_cast<long long>(elapsed_s()));
+        return 0;
+    }
+
+    if (std::strcmp(argv[1], "rank-cache") == 0) {
+        // PR-2 step 1: the ANALYTIC-RANK column for the height family, keyed by (A,B)
+        // (PR-2 Amendment 1). r = ord_{s=1} L(E,s) from PARI ellanalyticrank; oracle-
+        // provenance (numerically determined), NEVER the Mordell–Weil rank. The ONE new
+        // place the CLI calls PARI for PR-2. Reads the committed N/ε cache for the (A,B)
+        // keys AND ε, so the MANDATORY parity cross-check (analytic-rank parity == ε
+        // parity; ε=(−1)^r is a theorem) runs over ALL curves — any mismatch ABORTS and
+        // is a deliverable. Prints f₂ (the analytic-rank-2 fraction) — the pre-declared
+        // look (PR-2 §Looks). Run once; the cache is committed and re-aggregation reads it.
+        const char* cache = opt(argc, argv, "--cache", "data/m5/ne_cache_x65536.txt");
+        std::string outf = opt(argc, argv, "--out", "data/m5/rank_cache_x65536.txt");
+        std::string prec = opt(argc, argv, "--prec", "38");
+
+        std::optional<std::string> gp = oracle::find_gp();
+        if (!gp) {
+            std::fprintf(stderr, "at rank-cache: PARI/GP `gp` not found on PATH (required for ellanalyticrank).\n");
+            return 3;
+        }
+        at::murm::NeCacheHeader hdr;
+        std::vector<at::murm::NeRow> rows = at::murm::read_ne_cache(cache, hdr);
+        std::fprintf(stderr, "at rank-cache: %zu curves from %s (X=%lld); querying PARI "
+                     "ellanalyticrank (prec %s)...\n", rows.size(), cache,
+                     static_cast<long long>(hdr.X), prec.c_str());
+
+        std::ostringstream script;
+        script << "default(realprecision, " << prec << ");\n";
+        script << "print(version);\n";
+        for (const at::murm::NeRow& e : rows)
+            script << "print(ellanalyticrank(ellinit([0,0,0," << e.A << "," << e.B << "]))[1])\n";
+        const std::string out = oracle::run_gp(*gp, script.str());
+
+        std::istringstream lines(out);
+        std::string vline;
+        std::getline(lines, vline);   // version(...) vector, kept as provenance
+
+        std::vector<at::murm::RankRow> rrows;
+        rrows.reserve(rows.size());
+        std::string line;
+        for (const at::murm::NeRow& e : rows) {
+            if (!std::getline(lines, line)) {
+                std::fprintf(stderr, "at rank-cache: PARI output ended early (A=%lld B=%lld)\n",
+                             static_cast<long long>(e.A), static_cast<long long>(e.B));
+                return 4;
+            }
+            long long r = -1;
+            std::istringstream(line) >> r;
+            if (r < 0) {
+                std::fprintf(stderr, "at rank-cache: bad rank '%s' for A=%lld B=%lld\n",
+                             line.c_str(), static_cast<long long>(e.A), static_cast<long long>(e.B));
+                return 4;
+            }
+            rrows.push_back({e.A, e.B, static_cast<int>(r)});
+        }
+
+        // MANDATORY parity cross-check over ALL curves: ε = (−1)^r (a theorem). A
+        // mismatch is a numerical mis-determination of the analytic rank → ABORT.
+        long long mism = 0;
+        for (std::size_t i = 0; i < rows.size(); ++i) {
+            const bool r_even = (rrows[i].rank % 2 == 0);
+            const bool eps_plus = (rows[i].eps == 1);
+            if (r_even != eps_plus) {
+                if (mism < 20)
+                    std::fprintf(stderr, "  PARITY MISMATCH A=%lld B=%lld rank=%d eps=%d\n",
+                                 static_cast<long long>(rrows[i].A),
+                                 static_cast<long long>(rrows[i].B), rrows[i].rank, rows[i].eps);
+                ++mism;
+            }
+        }
+        if (mism > 0) {
+            std::fprintf(stderr, "at rank-cache: ABORT — %lld analytic-rank/ε parity mismatches "
+                         "of %zu (deliverable; increase --prec or investigate)\n", mism, rows.size());
+            return 5;
+        }
+
+        // Rank distribution + f₂ (the pre-declared look).
+        int maxr = 0;
+        for (const at::murm::RankRow& r : rrows) if (r.rank > maxr) maxr = r.rank;
+        std::vector<long long> dist(static_cast<std::size_t>(maxr) + 1, 0);
+        for (const at::murm::RankRow& r : rrows) ++dist[static_cast<std::size_t>(r.rank)];
+        const double f2 = rrows.empty() ? 0.0
+            : static_cast<double>(dist.size() > 2 ? dist[2] : 0) / static_cast<double>(rrows.size());
+
+        at::murm::RankCacheHeader rh;
+        rh.generator_hash = at::murm::rank_generator_hash();
+        rh.pari_version = vline;
+        rh.prec = prec;
+        rh.X = hdr.X;
+        rh.count = static_cast<i64>(rrows.size());
+        at::murm::write_rank_cache(outf, rh, rrows);
+
+        std::fprintf(stderr, "at rank-cache: wrote %zu rows -> %s (provenance: oracle-analytic-rank)\n",
+                     rrows.size(), outf.c_str());
+        std::fprintf(stderr, "at rank-cache: parity cross-check PASSED (0 mismatches over %zu)\n",
+                     rows.size());
+        std::fprintf(stderr, "at rank-cache: analytic-rank distribution:");
+        for (std::size_t r = 0; r < dist.size(); ++r)
+            std::fprintf(stderr, "  r%zu=%lld", r, dist[r]);
+        std::fprintf(stderr, "\nat rank-cache: f2 = %lld/%zu = %.6f  (the pre-declared look)\n",
+                     dist.size() > 2 ? dist[2] : 0, rrows.size(), f2);
         return 0;
     }
 

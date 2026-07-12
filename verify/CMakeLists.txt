@@ -434,7 +434,8 @@ set_tests_properties(m4.twin_bessel_j1_vs_pari PROPERTIES
 # once the 2¹⁶ rung has run (it consumes the committed extension run under data/m5).
 add_executable(verify_m5
   verify_main.cpp
-  m5/ss_extension_tests.cpp)
+  m5/ss_extension_tests.cpp
+  m5/rank_split_tests.cpp)
 target_include_directories(verify_m5 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
   ${CMAKE_CURRENT_SOURCE_DIR})
@@ -444,7 +445,7 @@ target_compile_definitions(verify_m5 PRIVATE
   AT_M5_DATA_DIR="${CMAKE_SOURCE_DIR}/data/m5")
 
 foreach(case twin_ss_partials_chunked_vs_single twin_ss_partials_file_roundtrip
-         prereg_ss_x_extension)
+         prereg_ss_x_extension prereg_rank_split)
   add_test(NAME m5.${case} COMMAND verify_m5 --test-case=${case})
   set_tests_properties(m5.${case} PROPERTIES LABELS "m5")
 endforeach()

@@ -241,6 +241,28 @@ and records the branch.
   tolerance at 2¹⁶ → *"underpowered at feasible X; resolvable only at larger X via the M0b
   fast-a_p stage"* — no claim.
 
-## Postscript (analysis-code hash, f₂, results — appended only after the run)
+## Postscript (analysis-code hash, f₂, results — appended after each step)
 
-*(empty — no rank has been computed; PR-1's 2¹⁶ rung has not run as of this commit)*
+### Step 1 — f₂ measured (2026-07-12)
+
+**Analysis-code binding (classifier).** The analytic-rank classifier is the `at rank-cache`
+subcommand (`app/at.cpp`) → PARI `ellanalyticrank(ellinit([0,0,0,A,B]))` at **prec 38**,
+**PARI/GP [2, 17, 4]**; the committed-cache reader/writer is `src/murm/rank_cache.cpp`,
+**sha256 = `24be7320c215b12f5437d0a8bf732cc867b9a81dbdd14abaf79b6dea49c71c77`**. The rank cache
+`data/m5/rank_cache_x65536.txt` carries **generator_hash 787e95…** = sha256(height_family.cpp)
+— the SAME (A,B) key generator as the N/ε cache, so the rank column is bound to the identical
+5042-curve family (no a_p was recomputed; PR-1's persisted partials are untouched). The
+**subpopulation re-aggregation code (step 3) will be hash-bound here when built.**
+
+**Parity cross-check — PASSED, 0 mismatches / 5042.** Analytic-rank parity equals the cached
+ε parity for every curve (ε=(−1)^r is the functional-equation sign, a theorem). The run did
+**not** abort. Internal consistency: even ranks r0+r2 = 1754+738 = **2492** = the ε=+1 count;
+odd r1+r3 = 2525+25 = **2550** = the ε=−1 count.
+
+**f₂ = 738 / 5042 = 0.14637** (the pre-declared look, LOOKS L4). Analytic-rank distribution
+over the full H≤2¹⁶ family: **r0 = 1754, r1 = 2525, r2 = 738, r3 = 25** (Σ = 5042). Sanity vs
+[SS25]: rank 2 dominates every rank > 1 (738 ≫ 25), matching their premise ("more curves have
+rank 2 than any other rank > 1"). Committed: `data/m5/rank_cache_x65536.txt`.
+
+*Next: step 2 — resolve the value-space contrast threshold as the committed function of f₂
+(σ_R0(u)·√(1/f₂)), IN WRITING, before any split curve is computed.*

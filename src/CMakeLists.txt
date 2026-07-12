@@ -48,6 +48,7 @@ add_library(at_murm STATIC
   murm/height_family.cpp
   murm/ss_density.cpp
   murm/ne_cache.cpp
+  murm/rank_cache.cpp
   murm/ss_empirical.cpp
   murm/ss_run_io.cpp)
 target_include_directories(at_murm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -69,6 +70,12 @@ set_source_files_properties(ell/ap_cache.cpp PROPERTIES
 file(SHA256 ${CMAKE_CURRENT_SOURCE_DIR}/murm/height_family.cpp AT_NE_GENERATOR_HASH)
 set_source_files_properties(murm/ne_cache.cpp PROPERTIES
   COMPILE_DEFINITIONS NE_GENERATOR_HASH="${AT_NE_GENERATOR_HASH}")
+
+# Analytic-rank cache generator hash (PR-2 Amendment 1): SAME key generator as the N/ε
+# cache — the (A,B) set is fixed by murm/height_family.cpp — so the rank column refuses a
+# cache written against a different enumeration.
+set_source_files_properties(murm/rank_cache.cpp PROPERTIES
+  COMPILE_DEFINITIONS RANK_GENERATOR_HASH="${AT_NE_GENERATOR_HASH}")
 
 # Empirical-run generator hash (m4-pinning step 3): sha256 of the STATISTIC source
 # (murm/ss_empirical.cpp — the numbers in the committed run). Applied to the IO TU
