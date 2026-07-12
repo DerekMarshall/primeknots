@@ -264,5 +264,44 @@ over the full H≤2¹⁶ family: **r0 = 1754, r1 = 2525, r2 = 738, r3 = 25** (Σ
 [SS25]: rank 2 dominates every rank > 1 (738 ≫ 25), matching their premise ("more curves have
 rank 2 than any other rank > 1"). Committed: `data/m5/rank_cache_x65536.txt`.
 
-*Next: step 2 — resolve the value-space contrast threshold as the committed function of f₂
-(σ_R0(u)·√(1/f₂)), IN WRITING, before any split curve is computed.*
+### Step 2 — value-space contrast threshold RESOLVED (2026-07-12, before any split curve)
+
+Committed here, before `D̂_{S₂}` / `D̂_{S₀}` are computed (the commit-before-run discipline).
+Amendment 4's threshold **σ_R0(u)·√(1/f₂)** resolved with the measured f₂ and the §R0c
+sampling model σ(u) = √(u³·⟨ln N⟩/(Δu·|fam|)):
+
+- **⟨ln N⟩ = 11.331**, computed from the committed 5042-curve N/ε cache (NOT the ln(2X)
+  bound: the conductor surprise means individual N reach 31·X > 2X, so "N ≤ 2X" is false —
+  but the *mean* ⟨ln N⟩ = 11.33 is still < ln(2X) = 11.78, so the §R0c model stays
+  conservative on the average). |fam| = 5042, Δu = 0.025, **√(1/f₂) = 2.614** (f₂=0.14637).
+- **σ_R0(u)·√(1/f₂) across the descending window [0.7, 0.9]** (density units):
+
+  | u | 0.70 | 0.75 | 0.80 | 0.85 | 0.90 |
+  |---|------|------|------|------|------|
+  | σ_R0(u) | 0.176 | 0.195 | 0.215 | 0.235 | 0.256 |
+  | **thr = σ_R0·√(1/f₂)** | **0.459** | 0.509 | **0.561** | 0.614 | **0.669** |
+  | two-sample gap SE (incl. S₀ term √(1/f₂+1/f₀)) | 0.547 | 0.607 | 0.668 | 0.732 | 0.798 |
+
+- **Committed contrast threshold.** The S₂-vs-S₀ descending-branch mean gap must exceed
+  **the two-sample gap SE** (the statistically complete SE of a *difference* of two means;
+  it strictly ≥ Amendment 4's √(1/f₂) dominant-term form by the factor √(1+f₂/f₀)=1.19, so
+  this is a **conservative tightening** — it can only make the gate harder, never
+  manufacture significance), evaluated at the window midpoint **u=0.80 ⇒ threshold = 0.668
+  (density units)**, AND the gap sign must be **downward** (S₂ more negative), per the SS
+  mechanism. Two axes, kept separate: this value-space gate is independent of the u-space
+  primary and cannot substitute for it.
+
+- **Power branch (pre-computed from f₂, pre-declared now).** The gate is **0.668 density
+  units** — large relative to the full-family bin SE (~0.2) and ~18% of the trough depth
+  (|D|≈3.7). We have **no quantitative a-priori model** of the S₂ *value* deficit, so the
+  secondary's power **cannot be asserted a priori**. Therefore, per Amendment 2, the **third
+  (inconclusive) branch is CONDITIONALLY PRE-DECLARED**: the value-space axis may
+  **confirm** a positive effect (gap > 0.668, downward) but a sub-threshold |gap| is
+  **pre-declared inconclusive** ("underpowered at 2¹⁶; resolvable only at larger X via M0b")
+  — never a value-space *null*. The **PRIMARY u-space leave-out recovery** (|F∖S₂| ≈ 4304,
+  threshold τ=0.06, sampling noise ≈ the M4 confirmation's — well-powered) carries the H1/H0
+  verdict regardless of the secondary.
+
+*Next: step 3 — the PRIMARY leave-out trough recovery (D̂ over F∖S₂, reaggregated from the
+committed partials, NO a_p recompute) on the annulus holdout, + the value-space contrast in
+the pre-declared branch.*
