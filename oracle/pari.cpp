@@ -52,7 +52,15 @@ std::string run_gp(const std::string& gp_path, const std::string& script) {
         }
     }
 
-    std::string cmd = "'" + gp_path + "' -q '" + tmpl + "' 2>/dev/null";
+    // </dev/null is load-bearing: with -q <file>, gp runs the script then drops to
+    // INTERACTIVE mode and blocks reading stdin. popen("r") leaves gp's stdin inherited
+    // from this process, which in a detached/background context never reaches EOF — gp
+    // then hangs at ~0% CPU forever (observed on the 9014-curve batch; smaller batches
+    // slipped through only because their inherited stdin happened to EOF). Redirecting
+    // stdin from /dev/null gives that interactive read an immediate EOF, so gp exits
+    // cleanly regardless of how this process was launched. No oracle call feeds gp via
+    // stdin, so this is safe for every batch.
+    std::string cmd = "'" + gp_path + "' -q '" + tmpl + "' </dev/null 2>/dev/null";
     FILE* pipe = ::popen(cmd.c_str(), "r");
     if (pipe == nullptr) {
         ::unlink(tmpl);
