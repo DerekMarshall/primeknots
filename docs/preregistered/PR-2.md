@@ -363,3 +363,17 @@ that value-space effect does not move the location gate, and — per the confoun
 attributable to rank per se. A pre-registered null; not a proof; MW rank never asserted."*
 Committed artifact: `viz/data/ss_rank_split_murmuration.json` (`ss_rank_split/1`), the
 `full / F∖S₂ / S₂ / S₀` overlay + D(u) + gates + branch.
+
+**Coherence of the two gate outcomes (they are NOT in tension).** Excising S₂ lifts the
+descending-branch mean by only **f₂·|gap| ≈ 0.146 · 1.73 ≈ 0.25 density units**. On an
+amplitude-≈4 curve that is a **sub-bin** perturbation of the trough *location* — nowhere near
+the **≈3-bin** displacement a recovery would require (dev 0.0825 = 3.3·Δu). So a significant
+value-space contrast (S₂ genuinely more negative) and a null location-recovery (the trough
+unmoved) are exactly what one expects *together*: a 14.6%-mass subpopulation, even one 2.6×
+past the value threshold, simply cannot shift a 3-bin location deficit. **The H0 is not in
+tension with the significant contrast; the two gate outcomes are mutually consistent** — which
+is itself a small vindication of keeping the axes separate.
+
+Two citable clauses, in claim language (Wachs-clause-bound, below): **(1)** *rank-2 curves show
+an enhanced downward bias (2.6× threshold);* **(2)** *that bias does not carry the trough
+displacement (leave-out trough unchanged on the family and on the virgin annulus).*

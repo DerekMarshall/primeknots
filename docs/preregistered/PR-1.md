@@ -131,6 +131,28 @@ observed d(2¹⁶); it does **not** emit a verdict from one rung. A FAIL-to-reco
 (Reading B) is a deliverable that *advances* the program (to PR-2), exactly as the
 committed decision rule intends — it is never a threshold to renegotiate.
 
+### Two completed rungs — what {2¹⁶, 2¹⁷} license (amended 2026-07-12, before Rung 2 data; R0)
+
+With **two** extension rungs in hand (2¹⁶ and 2¹⁷, over the 10⁴ anchor), the reading gains a
+**direction** but is still **evidence-grade, not the verdict**. Let d(X)=|trough_u(X)−0.805|;
+d(2¹⁶)=0.0825 (Rung 1, flat vs the anchor).
+
+> - **"Strengthens finite-X"** iff the trough dev at 2¹⁷ drops **≥ one bin** relative to 2¹⁶
+>   — d(2¹⁷) ≤ d(2¹⁶) − Δu = **0.0575**. (The sub-bin zero-crossing series is reported
+>   alongside as supporting direction, never as the gate.)
+> - **"Strengthens persistent"** iff d(2¹⁷) is **flat or rising** vs 2¹⁶ (within the Δu
+>   quantization floor).
+>
+> **The committed H1/H0 verdict language still requires the full ladder** — two rungs
+> sharpen the direction, they do not pronounce it.
+>
+> **Standing scale caveat, riding EVERY branch:** our feasible range (≤ 2¹⁷) sits at the
+> **very bottom** of [SS25]'s observed-decay window **2¹⁶–2²⁸**; 2¹⁸ is infeasible without
+> M0b (§Runtime). So a two-rung reading — in either direction — is **range-limited** and does
+> **not** settle the X→∞ behaviour [SS25] describe. "Strengthens finite-X" is not
+> "finite-X confirmed"; "strengthens persistent" is not "persistent proven." The verdict
+> remains explicitly conditional on a range we cannot yet reach.
+
 ## Runtime estimate per rung (stated up front — the ladder is NOT silently shrunk)
 
 Calibration: X=10⁴ ran in **250 s** (1048 curves, 12 threads). Cost model

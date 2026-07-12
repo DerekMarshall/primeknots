@@ -14,7 +14,7 @@
       "required": ["family", "statistic", "source", "external_data", "provenance",
                    "claim_class", "f2", "tol", "contrast_threshold", "X", "n_full",
                    "n_leaveout", "n_s2", "n_s0", "recovers", "contrast_downward",
-                   "branch", "density_trunc_B", "u_axis"],
+                   "branch", "coherence", "density_trunc_B", "u_axis"],
       "additionalProperties": false,
       "properties": {
         "family": {"type": "string"},
@@ -34,6 +34,7 @@
         "recovers": {"type": "boolean"},
         "contrast_downward": {"type": "boolean"},
         "branch": {"type": "string"},
+        "coherence": {"type": "string"},
         "density_trunc_B": {"type": "integer", "minimum": 1},
         "u_axis": {"type": "string"}
       }

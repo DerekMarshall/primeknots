@@ -330,6 +330,13 @@ void emit_m5_rank_split(const std::string& out_dir, const std::string& partials_
       << ", \"recovers\": " << (s.recovers ? "true" : "false")
       << ", \"contrast_downward\": " << (s.contrast_downward ? "true" : "false")
       << ", \"branch\": \"PRIMARY H0 (no recovery); SECONDARY downward-significant\""
+      << ", \"coherence\": \"the two gates are mutually consistent: excising S₂ lifts the "
+         "descending-branch mean by only f₂·|gap| ≈ " << num(f2 * std::abs(s.gap))
+      << " density units — a sub-bin perturbation on an amplitude-≈4 curve, nowhere near the "
+         "≈3-bin (dev/Δu) displacement a recovery needs; so a 14.6%-mass subpopulation, even "
+         "2.6× past the value threshold, cannot move the location gate. Clauses: (1) rank-2 "
+         "curves show an enhanced downward bias (2.6× threshold); (2) that bias does not carry "
+         "the trough displacement (leave-out trough unchanged on family and virgin annulus)\""
       << ", \"density_trunc_B\": " << kDensB << ", \"u_axis\": \"u = p/N(E)\""
       << "},\n";
 
