@@ -195,4 +195,72 @@ is never adjusted post-hoc.
 
 ## Postscript (results — appended only after the confirmation rungs run)
 
-*(empty — no extension rung has run as of commit of this document)*
+### Rung 1 — X = 2¹⁶ = 65536 (ran 2026-07-11 → 2026-07-12)
+
+**Outcome: Reading B — "consistent with persistent, proceed to PR-2" (evidence-grade).**
+The gate (the Δu-quantized trough) did **not move one bin** over a 6.5× increase in X.
+
+| X | \|fam\| | hump u (dev) | zero u (dev) | trough u (dev) |
+|---|--------|--------------|--------------|----------------|
+| 4000 | 522 | 0.4625 (0.0125) | 0.667642 (0.022642) | 0.8875 (0.0825) |
+| 6000 | 664 | 0.4625 (0.0125) | 0.669584 (0.024584) | 0.9125 (0.1075) |
+| 8000 | 870 | 0.4625 (0.0125) | 0.672637 (0.027637) | 0.8875 (0.0825) |
+| 10000 | 1048 | 0.4625 (0.0125) | 0.672894 (0.027894) | 0.8875 (0.0825) |
+| **65536** | **5042** | **0.4625 (0.0125)** | **0.670328 (0.025328)** | **0.8875 (0.0825)** |
+
+**Decision rule / single-rung clause applied VERBATIM.** d(10⁴)=0.0825; d(2¹⁶)=**0.0825**
+(trough_u=0.8875 at both — identical bin). The one-bin-recovery threshold is d ≤ 0.0575;
+d(2¹⁶)=0.0825 does **not** meet it and is **not** below d(10⁴). Reading A does not fire.
+**Reading B fires: consistent with persistent, proceed to PR-2.** This is EVIDENCE-GRADE
+only — it licenses beginning the rank-split (PR-2), it does **not** pronounce the H1/H0
+verdict, which requires the full ladder (2¹⁷ remains for verdict-strengthening; a spend
+decision, below). The threshold was **not** adjusted; a FAIL-to-recover advancing the
+program to PR-2 is exactly what the committed rule intends.
+
+**The two agreeing invariants still agree at 2¹⁶.** hump dev 0.0125 < τ and zero dev
+0.025328 < τ — the murmuration and its primary oscillation replicate at the larger scale.
+
+**Consistency twin (a strong internal cross-check).** Aggregating the SAME 5042-curve
+partials at H ≤ {4000,6000,8000,10⁴} reproduces the frozen M4 committed run **exactly** —
+same \|fam\| (522/664/870/1048) and same shape fields to full precision (`hump_v`, `zero_u`,
+`trough_v`, all). The 5042-curve pipeline reproduces M4; the extension is not a
+re-parameterised artifact. (Pinned in `prereg_ss_x_extension`.)
+
+**Supporting empiric — the interpolated zero-crossing (NOT the gate).** Over the M4 ladder
+the zero dev rose monotonically (0.022642 → 0.027894); at 2¹⁶ it **retreated** to 0.025328,
+**reversing direction**. Under H1 that is the finite-X-consistent sign — but it is the
+*supporting* empiric, sub-bin and more sensitive than the quantized trough, and the
+committed gate is the trough. Caveat stated: the trough's bin quantization (Δu=0.025) means
+a sub-bin trough drift could be masked; the zero-crossing (interpolated) is where such
+drift would show first, and it moved only 0.0026 — well inside plausible sampling jitter.
+**Recorded as a first-class empiric; it does not override the trough gate**, so the verdict
+stays Reading B. (Whether the *trough* is finite-X-biased below one bin is precisely what
+2¹⁷ + the value-space analysis would resolve; open.)
+
+**Crash + resume event (part of the run record).** The run was killed by an environment-level
+reap at **2048/5042 curves** (~2.09 h in, mid-chunk-5). The R3 crash-safety checkpoint held:
+a clean `complete=0` partials dump (no truncation, tmp+rename), from which the run **resumed
+byte-identically** (chunk size dropped 512→256 to checkpoint more often; thread count held at
+12, which the compat check enforces for byte-identity with the already-done curves) and
+completed the remaining 2994 curves. The final partials are exactly what a single clean pass
+would have produced (the property `twin_ss_partials_chunked_vs_single` locks, validated live
+in the resume).
+
+**Realized wall time per stage** (12 threads, this machine):
+- N/ε oracle cache (5042 curves, PARI): ~0.1 s.
+- **a_p statistic (the heavy stage): ~10.2 h** (7541 s to 2048 curves + 29207 s resume for
+  2994) — **heavily back-loaded**: the high-conductor tail dominates (per-chunk cost rose
+  from ~1000 s early to ~6000 s for the last chunks; max N = 2,037,232 = 31× X).
+- aggregate + two-pass shape + emit: < 1 s (from the committed partials, no a_p recompute).
+
+**Revised runtime estimates from the measured scaling** (power-law fit through the two
+12-thread points (10⁴, 250 s) and (2¹⁶, 36748 s): total ∝ X^2.65 — below the a-priori
+model's ~X², so PR-1's original figures were ~17% pessimistic):
+- **2¹⁷ ≈ 2.7 d** (was 3.3 d a-priori) — *costly but possible*, a multi-day committed run.
+- **2¹⁸ ≈ 17 d** (was 22.3 d) — still **INFEASIBLE** at current infrastructure; the **M0b
+  fast-a_p stage remains motivated** (no change: 2¹⁸ stays out of reach without it).
+
+**Analysis-code hash unchanged** (`b87ebd…` = `SS_GENERATOR_HASH`); `prereg_ss_x_extension`
+PASSES (records Reading B, pins d(2¹⁶)=0.0825 and the M4 consistency). Committed artifacts:
+`data/m5/ne_cache_x65536.txt`, `data/m5/ss_x65536.txt`, `data/m5/ss_partials_x65536.txt`
+(the a_p work, persisted for PR-2 — no recompute), `viz/data/ss_x_extension_murmuration.json`.

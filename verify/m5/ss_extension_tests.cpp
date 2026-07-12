@@ -16,16 +16,25 @@
 #include "doctest/doctest.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
+#include "harness.h"
 #include "murm/height_family.h"
 #include "murm/ss_empirical.h"
 
 using at::core::i64;
 using namespace at::murm;
+
+#ifndef AT_M4_DATA_DIR
+#define AT_M4_DATA_DIR "data/m4"
+#endif
+#ifndef AT_M5_DATA_DIR
+#define AT_M5_DATA_DIR "data/m5"
+#endif
 
 namespace {
 // A deterministic, PARI-free test family: real reduced (A,B) from the height enumeration,
@@ -165,4 +174,111 @@ TEST_CASE("twin_ss_partials_file_roundtrip") {
 
     std::remove(path.c_str());
     std::remove(ckpt.c_str());
+}
+
+namespace {
+const SSScaleShape* find_shape(const SSRun& r, double X) {
+    for (const SSScaleShape& s : r.shapes) if (s.X == X) return &s;
+    return nullptr;
+}
+}  // namespace
+
+TEST_CASE("prereg_ss_x_extension") {
+    // PR-1's confirmation — the FIRST prereg_ real-stakes run. Loads the committed 2^16
+    // extension run, applies the committed decision rule + single-rung clause (PR-1
+    // d9a5804), and PINS the observed outcome. A FAIL-to-recover is a DELIVERABLE, not a
+    // test failure — so this asserts the pinned reality; it does not gate on H1.
+    const std::string ext_path = std::string(AT_M5_DATA_DIR) + "/ss_x65536.txt";
+    SSRun ext;
+    try {
+        ext = read_ss_run(ext_path);
+    } catch (const std::exception& e) {
+        MESSAGE("[SKIP] prereg_ss_x_extension: extension run unreadable/stale (" << e.what() << ").");
+        at::verify::g_oracle_skipped = true;
+        return;
+    }
+
+    const double tol = ext.tol;                  // a-priori τ = 0.06 (§R0c)
+    const double target_zero = ext.r2_zero;      // 0.645
+    const double target_trough = ext.r2_trough;  // 0.805
+
+    // --- structural invariants ---
+    CHECK(ext.X_confirm == 65536.0);
+    CHECK(ext.du == 0.025);
+    CHECK(ext.confirm.n_curves == 5042);
+
+    // --- the 2^16 rung shape ---
+    const SSShape& s = ext.confirm.shape;
+    const double dev_hump16 = std::abs(s.hump_u - ext.r2_hump);
+    const double dev_zero16 = std::abs(s.zero_u - target_zero);
+    const double dev_trough16 = std::abs(s.trough_u - target_trough);
+    MESSAGE("2^16: |fam|=" << ext.confirm.n_curves
+            << "  hump u=" << s.hump_u << " (dev " << dev_hump16 << ")"
+            << "  zero u=" << s.zero_u << " (dev " << dev_zero16 << ")"
+            << "  trough u=" << s.trough_u << " (dev " << dev_trough16 << ")  τ=" << tol);
+
+    // The two agreeing invariants hold at 2^16 too; the trough is STILL the open deviation.
+    CHECK(dev_hump16 < tol);
+    CHECK(dev_zero16 < tol);
+    CHECK(dev_trough16 > tol);
+
+    // --- consistency twin: the <=10^4 re-derivations reproduce the frozen M4 run ---
+    SSRun m4;
+    bool have_m4 = true;
+    try {
+        m4 = read_ss_run(std::string(AT_M4_DATA_DIR) + "/ss_empirical.txt");
+    } catch (const std::exception&) { have_m4 = false; }
+    if (have_m4) {
+        int matched = 0;
+        for (double X : {4000.0, 6000.0, 8000.0, 10000.0}) {
+            const SSScaleShape* e = find_shape(ext, X);
+            const SSScaleShape* m = find_shape(m4, X);
+            REQUIRE(e != nullptr);
+            REQUIRE(m != nullptr);
+            CHECK(e->n_curves == m->n_curves);
+            CHECK(std::abs(e->shape.hump_u - m->shape.hump_u) < 1e-9);
+            CHECK(std::abs(e->shape.zero_u - m->shape.zero_u) < 1e-9);
+            CHECK(std::abs(e->shape.trough_u - m->shape.trough_u) < 1e-9);
+            ++matched;
+        }
+        MESSAGE("consistency twin: " << matched
+                << " <=10^4 ladder shapes reproduce the frozen M4 run exactly (same |fam|, same shape)");
+        CHECK(matched == 4);
+    } else {
+        MESSAGE("[note] M4 run absent; skipping the <=10^4 consistency twin");
+    }
+
+    // --- the committed single-rung clause (PR-1) ---
+    const SSScaleShape* s10 = find_shape(ext, 10000.0);
+    REQUIRE(s10 != nullptr);
+    const double d10 = std::abs(s10->shape.trough_u - target_trough);   // 0.0825 (anchor)
+    const double d16 = dev_trough16;                                     // 0.0825 (rung)
+    // "moved >=1 full bin (Δu) toward 0.805 relative to X=10^4" — threshold DERIVED from
+    // the committed anchor + Δu (d10 - du = 0.0575), never typed.
+    const bool reading_A = (d16 <= d10 - ext.du + 1e-12);   // finite-X, escalate
+    const std::string reading = reading_A
+        ? std::string("A (consistent with finite-X, escalate to 2^17)")
+        : std::string("B (consistent with persistent, proceed to PR-2)");
+    MESSAGE("single-rung clause: d(10^4)=" << d10 << "  d(2^16)=" << d16
+            << "  (one-bin-recovery threshold " << (d10 - ext.du) << ") -> Reading " << reading);
+
+    // PINNED OUTCOME: the trough is EXACTLY as displaced at 2^16 as at 10^4 (same bin) —
+    // flat within quantization, Reading B. A future change that moved it fails here and
+    // forces re-examination; the miss is a recorded fact, not hidden.
+    CHECK(std::abs(s.trough_u - 0.8875) < 1e-9);   // the displaced bin, pinned
+    CHECK(std::abs(d16 - d10) < 1e-9);             // FLAT: zero movement over 6.5x X
+    CHECK(reading_A == false);                     // Reading B fired
+
+    // --- supporting empiric (NOT the gate): the interpolated zero-crossing ---
+    // Rose monotonically over the M4 ladder then RETREATED at 2^16, reversing direction.
+    // Sub-bin, more sensitive than the quantized trough; reported, and pinned for the
+    // record, but it NEVER overrides the trough gate (PR-1: "the pass/fail gate is the
+    // trough rule").
+    const double zerodev10 = std::abs(s10->shape.zero_u - target_zero);  // 0.027894
+    MESSAGE("supporting: zero-crossing dev retreated " << zerodev10 << " -> " << dev_zero16
+            << " at 2^16 (direction reversed vs the M4 monotone drift); trough gate governs");
+    CHECK(dev_zero16 < zerodev10);   // pins the retreat (a recorded empiric, not the verdict)
+
+    REQUIRE(dev_trough16 > tol);     // the deviation is the finding
+    REQUIRE(reading_A == false);     // and it is persistent at this rung
 }

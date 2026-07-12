@@ -76,6 +76,12 @@ def emit_args():
         # statistic source (it does — both from the committed murm/ss_empirical.cpp).
         "m4": (["--ss-run", str(ROOT / "data" / "m4" / "ss_empirical.txt")],
                ["sawin_sutherland_murmuration.json"]),
+        # M5 / PR-1 (X-extension): like M4, the ~10 h a_p statistic is NOT re-run — emit
+        # reads the committed extension run (data/m5/ss_x65536.txt, which itself
+        # reaggregates from the committed partials) and recomputes only the cheap D(u)
+        # overlay (byte-portable). So byte-checked everywhere including CI.
+        "m5": (["--ss-run", str(ROOT / "data" / "m5" / "ss_x65536.txt")],
+               ["ss_x_extension_murmuration.json"]),
     }
     # M1 (murmurations): reproducible from the repo via the committed derived extract
     # (data/cremona/m1_extract.txt, R2), so it is byte-checked everywhere including CI

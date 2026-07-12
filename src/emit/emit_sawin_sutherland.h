@@ -18,4 +18,14 @@ namespace at::emit {
 void emit_m4(const std::string& out_dir, const std::string& run_path,
              const std::string& generated_by);
 
+// Stage M5 / PR-1 X-extension emitter. Same schema (sawin_sutherland_murmuration/1),
+// consuming the committed extension run data/m5/ss_x65536.txt (full ladder incl. the
+// 2¹⁶ rung + the 2¹⁶ confirm curve). claim_class carries the PR-1 single-rung verdict IN
+// WORDS: partial agreement — trough PERSISTENT at 2¹⁶ (dev identical to 10⁴, flat over
+// 6.5× X) → "consistent with persistent, proceed to PR-2" (evidence-grade, NOT the
+// finite-X verdict); the interpolated zero-crossing retreated (sub-bin, reported, not the
+// gate). D(u) recomputed cheaply and byte-portably, as in emit_m4.
+void emit_m5_extension(const std::string& out_dir, const std::string& run_path,
+                       const std::string& generated_by);
+
 }  // namespace at::emit

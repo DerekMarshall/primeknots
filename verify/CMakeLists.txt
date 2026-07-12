@@ -440,9 +440,11 @@ target_include_directories(verify_m5 PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(verify_m5 PRIVATE at_murm at_core)
 target_compile_definitions(verify_m5 PRIVATE
+  AT_M4_DATA_DIR="${CMAKE_SOURCE_DIR}/data/m4"
   AT_M5_DATA_DIR="${CMAKE_SOURCE_DIR}/data/m5")
 
-foreach(case twin_ss_partials_chunked_vs_single twin_ss_partials_file_roundtrip)
+foreach(case twin_ss_partials_chunked_vs_single twin_ss_partials_file_roundtrip
+         prereg_ss_x_extension)
   add_test(NAME m5.${case} COMMAND verify_m5 --test-case=${case})
   set_tests_properties(m5.${case} PROPERTIES LABELS "m5")
 endforeach()

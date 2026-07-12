@@ -126,6 +126,20 @@ def main() -> int:
             print(f"FAIL: sawin_sutherland_murmuration.json violates schema: {e.message} (at {list(e.path)})")
             failures += 1
 
+    # M5 / PR-1 (X-extension): emit reads the committed extension run; schema-check the
+    # committed snapshot here (byte-for-byte re-emit is the freshness suite's job).
+    m5_file = Path(__file__).resolve().parent.parent / "viz/data/ss_x_extension_murmuration.json"
+    if m5_file.exists():
+        m5_schema = schema_dir / "ss_x_extension_murmuration.schema.json"
+        try:
+            jsonschema.validate(instance=json.loads(m5_file.read_text()),
+                                schema=json.loads(m5_schema.read_text()))
+            print("OK: (committed) ss_x_extension_murmuration.json valid against ss_x_extension_murmuration.schema.json")
+            checked += 1
+        except jsonschema.ValidationError as e:
+            print(f"FAIL: ss_x_extension_murmuration.json violates schema: {e.message} (at {list(e.path)})")
+            failures += 1
+
     # Cross-field invariants the schema can't express.
     lm = json.loads((out / "linking_matrix.json").read_text())
     if not (lm["n"] == len(lm["primes"]) == len(lm["rows_base64"])):

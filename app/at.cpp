@@ -174,6 +174,15 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "at emit: stage m4 -> %s/sawin_sutherland_murmuration.json\n", out.c_str());
             return 0;
         }
+        if (stage == "m5") {
+            // PR-1 X-extension: the 2¹⁶ rung + full ladder, same schema, Reading-B verdict
+            // in claim_class. Consumes the committed extension run data/m5/ss_x65536.txt
+            // (the ~10 h a_p is never re-run here; the run file reaggregates from partials).
+            const char* run_path = opt(argc, argv, "--ss-run", "data/m5/ss_x65536.txt");
+            at::emit::emit_m5_extension(out, run_path, resolve_generated_by());
+            std::fprintf(stderr, "at emit: stage m5 -> %s/ss_x_extension_murmuration.json\n", out.c_str());
+            return 0;
+        }
         std::fprintf(stderr,
             "at emit: no emitter for stage '%s' (stages 1-6, m1-m3 are built)\n",
             stage.c_str());
@@ -318,7 +327,36 @@ int main(int argc, char** argv) {
         };
 
         at::murm::SSPartials P;
-        if (!do_checkpoint) {
+        bool loaded = false;
+
+        // Fast path (PR-2 reaggregation / clean re-emit): if a COMPLETE committed
+        // partials file already holds this run's a_p work, load it and skip the heavy
+        // compute entirely. read_ss_partials refuses a stale hash or an incomplete
+        // (checkpoint) file, so this never silently reuses the wrong numbers.
+        if (!partials_path.empty()) {
+            std::ifstream probe(partials_path);
+            if (probe.good()) {
+                probe.close();
+                try {
+                    at::murm::SSPartialsMeta pm;
+                    at::murm::SSPartials Pl =
+                        at::murm::read_ss_partials(partials_path, pm, /*allow_incomplete=*/false);
+                    const int NBexp = static_cast<int>(std::lround(1.0 / run.du));
+                    if (pm.generator_hash == std::string(at::murm::ss_generator_hash()) &&
+                        pm.X == run.X_confirm && pm.du == run.du && pm.NB == NBexp &&
+                        Pl.A.size() == C) {
+                        P = std::move(Pl);
+                        loaded = true;
+                        std::fprintf(stderr, "at ss-run: loaded COMPLETE partials %s (%zu curves) "
+                                     "— reaggregating, NO a_p recompute\n", partials_path.c_str(), C);
+                    }
+                } catch (const std::exception&) { /* unusable → fall through to compute */ }
+            }
+        }
+
+        if (loaded) {
+            /* P already populated from the committed partials */
+        } else if (!do_checkpoint) {
             // Single-pass (M4 path; also the fast small-X path). Nothing persisted.
             P = at::murm::ss_empirical_partials(rows, run.du, threads);
         } else {
