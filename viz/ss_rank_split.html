@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analytic-rank split of the height murmuration — M5 / PR-2</title>
+  <link rel="stylesheet" href="common.css" />
+  <style>
+    .axis text { font: 10px ui-monospace, Menlo, monospace; fill: var(--muted); }
+    .axis line, .axis path { stroke: var(--border); }
+    .stat { font-family: ui-monospace, Menlo, monospace; font-size: 13px; margin: 3px 0; }
+    .ok { color: #0f9d58; font-weight: bold; } .miss { color: #dc2626; font-weight: bold; }
+    .density { fill: none; stroke: #0f9d58; stroke-width: 1.4; stroke-dasharray: 5 3; }
+    .full { fill: none; stroke: #64748b; stroke-width: 1.6; }
+    .leaveout { fill: none; stroke: #2563eb; stroke-width: 2.2; }
+    .s2 { fill: none; stroke: #dc2626; stroke-width: 1.8; }
+    .s0 { fill: none; stroke: #7c3aed; stroke-width: 1.4; stroke-dasharray: 2 2; }
+    .zero { stroke: var(--border); stroke-dasharray: 3 3; }
+    .target { stroke: #d97706; stroke-width: 1.1; stroke-dasharray: 2 2; }
+    .targettxt { font: 10px ui-monospace, Menlo, monospace; fill: #d97706; }
+    .window { fill: rgba(37,99,235,0.06); }
+    .claim { border-left: 3px solid #d97706; padding: 6px 12px; margin: 8px 0;
+             background: var(--panel, rgba(217,119,6,0.06)); font-size: 13px; line-height: 1.5; }
+    table.g { border-collapse: collapse; font: 12px ui-monospace, Menlo, monospace; margin-top: 6px; }
+    table.g th, table.g td { border: 1px solid var(--border); padding: 3px 9px; text-align: right; }
+    table.g th { color: var(--muted); font-weight: normal; }
+    .swatch { display:inline-block; width:11px; height:11px; border-radius:2px; vertical-align:middle; margin-right:5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Analytic-rank split of the height murmuration</h1>
+    <p class="subtitle">Stage M5 / PR-2 (<a href="../docs/preregistered/PR-2.md">pre-registration</a>). The committed 2¹⁶ statistic (a<sub>p</sub> reused from the persisted partials, <em>no recompute</em>) split by <b>analytic rank</b> r=ord<sub>s=1</sub>L(E,s) (PARI, never Mordell–Weil rank): the full family, the leave-out <b>F∖S₂</b> (the PRIMARY test), and <b>S₂</b>/<b>S₀</b>, overlaid on the conjectured density D(u) and the R2 targets. Gates applied mechanically, then interpreted. Renders emitted JSON only.</p>
+  </header>
+  <div id="err" class="error" hidden></div>
+  <main>
+    <section class="panel">
+      <h2>D̂(u): full family, leave-out F∖S₂, S₂, S₀ — vs the conjectured D(u)</h2>
+      <div id="chart"></div>
+      <div class="legend">
+        <span><span class="swatch" style="background:#64748b"></span>full family</span>
+        <span><span class="swatch" style="background:#2563eb"></span>F∖S₂ (leave-out, primary)</span>
+        <span><span class="swatch" style="background:#dc2626"></span>S₂ (analytic-rank-2)</span>
+        <span><span class="swatch" style="background:#7c3aed"></span>S₀ (rank-0)</span>
+        <span><span class="swatch" style="background:#0f9d58"></span>conjectured D(u)</span>
+        <span><span class="swatch" style="background:#d97706"></span>R2 targets</span>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>The gates, and the branch taken</h2>
+      <div id="claim" class="claim"></div>
+      <div id="gates"></div>
+      <div class="params" id="params"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script>
+    const fail = (m) => { const e=document.getElementById("err"); e.hidden=false;
+      e.textContent="Could not load data: "+m+"  —  ./build/bin/at emit --stage m5split --out viz/data && python3 -m http.server -d viz"; };
+
+    fetch("data/ss_rank_split_murmuration.json").then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
+      drawChart(d); drawClaim(d); drawGates(d); drawParams(d);
+    }).catch(e=>fail(e.message));
+
+    function drawChart(d) {
+      const W=880,H=400,ml=48,mr=16,mt=12,mb=34;
+      const C=d.curves, series=[C.full,C.leaveout,C.s2,C.s0];
+      const ally=series.flat().map(p=>p.d).concat(d.density.map(p=>p.d));
+      const x=d3.scaleLinear().domain([0,1]).range([ml,W-mr]);
+      const y=d3.scaleLinear().domain([d3.min(ally)-0.3, d3.max(ally)+0.3]).range([H-mb,mt]);
+      const svg=d3.select("#chart").append("svg").attr("width",W).attr("height",H)
+        .attr("viewBox",`0 0 ${W} ${H}`).style("max-width","100%").style("height","auto");
+      // descending-branch contrast window [u_lo,u_hi]
+      const g=d.gates.contrast;
+      svg.append("rect").attr("class","window").attr("x",x(g.u_lo)).attr("width",x(g.u_hi)-x(g.u_lo)).attr("y",mt).attr("height",H-mb-mt);
+      svg.append("line").attr("class","zero").attr("x1",ml).attr("x2",W-mr).attr("y1",y(0)).attr("y2",y(0));
+      const tg=d.targets;
+      Object.keys(tg).forEach(k=>{
+        svg.append("line").attr("class","target").attr("x1",x(tg[k])).attr("x2",x(tg[k])).attr("y1",mt).attr("y2",H-mb);
+        svg.append("text").attr("class","targettxt").attr("x",x(tg[k])+3).attr("y",mt+11).text(k+" "+tg[k]);
+      });
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-mb})`).call(d3.axisBottom(x).ticks(10));
+      svg.append("g").attr("class","axis").attr("transform",`translate(${ml},0)`).call(d3.axisLeft(y).ticks(8));
+      svg.append("text").attr("class","axis").attr("x",(ml+W)/2).attr("y",H-3).attr("text-anchor","middle").text("u = p / N(E)");
+      const line=d3.line().x(p=>x(p.u)).y(p=>y(p.d));
+      svg.append("path").datum(d.density).attr("class","density").attr("d",line);
+      svg.append("path").datum(C.s0).attr("class","s0").attr("d",line);
+      svg.append("path").datum(C.full).attr("class","full").attr("d",line);
+      svg.append("path").datum(C.s2).attr("class","s2").attr("d",line);
+      svg.append("path").datum(C.leaveout).attr("class","leaveout").attr("d",line);
+    }
+
+    function drawClaim(d) {
+      document.getElementById("claim").innerHTML = `<b>Branch: ${d.params.branch}.</b> ${d.params.claim_class}`;
+    }
+
+    function drawGates(d) {
+      const f=d3.format(".4f"), r=d.gates.recovery, c=d.gates.contrast, a=d.gates.annulus;
+      document.getElementById("gates").innerHTML =
+        `<div class="stat">X = ${d.params.X}, f₂ = ${d3.format(".4f")(d.params.f2)} `+
+        `(S₂ ${d.params.n_s2} / ${d.params.n_full}); F∖S₂ ${d.params.n_leaveout}, S₀ ${d.params.n_s0}</div>`+
+        `<div class="stat ${r.recovers?'ok':'miss'}">PRIMARY (u-space): F∖S₂ trough dev ${f(r.dev_leaveout)} `+
+        `vs full ${f(r.dev_full)}; one-bin threshold ${f(r.one_bin_threshold)} — `+
+        `${r.recovers?'RECOVERS ✓':'does NOT recover ✗ → H0'}</div>`+
+        `<div class="stat ${c.downward?'ok':''}">SECONDARY (value-space): S₂−S₀ descending-branch mean gap `+
+        `${f(c.gap)} vs threshold −${f(c.threshold)} — ${c.downward?'downward-significant':'inconclusive'} `+
+        `(mean S₂ ${f(c.mean_s2)}, S₀ ${f(c.mean_s0)})</div>`+
+        `<div class="stat" style="color:var(--muted)">annulus (10⁴,2¹⁶] holdout, ${a.n_full} curves: `+
+        `F∖S₂ trough dev ${f(a.dev_leaveout)} → ${a.recovers?'recovers':'no recovery'}; gap ${f(a.gap)} `+
+        `→ ${a.downward?'downward-sig':'inconclusive'}. ${a.note}</div>`;
+    }
+
+    function drawParams(d) {
+      document.getElementById("params").textContent =
+        `schema: ${d.schema}\ngenerated_by: ${d.generated_by}\nparams: ${JSON.stringify(d.params)}`;
+    }
+  </script>
+</body>
+</html>

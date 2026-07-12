@@ -140,6 +140,19 @@ def main() -> int:
             print(f"FAIL: ss_x_extension_murmuration.json violates schema: {e.message} (at {list(e.path)})")
             failures += 1
 
+    # M5 / PR-2 step 3 (analytic-rank split): schema-check the committed snapshot.
+    m5s_file = Path(__file__).resolve().parent.parent / "viz/data/ss_rank_split_murmuration.json"
+    if m5s_file.exists():
+        m5s_schema = schema_dir / "ss_rank_split_murmuration.schema.json"
+        try:
+            jsonschema.validate(instance=json.loads(m5s_file.read_text()),
+                                schema=json.loads(m5s_schema.read_text()))
+            print("OK: (committed) ss_rank_split_murmuration.json valid against ss_rank_split_murmuration.schema.json")
+            checked += 1
+        except jsonschema.ValidationError as e:
+            print(f"FAIL: ss_rank_split_murmuration.json violates schema: {e.message} (at {list(e.path)})")
+            failures += 1
+
     # Cross-field invariants the schema can't express.
     lm = json.loads((out / "linking_matrix.json").read_text())
     if not (lm["n"] == len(lm["primes"]) == len(lm["rows_base64"])):

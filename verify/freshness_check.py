@@ -82,6 +82,12 @@ def emit_args():
         # overlay (byte-portable). So byte-checked everywhere including CI.
         "m5": (["--ss-run", str(ROOT / "data" / "m5" / "ss_x65536.txt")],
                ["ss_x_extension_murmuration.json"]),
+        # M5 / PR-2 step 3 (analytic-rank split): re-aggregates the committed partials
+        # filtered by the committed rank column through the frozen ss_aggregate (no a_p
+        # recompute) + the byte-portable D(u) overlay. Byte-checked everywhere.
+        "m5split": (["--partials", str(ROOT / "data" / "m5" / "ss_partials_x65536.txt"),
+                     "--rank-cache", str(ROOT / "data" / "m5" / "rank_cache_x65536.txt")],
+                    ["ss_rank_split_murmuration.json"]),
     }
     # M1 (murmurations): reproducible from the repo via the committed derived extract
     # (data/cremona/m1_extract.txt, R2), so it is byte-checked everywhere including CI

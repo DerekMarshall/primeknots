@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ss_rank_split/1",
+  "title": "ss_rank_split",
+  "description": "Stage M5 / PR-2 step 3: the analytic-rank split of the height murmuration at X=2^16. The committed per-curve partials (a_p work, no recompute) filtered by the analytic-rank column and re-aggregated through the frozen ss_aggregate into the full family, F-minus-S2 (leave-out), S2, and S0, overlaid on the conjectured density D(u) and the R2 targets. gates records the committed PRIMARY (u-space leave-out recovery, tau=0.06) and SECONDARY (value-space S2-vs-S0 descending-branch contrast vs 0.668, one-sided downward) verdicts plus the geometric-holdout annulus cross-check; claim_class states the branch taken IN WORDS with the Wachs (2603.04604) confound clause. A pre-registered null; no proof; analytic rank only (never Mordell-Weil).",
+  "type": "object",
+  "required": ["schema", "generated_by", "params", "targets", "gates", "curves", "density"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "ss_rank_split/1"},
+    "generated_by": {"type": "string"},
+    "params": {
+      "type": "object",
+      "required": ["family", "statistic", "source", "external_data", "provenance",
+                   "claim_class", "f2", "tol", "contrast_threshold", "X", "n_full",
+                   "n_leaveout", "n_s2", "n_s0", "recovers", "contrast_downward",
+                   "branch", "density_trunc_B", "u_axis"],
+      "additionalProperties": false,
+      "properties": {
+        "family": {"type": "string"},
+        "statistic": {"type": "string"},
+        "source": {"type": "string"},
+        "external_data": {"type": "string"},
+        "provenance": {"type": "string"},
+        "claim_class": {"type": "string"},
+        "f2": {"type": "number"},
+        "tol": {"type": "number"},
+        "contrast_threshold": {"type": "number"},
+        "X": {"type": "number"},
+        "n_full": {"type": "integer", "minimum": 1},
+        "n_leaveout": {"type": "integer", "minimum": 1},
+        "n_s2": {"type": "integer", "minimum": 0},
+        "n_s0": {"type": "integer", "minimum": 0},
+        "recovers": {"type": "boolean"},
+        "contrast_downward": {"type": "boolean"},
+        "branch": {"type": "string"},
+        "density_trunc_B": {"type": "integer", "minimum": 1},
+        "u_axis": {"type": "string"}
+      }
+    },
+    "targets": {
+      "type": "object",
+      "required": ["hump", "zero", "trough"],
+      "additionalProperties": false,
+      "properties": {"hump": {"type": "number"}, "zero": {"type": "number"}, "trough": {"type": "number"}}
+    },
+    "gates": {
+      "type": "object",
+      "required": ["recovery", "contrast", "annulus"],
+      "additionalProperties": false,
+      "properties": {
+        "recovery": {
+          "type": "object",
+          "required": ["target", "tol", "dev_full", "dev_leaveout", "one_bin_threshold", "recovers"],
+          "additionalProperties": false,
+          "properties": {
+            "target": {"type": "number"}, "tol": {"type": "number"},
+            "dev_full": {"type": "number"}, "dev_leaveout": {"type": "number"},
+            "one_bin_threshold": {"type": "number"}, "recovers": {"type": "boolean"}
+          }
+        },
+        "contrast": {
+          "type": "object",
+          "required": ["u_lo", "u_hi", "mean_s2", "mean_s0", "gap", "threshold", "downward"],
+          "additionalProperties": false,
+          "properties": {
+            "u_lo": {"type": "number"}, "u_hi": {"type": "number"},
+            "mean_s2": {"type": "number"}, "mean_s0": {"type": "number"},
+            "gap": {"type": "number"}, "threshold": {"type": "number"},
+            "downward": {"type": "boolean"}
+          }
+        },
+        "annulus": {
+          "type": "object",
+          "required": ["n_full", "leaveout_trough_u", "dev_leaveout", "recovers", "gap", "downward", "note"],
+          "additionalProperties": false,
+          "properties": {
+            "n_full": {"type": "integer", "minimum": 0},
+            "leaveout_trough_u": {"type": "number"}, "dev_leaveout": {"type": "number"},
+            "recovers": {"type": "boolean"}, "gap": {"type": "number"},
+            "downward": {"type": "boolean"}, "note": {"type": "string"}
+          }
+        }
+      }
+    },
+    "curves": {
+      "type": "object",
+      "required": ["full", "leaveout", "s2", "s0"],
+      "additionalProperties": false,
+      "properties": {
+        "full": {"$ref": "#/$defs/curve"},
+        "leaveout": {"$ref": "#/$defs/curve"},
+        "s2": {"$ref": "#/$defs/curve"},
+        "s0": {"$ref": "#/$defs/curve"}
+      }
+    },
+    "density": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["u", "d"],
+        "additionalProperties": false,
+        "properties": {"u": {"type": "number"}, "d": {"type": "number"}}
+      }
+    }
+  },
+  "$defs": {
+    "curve": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["u", "d", "count"],
+        "additionalProperties": false,
+        "properties": {"u": {"type": "number"}, "d": {"type": "number"}, "count": {"type": "integer", "minimum": 0}}
+      }
+    }
+  }
+}

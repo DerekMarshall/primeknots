@@ -49,6 +49,7 @@ add_library(at_murm STATIC
   murm/ss_density.cpp
   murm/ne_cache.cpp
   murm/rank_cache.cpp
+  murm/rank_split.cpp
   murm/ss_empirical.cpp
   murm/ss_run_io.cpp)
 target_include_directories(at_murm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

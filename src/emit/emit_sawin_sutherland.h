@@ -28,4 +28,12 @@ void emit_m4(const std::string& out_dir, const std::string& run_path,
 void emit_m5_extension(const std::string& out_dir, const std::string& run_path,
                        const std::string& generated_by);
 
+// Stage M5 / PR-2 step 3 emitter — the analytic-rank split (schema ss_rank_split/1).
+// Reads the committed partials + analytic-rank cache, re-aggregates (murm::rank_split, NO
+// a_p recompute) the full family, F∖S₂, S₂, and S₀, overlays the conjectured D(u) and the
+// R2 targets, and records the committed gates + the branch taken (PRIMARY u-space recovery,
+// SECONDARY value-space contrast vs 0.668) IN WORDS in claim_class + the Wachs clause (R1).
+void emit_m5_rank_split(const std::string& out_dir, const std::string& partials_path,
+                        const std::string& rank_path, const std::string& generated_by);
+
 }  // namespace at::emit

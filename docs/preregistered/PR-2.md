@@ -302,6 +302,64 @@ sampling model σ(u) = √(u³·⟨ln N⟩/(Δu·|fam|)):
   threshold τ=0.06, sampling noise ≈ the M4 confirmation's — well-powered) carries the H1/H0
   verdict regardless of the secondary.
 
-*Next: step 3 — the PRIMARY leave-out trough recovery (D̂ over F∖S₂, reaggregated from the
-committed partials, NO a_p recompute) on the annulus holdout, + the value-space contrast in
-the pre-declared branch.*
+### Step 3 — the split ran; gates applied mechanically (R4), THEN interpreted (2026-07-12)
+
+**Analysis-code binding (re-aggregation).** `src/murm/rank_split.cpp`, **sha256 =
+`5d94c0f2c2244ffaa8a02c3c1b22dce5eb38ec3d44266a299eac448329df05ba`** — it FILTERS the
+committed partials by the rank column and re-sums through the frozen `ss_aggregate` (a_p
+hash `b87ebd…` unchanged; **no a_p recompute**). The `prereg_rank_split` test and the
+`ss_rank_split/1` emit both consume it.
+
+**The committed gates, applied before any interpretation (R4):**
+
+| population | \|fam\| | trough_u | dev | descending-window mean |
+|---|---|---|---|---|
+| full | 5042 | 0.8875 | 0.0825 | — |
+| **F∖S₂ (primary)** | 4304 | **0.8875** | **0.0825** | — |
+| S₂ | 738 | 0.9625 | — | **−3.7165** |
+| S₀ | 1754 | 0.8625 | — | −1.9839 |
+
+- **PRIMARY (u-space) — recovery gate:** `dev_leaveout = 0.0825`; one-bin threshold
+  `= dev_full − Δu = 0.0575`. `0.0825 ≤ 0.0575`? **NO** → **does NOT recover** → **H0**.
+- **SECONDARY (value-space) — contrast gate:** `gap = mean D̂_{S₂} − mean D̂_{S₀} = −1.7326`;
+  threshold `−0.668`, one-sided downward. `−1.7326 < −0.668`? **YES** → **downward-significant**.
+- **Annulus (10⁴,2¹⁶] geometric holdout (3994 curves, never touched by exploration):** F∖S₂
+  trough `0.8875`, dev `0.0825` → **still does NOT recover**; gap `−1.5561` → still
+  downward-significant. **The primary verdict is not a seed-curve artifact.**
+
+**Branch taken: H0 (primary null), with a real but non-decisive secondary effect.**
+
+**Interpretation (written after the gates spoke).** Removing the 738 analytic-rank-2 curves
+leaves the trough **exactly** where it was (0.8875, on the full family and on the virgin
+annulus alike): **the tail deficit at H≤2¹⁶ is NOT explained by analytic-rank-2
+over-representation** — a citable pre-registered null constraining the [SS25] p.4 mechanism.
+The secondary axis is genuinely informative and does not contradict this: the analytic-rank-2
+subpopulation **is** markedly more negative on the descending branch (gap −1.73, ≈2.6× the
+threshold), consistent with the SS premise at the level of the subpopulation mean — but at
+f₂=14.6% it is too dilute to move the aggregate trough **location**, which is the gate that
+defines the murmuration's shape. Two axes, kept separate (§R0c): the value-space effect is
+real; it **cannot** substitute for the u-space recovery and does **not** overturn the null.
+
+**WACHS CLAUSE (R1), on this branch verbatim:** *this design does not distinguish rank per se
+from BSD invariants correlated with rank (Wachs 2603.04604); "carried by" is a statement
+about the subpopulation, not the mechanism.* Applied here: the null is about the
+analytic-rank-2 **subpopulation**, and the secondary's downward gap could equally be driven by
+Tamagawa/|Ш| structure correlated with rank ([Wachs-BSD]'s within-rank modulation), not rank
+itself. Neither the null nor the secondary licenses a mechanism claim.
+
+**H0 ENDS THIS PR (R2).** No same-session subgroup fishing was run. Candidate follow-ups,
+**named here as future pre-registrations, UNRUN** (each needs its own LOOKS accounting):
+(i) leave-out of the union rank ≥ 2 (S₂ ∪ S≥₃), does it recover?; (ii) a Tamagawa-product /
+|Ш| stratification (the [Wachs-BSD] confound made explicit) — is the descending-branch
+negativity carried by |Ш| ≥ 4 rather than by rank?; (iii) a harmonic (Petersson) re-weighting,
+which [Z25 p.5] notes changes the small-`P` bias. None of these is a step-3 addendum.
+
+**Claim licensed (H0 branch, analytic-rank-2; Wachs-clause-bound):** *"On a from-scratch
+height-ordered family we control end to end, the murmuration tail deficit at H≤2¹⁶ is **not
+explained** by analytic-rank-2 over-representation: removing that subpopulation (14.6%, 738
+curves) leaves the trough location unmoved, on the full family and on a virgin height annulus.
+The analytic-rank-2 curves are separately much more negative on the descending branch, but
+that value-space effect does not move the location gate, and — per the confound above — is not
+attributable to rank per se. A pre-registered null; not a proof; MW rank never asserted."*
+Committed artifact: `viz/data/ss_rank_split_murmuration.json` (`ss_rank_split/1`), the
+`full / F∖S₂ / S₂ / S₀` overlay + D(u) + gates + branch.

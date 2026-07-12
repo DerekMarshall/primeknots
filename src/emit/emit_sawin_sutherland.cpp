@@ -6,7 +6,14 @@
 #include <iomanip>
 #include <sstream>
 
+#include <map>
+#include <utility>
+#include <vector>
+
 #include "emit/json.h"
+#include "murm/height_family.h"
+#include "murm/rank_cache.h"
+#include "murm/rank_split.h"
 #include "murm/ss_density.h"
 #include "murm/ss_empirical.h"
 
@@ -246,6 +253,121 @@ void emit_m5_extension(const std::string& out_dir, const std::string& run_path,
           << ", \"dev_trough\": " << num(std::abs(sc.shape.trough_u - run.r2_trough)) << "}";
     }
     f << "]}\n}\n";
+}
+
+namespace {
+// Emit one subpopulation curve as a JSON array of {u, d, count}.
+void emit_curve(std::ofstream& f, const char* key, const SSEmpirical& e, bool last) {
+    f << "\"" << key << "\": [";
+    for (std::size_t b = 0; b < e.u_mid.size(); ++b)
+        f << (b ? "," : "") << "{\"u\": " << num(e.u_mid[b]) << ", \"d\": " << num(e.density[b])
+          << ", \"count\": " << e.count[b] << "}";
+    f << "]" << (last ? "" : ",");
+}
+}  // namespace
+
+void emit_m5_rank_split(const std::string& out_dir, const std::string& partials_path,
+                        const std::string& rank_path, const std::string& generated_by) {
+    fs::create_directories(out_dir);
+
+    SSPartialsMeta pm;
+    SSPartials P = read_ss_partials(partials_path, pm, /*allow_incomplete=*/false);
+    RankCacheHeader rh;
+    std::vector<RankRow> rr = read_rank_cache(rank_path, rh);
+
+    std::map<std::pair<long long, long long>, int> rank_of;
+    for (const RankRow& r : rr) rank_of[{r.A, r.B}] = r.rank;
+    std::vector<int> rank(P.A.size(), -1);
+    for (std::size_t c = 0; c < P.A.size(); ++c) rank[c] = rank_of[{P.A[c], P.B[c]}];
+
+    // Committed gates (PR-2 Amendment 4 + step 2, m4-pinning §R0c).
+    const double target = 0.805, tol = 0.06, contrast_thr = 0.668, u_lo = 0.7, u_hi = 0.9;
+    const RankSplit s = rank_split(P, rank, pm.X, target, tol, contrast_thr, u_lo, u_hi);
+
+    // Annulus (10⁴, 2¹⁶] geometric-holdout cross-check (PR-2 Amendment 3).
+    SSPartials Pa; Pa.du = P.du; Pa.NB = P.NB;
+    std::vector<int> rank_a;
+    for (std::size_t c = 0; c < P.A.size(); ++c) {
+        if (at::murm::naive_height(P.A[c], P.B[c]) <= 10000) continue;
+        Pa.A.push_back(P.A[c]); Pa.B.push_back(P.B[c]); Pa.N.push_back(P.N[c]);
+        Pa.num.push_back(P.num[c]); Pa.cnt.push_back(P.cnt[c]); rank_a.push_back(rank[c]);
+    }
+    const RankSplit sa = rank_split(Pa, rank_a, pm.X, target, tol, contrast_thr, u_lo, u_hi);
+
+    const double f2 = s.n_full ? static_cast<double>(s.n_s2) / static_cast<double>(s.n_full) : 0.0;
+
+    std::ofstream f(fs::path(out_dir) / "ss_rank_split_murmuration.json");
+    f << "{\n  \"schema\": \"ss_rank_split/1\",\n";
+    f << "  \"generated_by\": \"" << json_escape(generated_by) << "\",\n";
+    f << "  \"params\": {"
+      << "\"family\": \"E_{A,B} height-ordered, H ≤ 2¹⁶ (the PR-1 5042-curve family), split by "
+         "ANALYTIC rank r = ord_{s=1}L(E,s) (PARI ellanalyticrank; NEVER Mordell–Weil rank)\""
+      << ", \"statistic\": \"[SS25] eq. (1), UNCHANGED; a_p reused from the committed partials "
+         "(NO recompute), filtered by the rank column and re-summed through the frozen ss_aggregate\""
+      << ", \"source\": \"docs/preregistered/PR-2.md (analytic-rank split); [SS25] p.4 rank remark\""
+      << ", \"external_data\": \"a_p COMPUTED (partials); N, ε and analytic rank ORACLE-provenance "
+         "(PARI; ne_cache + rank_cache, generator-hash-bound to the same (A,B) family)\""
+      << ", \"provenance\": \"empirical = computed statistic; D(u) = conjectured Bessel-J₁ formula; "
+         "N,ε,rank: oracle\""
+      << ", \"claim_class\": \"PR-2 step 3 (analytic-rank split, X=2¹⁶). PRIMARY (u-space, "
+         "well-powered): H0 — removing the 738 analytic-rank-2 curves does NOT recover the trough "
+         "(F∖S₂ trough u=" << num(s.leaveout.shape.trough_u) << ", dev " << num(s.dev_leaveout)
+      << ", identical to the full family; and identical on the geometric-holdout annulus (10⁴,2¹⁶]). "
+         "The tail deficit at H≤2¹⁶ is NOT explained by analytic-rank-2 over-representation. "
+         "SECONDARY (value-space, f₂-limited): the analytic-rank-2 subpopulation IS markedly more "
+         "negative on the descending branch (S₂−S₀ mean gap " << num(s.gap) << ", past the committed "
+         "−" << num(contrast_thr) << ", downward) — a real value-space effect, but by the two-axes "
+         "discipline it cannot substitute for the location gate and does NOT overturn the primary "
+         "null. WACHS CLAUSE: this design does not distinguish rank per se from BSD invariants "
+         "correlated with rank (Wachs 2603.04604); 'carried by' is a statement about the "
+         "subpopulation, not the mechanism. A pre-registered null (PR-2) — no proof; MW rank never "
+         "asserted (rule 7)\""
+      << ", \"f2\": " << num(f2)
+      << ", \"tol\": " << num(tol) << ", \"contrast_threshold\": " << num(contrast_thr)
+      << ", \"X\": " << num(s.X)
+      << ", \"n_full\": " << s.n_full << ", \"n_leaveout\": " << s.n_leaveout
+      << ", \"n_s2\": " << s.n_s2 << ", \"n_s0\": " << s.n_s0
+      << ", \"recovers\": " << (s.recovers ? "true" : "false")
+      << ", \"contrast_downward\": " << (s.contrast_downward ? "true" : "false")
+      << ", \"branch\": \"PRIMARY H0 (no recovery); SECONDARY downward-significant\""
+      << ", \"density_trunc_B\": " << kDensB << ", \"u_axis\": \"u = p/N(E)\""
+      << "},\n";
+
+    f << "  \"targets\": {\"hump\": 0.475, \"zero\": 0.645, \"trough\": " << num(target) << "},\n";
+
+    f << "  \"gates\": {\"recovery\": {\"target\": " << num(target)
+      << ", \"tol\": " << num(tol) << ", \"dev_full\": " << num(s.dev_full)
+      << ", \"dev_leaveout\": " << num(s.dev_leaveout)
+      << ", \"one_bin_threshold\": " << num(s.dev_full - s.du)
+      << ", \"recovers\": " << (s.recovers ? "true" : "false") << "}"
+      << ", \"contrast\": {\"u_lo\": " << num(u_lo) << ", \"u_hi\": " << num(u_hi)
+      << ", \"mean_s2\": " << num(s.mean_s2) << ", \"mean_s0\": " << num(s.mean_s0)
+      << ", \"gap\": " << num(s.gap) << ", \"threshold\": " << num(contrast_thr)
+      << ", \"downward\": " << (s.contrast_downward ? "true" : "false") << "}"
+      << ", \"annulus\": {\"n_full\": " << sa.n_full
+      << ", \"leaveout_trough_u\": " << num(sa.leaveout.shape.trough_u)
+      << ", \"dev_leaveout\": " << num(sa.dev_leaveout)
+      << ", \"recovers\": " << (sa.recovers ? "true" : "false")
+      << ", \"gap\": " << num(sa.gap)
+      << ", \"downward\": " << (sa.contrast_downward ? "true" : "false")
+      << ", \"note\": \"geometric holdout (10⁴,2¹⁶], never touched by exploration; confirms the "
+         "primary is not a seed-curve artifact\"}},\n";
+
+    f << "  \"curves\": {";
+    emit_curve(f, "full", s.full, false);
+    emit_curve(f, "leaveout", s.leaveout, false);
+    emit_curve(f, "s2", s.s2, false);
+    emit_curve(f, "s0", s.s0, true);
+    f << "},\n";
+
+    f << "  \"density\": [";
+    bool first = true;
+    for (double u = P.du; u <= 1.0 + 1e-9; u += 0.005) {
+        f << (first ? "" : ",") << "{\"u\": " << num(u)
+          << ", \"d\": " << num(ss_density(u, kDensB, kDensB)) << "}";
+        first = false;
+    }
+    f << "]\n}\n";
 }
 
 }  // namespace at::emit

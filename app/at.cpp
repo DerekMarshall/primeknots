@@ -34,6 +34,7 @@
 #include "murm/height_family.h"
 #include "murm/ne_cache.h"
 #include "murm/rank_cache.h"
+#include "murm/rank_split.h"
 #include "murm/ss_empirical.h"
 #include "oracle/pari.h"
 
@@ -182,6 +183,16 @@ int main(int argc, char** argv) {
             const char* run_path = opt(argc, argv, "--ss-run", "data/m5/ss_x65536.txt");
             at::emit::emit_m5_extension(out, run_path, resolve_generated_by());
             std::fprintf(stderr, "at emit: stage m5 -> %s/ss_x_extension_murmuration.json\n", out.c_str());
+            return 0;
+        }
+        if (stage == "m5split") {
+            // PR-2 step 3: the analytic-rank split overlay (full, F∖S₂, S₂, S₀ + D(u) +
+            // targets + gates + branch). Re-aggregates the committed partials filtered by the
+            // rank column — no a_p recompute — so it is cheap and byte-portable (freshness).
+            const char* partials = opt(argc, argv, "--partials", "data/m5/ss_partials_x65536.txt");
+            const char* rankc = opt(argc, argv, "--rank-cache", "data/m5/rank_cache_x65536.txt");
+            at::emit::emit_m5_rank_split(out, partials, rankc, resolve_generated_by());
+            std::fprintf(stderr, "at emit: stage m5split -> %s/ss_rank_split_murmuration.json\n", out.c_str());
             return 0;
         }
         std::fprintf(stderr,
@@ -576,6 +587,89 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "  r%zu=%lld", r, dist[r]);
         std::fprintf(stderr, "\nat rank-cache: f2 = %lld/%zu = %.6f  (the pre-declared look)\n",
                      dist.size() > 2 ? dist[2] : 0, rrows.size(), f2);
+        return 0;
+    }
+
+    if (std::strcmp(argv[1], "rank-split") == 0) {
+        // PR-2 step 3: the analytic-rank split. Re-aggregates the committed partials,
+        // FILTERED by the committed rank column, through the frozen ss_aggregate — NO a_p
+        // recompute. Applies the committed gates MECHANICALLY (R4) and prints the branch;
+        // interpretation is written afterwards, in the doc.
+        const char* partials_path = opt(argc, argv, "--partials", "data/m5/ss_partials_x65536.txt");
+        const char* rank_path = opt(argc, argv, "--rank-cache", "data/m5/rank_cache_x65536.txt");
+        // Committed thresholds (pre-registered): PR-2 Amendment 4 + step 2, m4-pinning §R0c.
+        const double target_trough = 0.805, tol = 0.06, contrast_threshold = 0.668;
+        const double u_lo = 0.7, u_hi = 0.9;
+
+        at::murm::SSPartialsMeta pm;
+        at::murm::SSPartials P = at::murm::read_ss_partials(partials_path, pm, false);
+        at::murm::RankCacheHeader rh;
+        std::vector<at::murm::RankRow> rr = at::murm::read_rank_cache(rank_path, rh);
+
+        // Align the analytic rank to P.A order by (A,B).
+        std::map<std::pair<i64, i64>, int> rank_of;
+        for (const at::murm::RankRow& r : rr) rank_of[{r.A, r.B}] = r.rank;
+        std::vector<int> rank(P.A.size(), -1);
+        i64 missing = 0;
+        for (std::size_t c = 0; c < P.A.size(); ++c) {
+            auto it = rank_of.find({P.A[c], P.B[c]});
+            if (it == rank_of.end()) { ++missing; continue; }
+            rank[c] = it->second;
+        }
+        if (missing) {
+            std::fprintf(stderr, "at rank-split: %lld partials curves have no rank-cache entry "
+                         "(caches mismatched)\n", static_cast<long long>(missing));
+            return 4;
+        }
+
+        const at::murm::RankSplit s = at::murm::rank_split(
+            P, rank, pm.X, target_trough, tol, contrast_threshold, u_lo, u_hi);
+
+        std::fprintf(stderr,
+            "at rank-split (X=%.0f): committed gates applied mechanically (R4)\n", s.X);
+        std::fprintf(stderr,
+            "  full     |fam|=%lld  trough_u=%.4f  dev=%.4f\n",
+            static_cast<long long>(s.n_full), s.full.shape.trough_u, s.dev_full);
+        std::fprintf(stderr,
+            "  F\\S2     |fam|=%lld  trough_u=%.4f  dev=%.4f   (PRIMARY, u-space)\n",
+            static_cast<long long>(s.n_leaveout), s.leaveout.shape.trough_u, s.dev_leaveout);
+        std::fprintf(stderr,
+            "  S2       |fam|=%lld  trough_u=%.4f  window[%.2f,%.2f] mean=%.4f\n",
+            static_cast<long long>(s.n_s2), s.s2.shape.trough_u, u_lo, u_hi, s.mean_s2);
+        std::fprintf(stderr,
+            "  S0       |fam|=%lld  trough_u=%.4f  window mean=%.4f\n",
+            static_cast<long long>(s.n_s0), s.s0.shape.trough_u, s.mean_s0);
+        std::fprintf(stderr,
+            "  PRIMARY  recovery gate (dev_leaveout <= dev_full-du=%.4f AND <= tau=%.2f): %s\n",
+            s.dev_full - s.du, tol, s.recovers ? "RECOVERS" : "does NOT recover");
+        std::fprintf(stderr,
+            "  SECONDARY contrast gap (mean_S2 - mean_S0)=%.4f vs threshold -%.3f (downward): %s\n",
+            s.gap, contrast_threshold, s.contrast_downward ? "SIGNIFICANT" : "inconclusive");
+        std::fprintf(stderr, "  BRANCH primary  : %s\n", s.primary_branch.c_str());
+        std::fprintf(stderr, "  BRANCH secondary: %s\n", s.secondary_branch.c_str());
+
+        // Pre-registered annulus cross-check (PR-2 Amendment 3, committed): the same
+        // leave-out on the geometric holdout (10⁴, 2¹⁶] alone — curves never touched by any
+        // exploration — to show the primary verdict is not an artifact of the ≤10⁴ seed set.
+        // Not a new split (R2-permitted): same test, holdout subset.
+        at::murm::SSPartials Pa;
+        Pa.du = P.du; Pa.NB = P.NB;
+        std::vector<int> rank_a;
+        for (std::size_t c = 0; c < P.A.size(); ++c) {
+            if (at::murm::naive_height(P.A[c], P.B[c]) <= 10000) continue;   // annulus: H>10⁴
+            Pa.A.push_back(P.A[c]); Pa.B.push_back(P.B[c]); Pa.N.push_back(P.N[c]);
+            Pa.num.push_back(P.num[c]); Pa.cnt.push_back(P.cnt[c]);
+            rank_a.push_back(rank[c]);
+        }
+        const at::murm::RankSplit sa = at::murm::rank_split(
+            Pa, rank_a, pm.X, target_trough, tol, contrast_threshold, u_lo, u_hi);
+        std::fprintf(stderr,
+            "  ANNULUS (10^4,2^16] cross-check: |fam|=%lld  full trough_u=%.4f  "
+            "F\\S2 trough_u=%.4f (dev %.4f) -> %s ; contrast gap=%.4f -> %s\n",
+            static_cast<long long>(sa.n_full), sa.full.shape.trough_u,
+            sa.leaveout.shape.trough_u, sa.dev_leaveout,
+            sa.recovers ? "RECOVERS" : "does NOT recover", sa.gap,
+            sa.contrast_downward ? "downward-sig" : "inconclusive");
         return 0;
     }
 
