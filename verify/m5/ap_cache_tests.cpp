@@ -169,20 +169,37 @@ TEST_CASE("prereg_ap_cache_reproduces_shape") {
     const bool consumed_all = (off == cv.size());        // grid size == cache size, exactly
     CHECK(consumed_all);
 
-    // The CONSUMER's own computation is the ground truth (R3: verify against the consumer,
-    // not a re-derived rule). Same a_p ⇒ identical counts and shape (float order differs only
-    // in the last ULP of the interpolated zero).
-    const SSEmpirical ref = ss_empirical(rows, static_cast<double>(X), du, 4);
-    const SSEmpirical got = ss_aggregate(P, static_cast<double>(X));
+    // The COMMITTED run for this X is the ground truth (R3: verify against the consumer's
+    // RECORDED output — never a fresh ss_empirical() here: recomputing a_p is the ~10 h pass the
+    // cache exists to avoid). Same a_p ⇒ identical per-bin counts and shape.
+    const char* runenv = std::getenv("AT_AP_CACHE_RUN");
+    const std::string run_path = runenv ? runenv : (std::string(AT_M5_DATA_DIR) + "/ss_x65536.txt");
+    SSRun ref;
+    try {
+        ref = read_ss_run(run_path);
+    } catch (const std::exception& e) {
+        MESSAGE("[SKIP] committed ground-truth run " << run_path << " unreadable (" << e.what() << ").");
+        at::verify::g_oracle_skipped = true;
+        return;
+    }
+    if (std::abs(ref.X_confirm - static_cast<double>(X)) > 0.5) {
+        MESSAGE("[SKIP] committed run X_confirm=" << ref.X_confirm << " != cache X=" << X
+                << " — no matching ground-truth run (set AT_AP_CACHE_RUN).");
+        at::verify::g_oracle_skipped = true;
+        return;
+    }
+    const SSEmpirical got = ss_aggregate(P, static_cast<double>(X));   // NO recompute
 
-    CHECK(got.n_curves == ref.n_curves);
+    CHECK(got.n_curves == ref.confirm.n_curves);
     bool counts_match = true;
-    for (int b = 0; b < NB; ++b) if (got.count[b] != ref.count[b]) counts_match = false;
-    CHECK(counts_match);                                 // R3: per-bin grid counts identical
-    CHECK(std::abs(got.shape.hump_u - ref.shape.hump_u) < 1e-9);
-    CHECK(std::abs(got.shape.zero_u - ref.shape.zero_u) < 1e-9);
-    CHECK(std::abs(got.shape.trough_u - ref.shape.trough_u) < 1e-9);   // R2c: reproduce-shape seal
-    MESSAGE("ap_cache reproduces ss_empirical @X=" << X << ": hump=" << got.shape.hump_u
+    for (int b = 0; b < NB && b < static_cast<int>(ref.confirm.count.size()); ++b)
+        if (got.count[b] != ref.confirm.count[b]) counts_match = false;
+    CHECK(counts_match);                                 // R3: per-bin grid counts identical (exact)
+    CHECK(std::abs(got.shape.hump_u - ref.confirm.shape.hump_u) < 1e-9);      // exact bin
+    CHECK(std::abs(got.shape.trough_u - ref.confirm.shape.trough_u) < 1e-9);  // exact bin
+    CHECK(std::abs(got.shape.zero_u - ref.confirm.shape.zero_u) < 1e-5);      // R2c seal (run stored 6 s.f.)
+    MESSAGE("ap_cache @X=" << X << " reproduces the committed run: hump=" << got.shape.hump_u
             << " zero=" << got.shape.zero_u << " trough=" << got.shape.trough_u
-            << "  (counts match; " << off << " a_p aggregated)");
+            << "  vs committed zero=" << ref.confirm.shape.zero_u << "  (counts match; " << off
+            << " a_p aggregated, NO recompute)");
 }
