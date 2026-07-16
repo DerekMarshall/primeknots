@@ -203,9 +203,28 @@ M0b is accepted only when ALL of the following are green (a_p is an **integer** 
 4. **`oracle_ellap_m0b_spot`** — a spot sample checked against **PARI `ellap`** (independent
    oracle); SKIPs cleanly (visible SKIP) when `gp` is absent.
 
-Two-phase gate (RESEARCH-M §8): **Phase 1 = this doc, reviewed. Phase 2 = implementation**, which
-begins only after the review sign-off and produces the twins above before M0b is trusted or used
-for any rung.
+**The x17 twin is the strongest single test the repo will have [record when green].** By
+construction it is **cross-platform AND cross-algorithm**: the 2¹⁷ *canonical* a_p are computed on
+**FreeBSD (charsum, 48-thread)** and feed the committed shape; the M0b x17 reference cache is
+generated on the **laptop (charsum)**; M0b itself is the **laptop (Shanks–Mestre)** subject. So the
+2¹⁷ a_p integers are corroborated across both a **platform** axis (FreeBSD-canonical shape ≡
+laptop-reference aggregate — the byte-identity already demonstrated at 2¹⁶) and an **algorithm**
+axis (charsum ≡ Shanks–Mestre, exact integers). Record this explicitly in the postscript when
+`twin_m0b_vs_charsum_x17` goes green.
+
+**Acceptance order (2b ruling, 2026-07-15) — PRODUCTION gate:**
+`anchors → x16 full twin → x18 sample twin → oracle_ellap spot →` **PRODUCTION-CAPABLE**. The
+**x17 full twin trails** as the completeness check (twin 2 may still be generating its reference
+cache) and **must be green before the data note cites M0b anywhere.**
+
+**Reference-cache generation (2b ruling):** on the **laptop**, conductor-sorted chunked, **2¹⁶
+first, then 2¹⁷**. The FreeBSD box stays reserved, in order, for: 2¹⁷ completion → R2 → the 2¹⁸
+tail-weighted brute-force sample (§7.3, hours) → M0b's **first production run at 2¹⁸** (launched
+once twins 1 & 3 + the oracle spot are green; twin 2 / x17 may trail).
+
+Two-phase gate (RESEARCH-M §8): Phase 1 = this doc, **reviewed & authorized 2026-07-15 (§9)**.
+Phase 2 = implementation, producing the twins above (in the acceptance order) before M0b is trusted
+or used for any rung.
 
 ## 8. Complexity claims (pinned) — and a RESEARCH-M discrepancy FLAGGED (rule 5)
 
@@ -242,6 +261,8 @@ incorporated. **Phase 2 (implementation) is AUTHORIZED.** Resolutions of the Pha
 4. **Scope — RESOLVED:** BSGS/Shanks–Mestre + Mestre twist only; SEA / average-polynomial-time is a
    separate future stage, explicitly out of M0b scope.
 
-**Phase 2 acceptance = the §7 contract green** (full-cache twins at 2¹⁶/2¹⁷, tail-weighted
-brute-force sample at 2¹⁸, `oracle_ellap` spot), with the §6 anchors as unit tests reading their
-expected values from this log.
+**Phase 2 acceptance = the §7 contract green**, run in the pinned **acceptance order** (§7,
+2b ruling 2026-07-15): anchors → x16 full twin → x18 sample twin → oracle spot →
+PRODUCTION-CAPABLE, with the x17 full twin trailing (and required green before the data note cites
+M0b). Reference caches generated laptop-side (2¹⁶ then 2¹⁷); box reserved for 2¹⁷→R2→2¹⁸ sample→
+M0b's first 2¹⁸ production run. §6 anchors are unit tests reading their expected values from this log.
