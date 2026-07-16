@@ -24,6 +24,10 @@
 #include "emit/emit_borromean.h"
 #include "emit/emit_classgroups.h"
 #include "emit/emit_cs.h"
+#include "ell/ap.h"
+#include "ell/ap_cache.h"
+#include "ell/ap_fast.h"
+#include "ell/curve.h"
 #include "ell/ecdata.h"
 #include "emit/emit_dirichlet.h"
 #include "emit/emit_dw.h"
@@ -504,6 +508,251 @@ int main(int argc, char** argv) {
         at::murm::write_ss_run(outf, run);
         std::fprintf(stderr, "at ss-run: wrote %s (X_confirm=%.0f, τ=%.2f, %llds total)\n",
                      outf.c_str(), run.X_confirm, run.tol, static_cast<long long>(elapsed_s()));
+        return 0;
+    }
+
+    if (std::strcmp(argv[1], "ap-cache") == 0) {
+        // ---- M0b reference a_p cache generator (Phase 2b), v2 (prime-major) ---------------
+        // FROZEN-REFEREE-ONLY (P2 firewall): a_p via ell::ap_fast, spot-checked against the
+        // frozen ell::ap_charsum; NO ap_shanks_mestre path here, ever. Grid = the statistic's
+        // good-prime domain (ss_empirical.cpp:64–68): {p prime : 3 < p ≤ N(E), p ∤ disc},
+        // disc = 4A³+27B². [R3] the factored object is 4A³+27B², NOT the model discriminant
+        // −16(4A³+27B²); the factor of 2 differs only at p=2, outside the p>3 grid, so the
+        // bad-prime SET on the grid is identical either way.
+        // PRIME-MAJOR with the p ≤ N(E) skip (mirrors ss_empirical — no wasted compute; the
+        // v1 ap_fast_grid path had NO skip and was fatally slow), QR built once per prime. Raw
+        // a_p placed by write-index idx(c,p) = (π(p−1)−2) − #{bad primes of c below p}; disc ≤
+        // 2X so bad primes factor trivially. Slots sentinel-filled and REQUIRED all written
+        // [R2a]. int16 (|a_p| ≤ 2√p), stored CONDUCTOR-ASC (N, then ne-row index). Resumable by
+        // PRIME-BLOCK (R1: complete/n_done; on a checkpoint n_done = primes done). Grid
+        // DEFINITION packed into curve_set (P1); twins REQUIRE its equality before any value.
+        i64 X = static_cast<i64>(std::strtoull(opt(argc, argv, "--X", "65536"), nullptr, 10));
+        const char* cache = opt(argc, argv, "--cache", "data/m5/ne_cache_x65536.txt");
+        std::string outf = opt(argc, argv, "--out", "");
+        if (outf.empty()) outf = "data/m5/ap_cache_x" + std::to_string(X) + ".bin";
+        std::string ckpt_path = opt(argc, argv, "--checkpoint", (outf + ".ckpt").c_str());
+        std::size_t block = static_cast<std::size_t>(
+            std::strtoull(opt(argc, argv, "--chunk", "8192"), nullptr, 10));   // primes per checkpoint block
+        if (block == 0) block = 8192;
+        int threads = static_cast<int>(std::strtoull(opt(argc, argv, "--threads", "0"), nullptr, 10));
+        if (threads <= 0) { unsigned hc = std::thread::hardware_concurrency(); threads = hc ? static_cast<int>(hc) : 4; }
+        const bool do_spot = std::strcmp(opt(argc, argv, "--spot-check", "1"), "0") != 0;
+
+        at::murm::NeCacheHeader nehdr;
+        std::vector<at::murm::NeRow> allrows = at::murm::read_ne_cache(cache, nehdr);
+        if (nehdr.X < X) {
+            std::fprintf(stderr, "at ap-cache: cache X=%lld < requested --X %lld\n",
+                         static_cast<long long>(nehdr.X), static_cast<long long>(X));
+            return 4;
+        }
+        std::vector<at::murm::NeRow> rows;
+        for (const auto& r : allrows)
+            if (at::murm::naive_height(r.A, r.B) <= X) rows.push_back(r);
+        const std::size_t C = rows.size();
+        if (C == 0) { std::fprintf(stderr, "at ap-cache: empty family\n"); return 4; }
+
+        std::vector<i64> disc(C);
+        i64 maxN = 0;
+        for (std::size_t c = 0; c < C; ++c) {
+            disc[c] = 4 * rows[c].A * rows[c].A * rows[c].A + 27 * rows[c].B * rows[c].B;
+            if (rows[c].N > maxN) maxN = rows[c].N;
+        }
+        // deterministic storage order: N ascending, ties by ne-row index
+        std::vector<std::size_t> order(C);
+        std::iota(order.begin(), order.end(), std::size_t{0});
+        std::sort(order.begin(), order.end(), [&](std::size_t a, std::size_t b) {
+            if (rows[a].N != rows[b].N) return rows[a].N < rows[b].N;
+            return a < b;
+        });
+        // global ascending primes in (3, maxN] + prefix count pref[x] = #primes ≤ x
+        std::vector<i64> gp;
+        std::vector<i64> pref(static_cast<std::size_t>(maxN) + 1, 0);
+        {
+            std::vector<char> sieve(static_cast<std::size_t>(maxN) + 1, 1);
+            i64 running = 0;
+            for (i64 i = 2; i <= maxN; ++i) {
+                if (sieve[i]) {
+                    ++running;
+                    if (i > 3) gp.push_back(i);
+                    for (i64 j = i * i; j <= maxN; j += i) sieve[j] = 0;
+                }
+                pref[i] = running;
+            }
+        }
+        auto pi_le = [&](i64 x) -> i64 { return x < 2 ? 0 : pref[x > maxN ? maxN : x]; };  // #primes ≤ x
+        // bad primes of each curve = prime factors (>3) of disc = 4A³+27B² [R3], ascending.
+        // disc ≤ 2X ⇒ trial division to √disc is trivial.
+        std::vector<std::vector<i64>> badp(C);
+        for (std::size_t c = 0; c < C; ++c) {
+            i64 d = disc[c] < 0 ? -disc[c] : disc[c];
+            for (i64 f = 2; f * f <= d; ++f)
+                if (d % f == 0) { while (d % f == 0) d /= f; if (f > 3) badp[c].push_back(f); }
+            if (d > 3) badp[c].push_back(d);
+            std::sort(badp[c].begin(), badp[c].end());
+        }
+        auto good_count = [&](std::size_t c) -> std::size_t {   // #good primes ≤ N_c
+            i64 total = pi_le(rows[c].N) - 2;                   // primes in (3, N_c]
+            i64 bad = 0;
+            for (i64 q : badp[c]) { if (q <= rows[c].N) ++bad; else break; }
+            return static_cast<std::size_t>(total - bad);
+        };
+        auto idx_of = [&](std::size_t c, i64 p) -> std::size_t {  // slot of good prime p in curve c
+            i64 below = pi_le(p - 1) - 2;                        // #primes in (3, p)
+            i64 bad = 0;
+            for (i64 q : badp[c]) { if (q < p) ++bad; else break; }
+            return static_cast<std::size_t>(below - bad);
+        };
+        // grid DEFINITION descriptor (P1) — twins REQUIRE equality of this before any value
+        const std::string grid_desc =
+            "family=height(X=" + std::to_string(X) + ",fam=" + std::to_string(C) + ")"
+            "|order=conductor-asc(N,idx)|prime_rule=3<p<=N,p_ndiv_(4A^3+27B^2)"
+            "|ne=" + std::string(cache) + ",ne_gen=" + nehdr.generator_hash +
+            ",ne_X=" + std::to_string(nehdr.X) + ",ne_count=" + std::to_string(nehdr.count) +
+            "|algo=charsum_referee(ap_fast;spot=ap_charsum)";
+
+        constexpr int16_t SENT = -32768;   // impossible a_p (|a_p| ≤ 2√maxN ≪ 32768): unwritten slot
+        std::vector<std::vector<int16_t>> vals(C);
+        for (std::size_t c = 0; c < C; ++c) vals[c].assign(good_count(c), SENT);
+        std::size_t n_primes_done = 0;      // resume cursor: leading primes of gp fully processed
+        const auto t_start = std::chrono::steady_clock::now();
+        auto elapsed_s = [&]() {
+            return std::chrono::duration_cast<std::chrono::seconds>(
+                       std::chrono::steady_clock::now() - t_start).count();
+        };
+
+        // Flat = concat vals[order[i]] over ALL curves (prime-major fills every curve in
+        // lockstep, so a checkpoint always carries all curves — sentinels in not-yet-done
+        // prime slots). COMPLETE: n_done = C (curve count — the finished reference all
+        // consumers read). PARTIAL checkpoint: n_done = primes done (the resume cursor). The
+        // complete flag disambiguates; consumers read COMPLETE only (R1).
+        auto write_cache = [&](bool complete) {
+            at::ell::ApCacheHeader h;
+            h.generator_hash = at::ell::ap_generator_hash();
+            h.prime_bound = static_cast<uint64_t>(maxN);
+            h.curve_set = grid_desc;
+            h.complete = complete;
+            h.n_done = complete ? static_cast<uint64_t>(C)
+                                : static_cast<uint64_t>(n_primes_done);
+            std::vector<int16_t> flat;
+            for (std::size_t i = 0; i < C; ++i) {
+                const std::vector<int16_t>& v = vals[order[i]];
+                flat.insert(flat.end(), v.begin(), v.end());
+            }
+            if (complete) {
+                at::ell::write_ap_cache(outf, h, flat);
+            } else {
+                at::ell::write_ap_cache(ckpt_path + ".tmp", h, flat);
+                std::rename((ckpt_path + ".tmp").c_str(), ckpt_path.c_str());
+            }
+        };
+
+        // Resume from a compatible PARTIAL checkpoint — the ONLY allow_incomplete read (R1).
+        {
+            std::ifstream probe(ckpt_path);
+            if (probe.good()) {
+                probe.close();
+                try {
+                    at::ell::ApCacheHeader ch;
+                    std::vector<int16_t> cv =
+                        at::ell::read_ap_cache(ckpt_path, ch, /*allow_incomplete=*/true);
+                    std::size_t expect = 0;
+                    for (std::size_t c = 0; c < C; ++c) expect += vals[c].size();
+                    if (ch.curve_set == grid_desc && !ch.complete &&
+                        ch.n_done <= gp.size() && cv.size() == expect) {
+                        std::size_t off = 0;
+                        for (std::size_t i = 0; i < C; ++i) {
+                            const std::size_t c = order[i];
+                            const std::size_t k = vals[c].size();
+                            std::copy(cv.begin() + off, cv.begin() + off + k, vals[c].begin());
+                            off += k;
+                        }
+                        n_primes_done = static_cast<std::size_t>(ch.n_done);
+                        std::fprintf(stderr, "at ap-cache: RESUMED %zu/%zu primes from %s\n",
+                                     n_primes_done, gp.size(), ckpt_path.c_str());
+                    } else {
+                        std::fprintf(stderr, "at ap-cache: checkpoint incompatible; fresh start\n");
+                    }
+                } catch (const std::exception& e) {
+                    std::fprintf(stderr, "at ap-cache: checkpoint unreadable (%s); fresh start\n",
+                                 e.what());
+                }
+            }
+        }
+
+        std::fprintf(stderr, "at ap-cache: %zu curves (X=%lld), maxN=%lld, %zu primes, %d threads; "
+                     "prime-major a_p (frozen referee ap_fast)...\n", C, static_cast<long long>(X),
+                     static_cast<long long>(maxN), gp.size(), threads);
+
+        for (std::size_t pstart = n_primes_done; pstart < gp.size(); pstart += block) {
+            const std::size_t pstop = std::min(pstart + block, gp.size());
+            // Prime-major, primes interleaved across threads; each (c,p) writes a DISTINCT slot
+            // vals[c][idx_of(c,p)] (distinct primes ⇒ distinct slots ⇒ no data race on vals[c]).
+            auto worker = [&](int t) {
+                for (std::size_t pj = pstart + static_cast<std::size_t>(t); pj < pstop;
+                     pj += static_cast<std::size_t>(threads)) {
+                    const i64 p = gp[pj];
+                    const at::ell::QRTable qr = at::ell::build_qr_table(static_cast<at::core::u64>(p));
+                    for (std::size_t c = 0; c < C; ++c) {
+                        if (rows[c].N < p) continue;         // p ≤ N(E) skip (mirrors ss_empirical:67)
+                        if (disc[c] % p == 0) continue;      // bad reduction (p | disc)
+                        const at::ell::Curve E{0, 0, 0, rows[c].A, rows[c].B};
+                        vals[c][idx_of(c, p)] = static_cast<int16_t>(at::ell::ap_fast(E, qr));
+                    }
+                }
+            };
+            std::vector<std::thread> pool;
+            for (int t = 1; t < threads; ++t) pool.emplace_back(worker, t);
+            worker(0);
+            for (std::thread& th : pool) th.join();
+            n_primes_done = pstop;
+
+            // Spot-check: the block's last prime on the highest-conductor curve that uses it,
+            // vs the frozen ap_charsum (P2). Abort on any disagreement.
+            if (do_spot && pstop > pstart) {
+                const i64 p = gp[pstop - 1];
+                for (std::size_t ii = C; ii-- > 0;) {          // highest-N curve first
+                    const std::size_t c = order[ii];
+                    if (rows[c].N < p || disc[c] % p == 0) continue;
+                    const at::ell::Curve E{0, 0, 0, rows[c].A, rows[c].B};
+                    const int ref = at::ell::ap_charsum(E, static_cast<at::core::u64>(p));
+                    const int got = static_cast<int>(vals[c][idx_of(c, p)]);
+                    if (ref != got) {
+                        std::fprintf(stderr, "at ap-cache: SPOT-CHECK FAIL A=%lld B=%lld p=%lld: "
+                                     "ap_fast=%d != ap_charsum=%d — ABORT\n",
+                                     static_cast<long long>(rows[c].A), static_cast<long long>(rows[c].B),
+                                     static_cast<long long>(p), got, ref);
+                        return 5;
+                    }
+                    break;
+                }
+            }
+
+            write_cache(false);
+            std::fprintf(stderr, "  ap-cache checkpoint: %zu/%zu primes (p≤%lld)  (%llds elapsed)\n",
+                         n_primes_done, gp.size(),
+                         static_cast<long long>(gp[pstop - 1]), static_cast<long long>(elapsed_s()));
+        }
+
+        // [R2a] slot-count identity: every slot must be written exactly once — a remaining
+        // sentinel means a missed/collided write-index. REQUIRED for every curve.
+        for (std::size_t c = 0; c < C; ++c)
+            for (std::size_t s = 0; s < vals[c].size(); ++s)
+                if (vals[c][s] == SENT) {
+                    std::fprintf(stderr, "at ap-cache: SLOT-COUNT IDENTITY FAIL — curve A=%lld B=%lld "
+                                 "slot %zu/%zu unwritten (write-index bug) — ABORT\n",
+                                 static_cast<long long>(rows[c].A), static_cast<long long>(rows[c].B),
+                                 s, vals[c].size());
+                    return 6;
+                }
+
+        write_cache(true);              // COMPLETE reference cache
+        std::remove(ckpt_path.c_str());
+        std::size_t total_vals = 0;
+        for (std::size_t c = 0; c < C; ++c) total_vals += vals[c].size();
+        std::fprintf(stderr, "at ap-cache: wrote %s (%zu curves, %zu a_p values, %.1f MB, %llds) "
+                     "[P3: record size+wall-time]\n", outf.c_str(), C, total_vals,
+                     static_cast<double>(total_vals * sizeof(int16_t)) / 1e6,
+                     static_cast<long long>(elapsed_s()));
         return 0;
     }
 

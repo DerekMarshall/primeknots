@@ -45,13 +45,16 @@ void write_ap_cache(const std::string& path, const ApCacheHeader& header,
     put_str(os, header.ecdata_sha);
     put_u64(os, header.prime_bound);
     put_str(os, header.curve_set);
+    put_u32(os, header.complete ? 1u : 0u);   // v2: partial-state checkpoint (R1)
+    put_u64(os, header.n_done);
     put_u64(os, values.size());
     os.write(reinterpret_cast<const char*>(values.data()),
              static_cast<std::streamsize>(values.size() * sizeof(int16_t)));
     if (!os) throw std::runtime_error("write_ap_cache: write failed for " + path);
 }
 
-std::vector<int16_t> read_ap_cache(const std::string& path, ApCacheHeader& out_header) {
+std::vector<int16_t> read_ap_cache(const std::string& path, ApCacheHeader& out_header,
+                                   bool allow_incomplete) {
     std::ifstream is(path, std::ios::binary);
     if (!is) throw std::runtime_error("read_ap_cache: cannot open " + path);
 
@@ -68,6 +71,8 @@ std::vector<int16_t> read_ap_cache(const std::string& path, ApCacheHeader& out_h
     out_header.ecdata_sha = get_str(is);
     out_header.prime_bound = get_u64(is);
     out_header.curve_set = get_str(is);
+    out_header.complete = (get_u32(is) != 0u);   // v2 (R1)
+    out_header.n_done = get_u64(is);
 
     // The refusal that matters: a cache whose generator differs from HEAD's is
     // stale and is NEVER silently reused (ARCHITECTURE-M §4).
@@ -76,6 +81,15 @@ std::vector<int16_t> read_ap_cache(const std::string& path, ApCacheHeader& out_h
             "read_ap_cache: REFUSED — stale a_p cache: generator hash " +
             out_header.generator_hash + " != current " + ap_generator_hash() +
             " (regenerate the cache; never reuse a stale one)");
+
+    // The R1 refusal: a PARTIAL checkpoint never referees a twin. Only the generator's
+    // own resume path opts in with allow_incomplete; every consumer gets COMPLETE or a throw.
+    if (!out_header.complete && !allow_incomplete)
+        throw std::runtime_error(
+            "read_ap_cache: REFUSED — PARTIAL a_p cache (checkpoint, n_done=" +
+            std::to_string(out_header.n_done) +
+            "): twins/aggregation consume COMPLETE caches only. This is a crash-safety "
+            "checkpoint, not a finished reference cache (regenerate to completion).");
 
     const uint64_t n = get_u64(is);
     std::vector<int16_t> values(n);

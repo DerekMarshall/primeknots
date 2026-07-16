@@ -435,7 +435,8 @@ set_tests_properties(m4.twin_bessel_j1_vs_pari PROPERTIES
 add_executable(verify_m5
   verify_main.cpp
   m5/ss_extension_tests.cpp
-  m5/rank_split_tests.cpp)
+  m5/rank_split_tests.cpp
+  m5/ap_cache_tests.cpp)
 target_include_directories(verify_m5 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
   ${CMAKE_CURRENT_SOURCE_DIR})
@@ -445,9 +446,12 @@ target_compile_definitions(verify_m5 PRIVATE
   AT_M5_DATA_DIR="${CMAKE_SOURCE_DIR}/data/m5")
 
 foreach(case twin_ss_partials_chunked_vs_single twin_ss_partials_file_roundtrip
-         prereg_ss_x_extension prereg_rank_split)
+         prereg_ss_x_extension prereg_rank_split
+         twin_ap_cache_refuses_partial prereg_ap_cache_reproduces_shape)
   add_test(NAME m5.${case} COMMAND verify_m5 --test-case=${case})
-  set_tests_properties(m5.${case} PROPERTIES LABELS "m5")
+  # SKIP_RETURN_CODE 77: prereg_ap_cache_reproduces_shape cleanly SKIPs when the (gitignored,
+  # local) a_p cache is absent — exit 77, rendered SKIP not FAIL (the visible-skip contract).
+  set_tests_properties(m5.${case} PROPERTIES LABELS "m5" SKIP_RETURN_CODE 77)
 endforeach()
 
 # --- deck: the explainer deck is an emitted artifact, validated like one -------

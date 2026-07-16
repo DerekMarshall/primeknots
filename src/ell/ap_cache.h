@@ -11,14 +11,22 @@
 // refusal is DEMONSTRATED firing by the M0 tests (both directions).
 namespace at::ell {
 
-constexpr uint32_t kApCacheFormatVersion = 1;
+constexpr uint32_t kApCacheFormatVersion = 2;   // v2: + complete/n_done (M0b R1 checkpoint)
 
 struct ApCacheHeader {
     uint32_t format_version = kApCacheFormatVersion;
     std::string generator_hash;   // sha256 of ell/ap_fast.cpp at build (the generator)
     std::string ecdata_sha;       // ecdata pin the values were computed against
     uint64_t prime_bound = 0;
-    std::string curve_set;        // descriptor of the curve set / layout
+    std::string curve_set;        // GRID DEFINITION descriptor (M0b P1): family, storage order,
+                                  // per-curve prime rule, ne_cache identity, algorithm — twins
+                                  // REQUIRE equality of this before comparing any value.
+    // --- M0b R1: partial-state checkpoint (mirrors ss_partials complete/allow_incomplete) ---
+    bool complete = true;         // false ⇒ crash-safety CHECKPOINT: read_ap_cache REFUSES it
+                                  // (naming the state + n_done) unless allow_incomplete — so a
+                                  // truncated 11th-hour cache can never referee a twin (R1).
+    uint64_t n_done = 0;          // curves present = leading prefix of the stored (conductor-asc,
+                                  // then ne-row index) order; == total curve count iff complete.
 };
 
 // The compiled-in generator hash (CMake sha256 of ell/ap_fast.cpp). A cache is
@@ -29,8 +37,13 @@ void write_ap_cache(const std::string& path, const ApCacheHeader& header,
                     const std::vector<int16_t>& values);
 
 // Reads the cache into `out_header` and returns the packed values. THROWS
-// std::runtime_error if the magic/format is wrong, or — the refusal that matters —
-// if header.generator_hash != ap_generator_hash() (a stale cache is never reused).
-std::vector<int16_t> read_ap_cache(const std::string& path, ApCacheHeader& out_header);
+// std::runtime_error if the magic/format is wrong; if header.generator_hash !=
+// ap_generator_hash() (a stale cache is never reused); or — the R1 refusal — if the
+// cache is a PARTIAL checkpoint (header.complete == false) and allow_incomplete is
+// false (the message names the state and n_done). Twins/aggregation call it with the
+// default (allow_incomplete = false): they consume COMPLETE caches ONLY. The single
+// allow_incomplete = true caller is the generator's own resume path.
+std::vector<int16_t> read_ap_cache(const std::string& path, ApCacheHeader& out_header,
+                                   bool allow_incomplete = false);
 
 }  // namespace at::ell
