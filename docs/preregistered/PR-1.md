@@ -336,3 +336,51 @@ model's ~X², so PR-1's original figures were ~17% pessimistic):
 PASSES (records Reading B, pins d(2¹⁶)=0.0825 and the M4 consistency). Committed artifacts:
 `data/m5/ne_cache_x65536.txt`, `data/m5/ss_x65536.txt`, `data/m5/ss_partials_x65536.txt`
 (the a_p work, persisted for PR-2 — no recompute), `viz/data/ss_x_extension_murmuration.json`.
+
+### Rung 2 — X = 2¹⁷ = 131072 (ran 2026-07-15 → 2026-07-16)
+
+**Outcome: STRENGTHENS PERSISTENT (R0 two-rung clause) — the trough deficit does not recover.**
+The Δu-quantized trough sits in the **same bin** at 2¹⁷ as at 2¹⁶ and at the 10⁴ anchor, over a
+2× rise in X (32× over the anchor).
+
+| X | \|fam\| | hump u (dev) | zero u (dev) | trough u (dev) |
+|---|--------|--------------|--------------|----------------|
+| 10000 | 1048 | 0.4625 (0.0125) | 0.672894 (0.027894) | 0.8875 (0.0825) |
+| 65536 | 5042 | 0.4625 (0.0125) | 0.670328 (0.025328) | 0.8875 (0.0825) |
+| 131072 | 9014 | 0.4625 (0.0125) | 0.673202 (0.028202) | 0.8875 (0.0825) |
+
+**R0 two-rung clause, applied VERBATIM (committed 2026-07-12, before this data):** d(X)=|trough_u−0.805|;
+d(2¹⁶)=0.0825, d(2¹⁷)=0.0825, Δu=0.025. "Strengthens finite-X" needs d(2¹⁷) ≤ d(2¹⁶)−Δu = **0.0575**;
+observed **0.0825 > 0.0575 → NOT met**. d(2¹⁷) is **flat** vs d(2¹⁶) ⇒ **"strengthens persistent."** The
+two agreeing invariants (hump, zero within τ) hold; the trough is the persistent open deviation, now
+across three rungs. `prereg_ss_x17_confirmation` PASSES (pins this reading; a FAIL-to-recover is the
+deliverable, never a threshold to renegotiate).
+
+**Consistency twins (full-scale sorted-build + cross-platform proof).** The 2¹⁷ run is the FreeBSD
+48-core conductor-sorted chunked build (the single referee for this rung). (i) Its ≤10⁴ rungs
+reproduce the frozen M4 shapes **byte-for-byte**. (ii) Its H≤2¹⁶ subset, re-aggregated at X=65536,
+reproduces the committed **macOS** 2¹⁶ shape **exactly** (zero 0.670328, trough 0.8875, |fam| 5042) —
+a cross-platform (FreeBSD-charsum vs macOS-charsum) full-scale identity. The sorted/chunked build is
+thus proven correct at 2¹⁷ scale, and PR-3 may consume this rung.
+
+**Supporting empiric (NOT the gate): the sub-bin zero-crossing.** 0.667642 → 0.669584 → 0.672637 →
+0.672894 (M4) → 0.670328 (2¹⁶) → **0.673202 (2¹⁷)**; dev vs the 0.645 target ≈ 0.028, flat/slightly
+rising — it does not converge to target either. Reported for direction only; the trough rule governs.
+
+**Scale caveat, riding EVERY branch (unchanged).** 2¹⁷ is still the **very bottom** of [SS25]'s
+2¹⁶–2²⁸ observed-decay window. "Strengthens persistent" is a **finite-range** statement, explicitly
+**not** the X→∞ verdict [SS25] describe.
+
+**Run engineering + wall time.** **54020 s ≈ 15.0 h** on 48 FreeBSD cores (clang 21, EPYC), chunk 256,
+resumable. The laptop's 12-thread run was stopped at 8640/9014 (its high-conductor tail was
+exploding — tens of hours) and the canonical rung pivoted to the box; a_p is a path-independent
+integer, and the R2 consistency twin above is the proof the pivot is sound. **Re-revised 2¹⁸
+estimate:** at the measured X^2.65 scaling, 2¹⁸ ≈ 54020 s × 2^2.65 ≈ **~3.9 d on 48 cores** — no
+longer infrastructure-blocked (Rung-3 clause: cores substitute for M0b, a_p identical).
+
+**Analysis-code hash unchanged** (`b87ebd…` = `SS_GENERATOR_HASH`). Committed artifacts:
+`data/m5/ne_cache_x131072.txt`, `data/m5/ss_x131072.txt`, `data/m5/ss_partials_x131072.txt`
+(FreeBSD-generated; PR-2/PR-3 re-aggregate with no a_p recompute). The viewer JSON re-emit at
+2¹⁷ is **deferred** to when `at` can be safely rebuilt (the emit's rung label is hardcoded "2¹⁶";
+the binary is currently held by the M0b a_p-cache generation) — freshness holds on the committed
+2¹⁶ emit meanwhile, and the 2¹⁷ re-emit + label fix land together in that follow-up.

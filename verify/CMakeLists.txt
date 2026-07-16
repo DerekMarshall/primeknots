@@ -446,7 +446,7 @@ target_compile_definitions(verify_m5 PRIVATE
   AT_M5_DATA_DIR="${CMAKE_SOURCE_DIR}/data/m5")
 
 foreach(case twin_ss_partials_chunked_vs_single twin_ss_partials_file_roundtrip
-         prereg_ss_x_extension prereg_rank_split
+         prereg_ss_x_extension prereg_ss_x17_confirmation prereg_rank_split
          twin_ap_cache_refuses_partial prereg_ap_cache_reproduces_shape)
   add_test(NAME m5.${case} COMMAND verify_m5 --test-case=${case})
   # SKIP_RETURN_CODE 77: prereg_ap_cache_reproduces_shape cleanly SKIPs when the (gitignored,

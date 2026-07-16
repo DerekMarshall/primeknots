@@ -282,3 +282,96 @@ TEST_CASE("prereg_ss_x_extension") {
     REQUIRE(dev_trough16 > tol);     // the deviation is the finding
     REQUIRE(reading_A == false);     // and it is persistent at this rung
 }
+
+TEST_CASE("prereg_ss_x17_confirmation") {
+    // PR-1 Rung 2 (R2): read the 2^17 canonical run (FreeBSD single-referee) and apply the
+    // COMMITTED R0 two-rung clause VERBATIM. A FAIL-to-recover is a DELIVERABLE — this pins the
+    // observed reading, it does not gate on recovery. SKIPs cleanly if the run is absent.
+    const std::string ext17 = std::string(AT_M5_DATA_DIR) + "/ss_x131072.txt";
+    SSRun r17;
+    try {
+        r17 = read_ss_run(ext17);
+    } catch (const std::exception& e) {
+        MESSAGE("[SKIP] 2^17 run unreadable/stale (" << e.what() << ").");
+        at::verify::g_oracle_skipped = true;
+        return;
+    }
+
+    CHECK(r17.X_confirm == 131072.0);
+    CHECK(r17.confirm.n_curves == 9014);
+    const double du = r17.du;                          // 0.025
+    const double target_trough = r17.r2_trough;        // 0.805
+
+    // --- 2^17 shape ---
+    const SSShape& s17 = r17.confirm.shape;
+    const double d17 = std::abs(s17.trough_u - target_trough);
+    const double d16 = 0.0825;                          // committed Rung-1 d(2^16) (PR-1 §R0)
+    MESSAGE("2^17: |fam|=" << r17.confirm.n_curves << "  hump=" << s17.hump_u
+            << "  zero=" << s17.zero_u << "  trough=" << s17.trough_u << "  d(2^17)=" << d17);
+
+    // --- R0 two-rung clause, VERBATIM (committed 2026-07-12, before Rung-2 data): ---
+    //   "strengthens finite-X" iff d(2^17) <= d(2^16) - Du = 0.0575; else "strengthens persistent".
+    const bool strengthens_finiteX = (d17 <= d16 - du + 1e-12);
+    const std::string reading =
+        strengthens_finiteX ? std::string("strengthens finite-X (trough recovered >=1 bin)")
+                            : std::string("STRENGTHENS PERSISTENT (trough flat/rising vs 2^16)");
+    MESSAGE("R0 two-rung reading: d(2^16)=" << d16 << "  d(2^17)=" << d17
+            << "  (finite-X threshold " << (d16 - du) << ")  ->  " << reading);
+    // PINNED OUTCOME: d(2^17)==d(2^16) — trough in the SAME bin over a 2x rise in X (32x over the
+    // 10^4 anchor); the pre-committed clause yields STRENGTHENS PERSISTENT (Rung 1's Reading B,
+    // extended). Not the X->inf verdict — the scale caveat rides (PR-1 §R0: 2^17 is bottom-of-window).
+    CHECK(std::abs(d17 - d16) < 1e-9);
+    CHECK(strengthens_finiteX == false);
+
+    // --- supporting empiric (NOT the gate): the sub-bin zero-crossing 4th point + direction ---
+    const SSScaleShape* z16 = find_shape(r17, 65536.0);   // absent from the 2^17 ladder (see re-agg below)
+    MESSAGE("zero-series (sub-bin, supporting direction only): 10^4=" << r17.shapes.front().shape.zero_u
+            << " ... 2^17=" << s17.zero_u << "  (zero dev vs target 0.645 = "
+            << std::abs(s17.zero_u - r17.r2_zero) << ", flat/slightly rising — never the gate)");
+    (void)z16;
+
+    // --- ≤10^4 consistency twin: the 2^17 sorted-build reproduces the frozen M4 rungs exactly ---
+    SSRun m4; bool have_m4 = true;
+    try { m4 = read_ss_run(std::string(AT_M4_DATA_DIR) + "/ss_empirical.txt"); }
+    catch (const std::exception&) { have_m4 = false; }
+    if (have_m4) {
+        int matched = 0;
+        for (double X : {4000.0, 6000.0, 8000.0, 10000.0}) {
+            const SSScaleShape* e = find_shape(r17, X);
+            const SSScaleShape* m = find_shape(m4, X);
+            REQUIRE(e != nullptr);
+            REQUIRE(m != nullptr);
+            CHECK(e->n_curves == m->n_curves);
+            CHECK(std::abs(e->shape.zero_u - m->shape.zero_u) < 1e-9);
+            CHECK(std::abs(e->shape.trough_u - m->shape.trough_u) < 1e-9);
+            ++matched;
+        }
+        MESSAGE("<=10^4 consistency twin: " << matched
+                << " M4 rungs reproduced EXACTLY by the 2^17 conductor-sorted build");
+        CHECK(matched == 4);
+    }
+
+    // --- ≤2^16 consistency twin (FULL-SCALE sorted-build proof): re-aggregate BOTH the 2^17
+    // partials and the committed 2^16 partials at X=65536 and REQUIRE the same shape. This proves
+    // the 2^17 sorted/chunked build, restricted to H<=2^16, reproduces the committed 2^16 run
+    // (cross-platform: 2^17 partials are FreeBSD, committed 2^16 is macOS — libm differs only in
+    // the last ULP, which the bins absorb). PR-3 does not consume the 2^17 deficit until this passes.
+    try {
+        SSPartialsMeta pm17, pm16;
+        SSPartials P17 = read_ss_partials(std::string(AT_M5_DATA_DIR) + "/ss_partials_x131072.txt", pm17);
+        SSPartials P16 = read_ss_partials(std::string(AT_M5_DATA_DIR) + "/ss_partials_x65536.txt", pm16);
+        SSEmpirical a17 = ss_aggregate(P17, 65536.0);   // 2^17 partials, filtered to H<=2^16
+        SSEmpirical a16 = ss_aggregate(P16, 65536.0);   // committed 2^16 partials
+        MESSAGE("<=2^16 re-agg: 2^17-subset |fam|=" << a17.n_curves << " zero=" << a17.shape.zero_u
+                << " trough=" << a17.shape.trough_u << "  vs committed-2^16 |fam|=" << a16.n_curves
+                << " zero=" << a16.shape.zero_u << " trough=" << a16.shape.trough_u);
+        CHECK(a17.n_curves == 5042);
+        CHECK(a17.n_curves == a16.n_curves);
+        CHECK(std::abs(a17.shape.hump_u - a16.shape.hump_u) < 1e-9);      // exact bin
+        CHECK(std::abs(a17.shape.trough_u - a16.shape.trough_u) < 1e-9);  // exact bin
+        CHECK(std::abs(a17.shape.zero_u - a16.shape.zero_u) < 1e-6);      // interpolated, cross-platform libm
+    } catch (const std::exception& e) {
+        MESSAGE("[SKIP] <=2^16 re-agg twin — a partials file absent (" << e.what() << ").");
+        at::verify::g_oracle_skipped = true;
+    }
+}
