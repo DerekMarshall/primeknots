@@ -22,6 +22,7 @@ add_library(at_ell STATIC
   ell/curve.cpp
   ell/ap.cpp
   ell/ap_fast.cpp
+  ell/ap_shanks_mestre.cpp
   ell/ap_cache.cpp
   ell/ecdata.cpp)
 target_include_directories(at_ell PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

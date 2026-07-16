@@ -436,7 +436,8 @@ add_executable(verify_m5
   verify_main.cpp
   m5/ss_extension_tests.cpp
   m5/rank_split_tests.cpp
-  m5/ap_cache_tests.cpp)
+  m5/ap_cache_tests.cpp
+  m5/ap_shanks_mestre_tests.cpp)
 target_include_directories(verify_m5 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
   ${CMAKE_CURRENT_SOURCE_DIR})
@@ -447,7 +448,9 @@ target_compile_definitions(verify_m5 PRIVATE
 
 foreach(case twin_ss_partials_chunked_vs_single twin_ss_partials_file_roundtrip
          prereg_ss_x_extension prereg_ss_x17_confirmation prereg_rank_split
-         twin_ap_cache_refuses_partial prereg_ap_cache_reproduces_shape)
+         twin_ap_cache_refuses_partial prereg_ap_cache_reproduces_shape
+         anchor_shanks_mestre_pari anchor_shanks_mestre_bad_reduction_refused
+         twin_shanks_mestre_vs_charsum)
   add_test(NAME m5.${case} COMMAND verify_m5 --test-case=${case})
   # SKIP_RETURN_CODE 77: prereg_ap_cache_reproduces_shape cleanly SKIPs when the (gitignored,
   # local) a_p cache is absent — exit 77, rendered SKIP not FAIL (the visible-skip contract).
