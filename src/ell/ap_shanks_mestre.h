@@ -26,6 +26,9 @@ using at::core::u64;
 
 constexpr u64 kMestreThreshold = 229;   // Thm 7.7 bound; p ≤ threshold ⇒ charsum fallback (§5)
 
-int ap_shanks_mestre(const Curve& E, u64 p);
+// If resolved_by != nullptr it is set to how #E was determined (a twin-witness diagnostic):
+//   -1 = charsum fallback (p ≤ threshold);  0 = E-side λ had the unique Hasse multiple;
+//    1 = twist-side λ was unique (⇒ #E = 2p+2 − #Ẽ). Unset on the throw paths.
+int ap_shanks_mestre(const Curve& E, u64 p, int* resolved_by = nullptr);
 
 }  // namespace at::ell

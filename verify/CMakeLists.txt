@@ -450,7 +450,7 @@ foreach(case twin_ss_partials_chunked_vs_single twin_ss_partials_file_roundtrip
          prereg_ss_x_extension prereg_ss_x17_confirmation prereg_rank_split
          twin_ap_cache_refuses_partial prereg_ap_cache_reproduces_shape
          anchor_shanks_mestre_pari anchor_shanks_mestre_bad_reduction_refused
-         twin_shanks_mestre_vs_charsum)
+         twin_shanks_mestre_vs_charsum twin_m0b_vs_charsum_x16)
   add_test(NAME m5.${case} COMMAND verify_m5 --test-case=${case})
   # SKIP_RETURN_CODE 77: prereg_ap_cache_reproduces_shape cleanly SKIPs when the (gitignored,
   # local) a_p cache is absent — exit 77, rendered SKIP not FAIL (the visible-skip contract).

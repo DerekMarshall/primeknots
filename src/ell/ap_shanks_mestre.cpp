@@ -146,7 +146,7 @@ u64 unique_multiple(u64 lam, u64 lo, u64 hi) {
 
 }  // namespace
 
-int ap_shanks_mestre(const Curve& E, u64 p) {
+int ap_shanks_mestre(const Curve& E, u64 p, int* resolved_by) {
     if (p <= 3) throw std::invalid_argument("ap_shanks_mestre: short model requires p > 3");
 
     // Reduce to the short model y² = x³ + Ax + B mod p — IDENTICAL to ap_charsum/ap_fast.
@@ -169,7 +169,10 @@ int ap_shanks_mestre(const Curve& E, u64 p) {
     if (disc == 0)
         throw std::invalid_argument("ap_shanks_mestre: bad reduction (p | 4A^3+27B^2) — defer to oracle");
 
-    if (p <= kMestreThreshold) return ap_charsum(E, p);      // §5 small-p fallback (Thm 7.7 needs p>229)
+    if (p <= kMestreThreshold) {                             // §5 small-p fallback (Thm 7.7 needs p>229)
+        if (resolved_by) *resolved_by = -1;
+        return ap_charsum(E, p);
+    }
 
     // Hasse interval [lo, hi] ∋ #E (|a_p| ≤ 2√p); widen with +2 slack (isqrt is floor).
     const u64 hw = 2 * isqrt(p) + 2;
@@ -195,16 +198,20 @@ int ap_shanks_mestre(const Curve& E, u64 p) {
             const u64 M = smallest_mult_in_hasse(PE, A, p, lo, hi);
             if (M) lamE = lcm_u64(lamE, point_order(PE, A, p, M));
         }
-        if (const u64 nE = unique_multiple(lamE, lo, hi))
+        if (const u64 nE = unique_multiple(lamE, lo, hi)) {
+            if (resolved_by) *resolved_by = 0;               // E-side λ unique
             return static_cast<int>(static_cast<long long>(p + 1) - static_cast<long long>(nE));
+        }
 
         const Pt PT = next_point(At, Bt, p, seedT, iter);
         if (!PT.inf) {
             const u64 M = smallest_mult_in_hasse(PT, At, p, lo, hi);
             if (M) lamT = lcm_u64(lamT, point_order(PT, At, p, M));
         }
-        if (const u64 nEt = unique_multiple(lamT, lo, hi))      // #Ẽ unique ⇒ #E = 2p+2 − #Ẽ
+        if (const u64 nEt = unique_multiple(lamT, lo, hi)) {    // #Ẽ unique ⇒ #E = 2p+2 − #Ẽ
+            if (resolved_by) *resolved_by = 1;                  // twist-side λ unique
             return static_cast<int>(static_cast<long long>(nEt) - static_cast<long long>(p + 1));
+        }
     }
     throw std::runtime_error("ap_shanks_mestre: #E undetermined after 96 iters (p>229 should terminate)");
 }

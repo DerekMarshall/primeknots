@@ -24,7 +24,11 @@ Every mathematically load-bearing function has **two independent implementations
 algorithms, not refactors of each other — that must agree, or an external oracle check.
 <!-- claim:E3-1 --> Example: the Frobenius trace `a_p` is computed both by a fast table-based
 character sum and by a frozen reference routine, checked to agree on a **certified sample
-spanning the range** of primes we use (`twin_ap_fast_vs_charsum_m4`). <!-- claim:E3-2 --> Only after the twins
+spanning the range** of primes we use (`twin_ap_fast_vs_charsum_m4`). <!-- claim:E3-2 --> With the
+M0b stage a **third, genuinely independent** algorithm — Shanks–Mestre point counting, *not a
+character sum at all* — reproduces the referee's a_p **exactly over the full 2¹⁶ grid** (all 112
+million (curve, prime) values, `twin_m0b_vs_charsum_x16`) at ~145× less CPU, so one a_p is now
+corroborated across three independent algorithms. <!-- claim:E3-2b --> Only after the twins
 agree is one of them optimized; the naive twin stays as the referee and is never optimized
 too. <!-- claim:E3-3 -->
 
