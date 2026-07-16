@@ -168,7 +168,7 @@ it. The ~22 d estimate is retired either by **brute-forcing the embarrassingly-p
 48-core host** (~4 d; the box measured **5.6×** over the 12-thread calibration — 2¹⁶ in 2.1 h vs the
 11.9 h estimate) **or** by the **M0b faster-a_p stage** (Shanks–Mestre; usable once its twin against
 the frozen `ap_charsum` passes). The rung's data is **provenance-clean regardless of the compute
-path**, and if M0b computes it, M0b's exact-match twin on the committed 2¹⁶/2¹⁷ a_p must pass first.
+path**, and if M0b computes it, M0b's exact-match twin on the checksummed 2¹⁶/2¹⁷ a_p caches must pass first.
 Rung 3 is thus a *hardware/algorithm* escalation — it does **not** touch the statistic, extractor, τ,
 holdout, or decision rule.
 
