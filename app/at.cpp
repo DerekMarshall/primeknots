@@ -237,6 +237,11 @@ int main(int argc, char** argv) {
         // ellrootno is the global root number (the ε in the statistic's weighting).
         std::ostringstream script;
         script << "print(version);\n";
+        // Large families (X ≥ 2^18 ⇒ ~16k separate ellinit/ellglobalred statements) overflow
+        // gp's fixed 8 MB stack (default parisizemax=0, no auto-grow); 9014 curves at 2^17 fit,
+        // 15936 at 2^18 do not. Let the stack grow as needed — harmless at small X (allocates
+        // nothing up front), and emits no stdout so the version provenance line stays line 1.
+        script << "default(parisizemax,1<<31);\n";
         for (const at::murm::HeightCurve& e : fam)
             script << "E=ellinit([0,0,0," << e.A << "," << e.B
                    << "]);print(ellglobalred(E)[1],\" \",ellrootno(E))\n";
