@@ -153,6 +153,48 @@ d(2¹⁶)=0.0825 (Rung 1, flat vs the anchor).
 > "finite-X confirmed"; "strengthens persistent" is not "persistent proven." The verdict
 > remains explicitly conditional on a range we cannot yet reach.
 
+### Three completed rungs — what {2¹⁶, 2¹⁷, 2¹⁸} license (amended 2026-07-15, before Rung 2 data; Rung-3 / R0-ext)
+
+**Pre-registration status.** Committed while the 2¹⁷ rung is still *running and unread* (the FreeBSD
+canonical run is churning as this is written) and before any 2¹⁸ data exists. The 2¹⁸ threshold below
+is therefore expressed **relative to the as-yet-unread d(2¹⁷)** — never a typed absolute — so no
+rung's reading rule can be contaminated by a rung's result. This extends the R0 two-rung clause by one
+rung; the prime directive (a threshold is never renegotiated post-hoc) governs it identically.
+
+**Why 2¹⁸ is now reachable (reconciliation with §Runtime).** §Runtime declared 2¹⁸ "INFEASIBLE
+(~22 d) with the O(p) charsum a_p, blocked pending M0b." That blocker is **infrastructure, not
+mathematics**: a_p(E,p) is a uniquely-determined **integer**, identical whichever algorithm computes
+it. The ~22 d estimate is retired either by **brute-forcing the embarrassingly-parallel O(p) a_p on a
+48-core host** (~4 d; the box measured **5.6×** over the 12-thread calibration — 2¹⁶ in 2.1 h vs the
+11.9 h estimate) **or** by the **M0b faster-a_p stage** (Shanks–Mestre; usable once its twin against
+the frozen `ap_charsum` passes). The rung's data is **provenance-clean regardless of the compute
+path**, and if M0b computes it, M0b's exact-match twin on the committed 2¹⁶/2¹⁷ a_p must pass first.
+Rung 3 is thus a *hardware/algorithm* escalation — it does **not** touch the statistic, extractor, τ,
+holdout, or decision rule.
+
+Let d(X)=|trough_u(X)−0.805|; d(2¹⁶)=0.0825 (Rung 1, committed); Δu=0.025; d(2¹⁷) is the holdout.
+
+> - **Rung-3 step reading — "strengthens finite-X":** iff d(2¹⁸) ≤ d(2¹⁷) − Δu (one further bin of
+>   trough recovery beyond the 2¹⁷ rung). **"Strengthens persistent":** iff d(2¹⁸) is flat or rising
+>   vs d(2¹⁷) within the Δu quantization floor. (The 4-point sub-bin zero-crossing series over the
+>   anchor {2¹⁶, 2¹⁷, 2¹⁸} is reported alongside as supporting direction, **never** the gate.)
+>
+> - **Finite-range verdict (the full feasible ladder).** Three rungs over the 10⁴ anchor is the
+>   **fullest ladder this infrastructure can build** — the ladder R0 reserved the H1/H0 verdict for.
+>   With it in hand the verdict may be **pronounced as a finite-range statement (over ≤ 2¹⁸)**:
+>     - **H1 (finite-X, ≤ 2¹⁸)** iff the trough recovers monotonically by ≥ Δu at **both** steps:
+>       d(2¹⁷) ≤ d(2¹⁶) − Δu **and** d(2¹⁸) ≤ d(2¹⁷) − Δu — two consecutive bin-recoveries, a genuine
+>       decaying trend, not a single step.
+>     - **H0 (persistent, ≤ 2¹⁸)** iff the trough stays flat across the ladder (no ≥ Δu recovery at
+>       either step) — Rung 1's Reading-B trajectory extended.
+>     - **Ambiguous** otherwise (one step recovers, the other does not): reported as-is, no verdict.
+>
+> **Standing scale caveat, riding EVERY branch (unchanged — and it still bites at 2¹⁸).** Even 2¹⁸
+> sits at the **very bottom** of [SS25]'s observed-decay window **2¹⁶–2²⁸** — ~2¹⁰× below their top,
+> which they reach only via sub-linear point counting. Reaching 2¹⁸ by cores or by M0b/Shanks–Mestre
+> does **not** change this: a "finite-range H1/H0 verdict (≤ 2¹⁸)" is **explicitly not** the X→∞
+> verdict [SS25] describe. Every reading above stays conditional on a range we still cannot reach.
+
 ## Runtime estimate per rung (stated up front — the ladder is NOT silently shrunk)
 
 Calibration: X=10⁴ ran in **250 s** (1048 curves, 12 threads). Cost model
@@ -170,6 +212,14 @@ blocker is named: a_p is O(p) per prime (`ap_fast`, table charsum); [SS25] reach
 via Sutherland's sub-linear point counting (smalljac / Schoof–Elkies–Atkin). Reaching
 2¹⁸+ here requires an **M0b faster-a_p stage** (its own pinning + twins) — recorded as a
 prerequisite, out of PR-1 scope.
+
+**[2026-07-15 update — infrastructure changed, estimate retired.]** A 48-core host retires the
+~22 d wall by brute force (~4 d; measured 5.6× over this 12-thread calibration), so 2¹⁸ is no
+longer infrastructure-blocked — see the Rung-3 clause above for the pre-registered reading and
+the provenance argument (a_p is an integer, path-independent). The **M0b algorithmic upgrade
+remains the right long-term route** (it, not cores, is how [SS25] reach 2²⁸) and is now in
+Phase-1 pinning (`docs/notes/m0b-pinning.md`); the hardware route substitutes cores for it
+without touching a_p. This estimate table is left as the original honest calibration.
 
 **Execution plan (budget-gated):**
 - **Rung 2¹⁶** runs first (overnight). If the decision rule already resolves at
