@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "harness.h"
+#include "progress.h"               // at::verify::Progress — standing live-progress convention
 #include "ell/ap.h"                 // ap_charsum (frozen referee)
 #include "ell/ap_cache.h"
 #include "ell/ap_shanks_mestre.h"
@@ -168,7 +169,7 @@ TEST_CASE("twin_m0b_vs_charsum_x16") {
     std::size_t off = 0;
     long long checked = 0, band_le229 = 0;
     bool mismatch = false, overrun = false, threw = false;
-    const auto t0 = std::chrono::steady_clock::now();
+    at::verify::Progress prog("twin_m0b_vs_charsum_x16", static_cast<long long>(C), 256);
     for (std::size_t i = 0; i < C && !mismatch && !overrun && !threw; ++i) {
         const std::size_t c = order[i];
         const Curve E{0, 0, 0, rows[c].A, rows[c].B};
@@ -197,14 +198,9 @@ TEST_CASE("twin_m0b_vs_charsum_x16") {
             if (p <= static_cast<i64>(at::ell::kMestreThreshold)) ++band_le229;
             ++checked;
         }
-        if ((i & 255) == 0 && i > 0) {           // live progress (stderr) — curves/rate/ETA
-            const double el = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
-            std::fprintf(stderr, "  x16 twin: %zu/%zu curves  %lld a_p  %.0fs  %.0f ev/s  ETA %.0fs\n",
-                         i, C, checked, el, el > 0 ? checked / el : 0.0,
-                         i > 0 ? el * static_cast<double>(C - i) / static_cast<double>(i) : 0.0);
-        }
+        prog.tick(static_cast<long long>(i) + 1, checked);   // curves done / rate / ETA (+ a_p detail)
     }
-    const double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
+    const double secs = prog.elapsed();
 
     CHECK(threw == false);
     CHECK(overrun == false);
