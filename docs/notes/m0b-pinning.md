@@ -248,10 +248,17 @@ are equal integers; the prime-major iteration + accumulation order are unchanged
 verified drop-in. M0b 2¹⁷ ss-run wall: **272 s on 48 threads** (vs the ~14.6 h charsum path).
 Default provider stays `fast`; `--ap m0b` opts in, and the default is not switched until
 PRODUCTION-CAPABLE. **Remaining before any 2¹⁸ production run: PRODUCTION-CAPABLE** = x18
-tail-weighted sample twin + `oracle_ellap` spot (the committed 2b acceptance). *Open (data-note
-B1): M0b-produced files carry no a_p-provider provenance field yet — they stamp the statistic's
-hash (honest for the statistic, silent on which a_p algorithm ran); to be resolved with B1
-before any M0b-produced file becomes a committed artifact.*
+tail-weighted sample twin + `oracle_ellap` spot (the committed 2b acceptance).
+
+**Wiring riders R1/R2 (2026-07-17) — landed.** *R1 (provider provenance, commit 00bc821):*
+ss-run outputs now carry `# ap_provider fast|m0b` and, on `--ap m0b`, a `# provider_hash`
+= sha256 of the provider TU (`AT_M0B_PROVIDER_HASH`), so an M0b-produced file names its a_p
+algorithm and pins its provider source — closing the ERRATA #18-style gap (= data-note B1)
+before any M0b file becomes a committed artifact. Readers accept both provider values and
+default to `fast` when the field is absent (committed legacy artifacts stay readable). *R2
+(copy-drift guard, commit 980dca0):* `twin_ss_provider_fast_vs_m0b` (verify/m5, ~522 curves,
+seconds, committed ne_cache only) REQUIREs the two providers' partials byte-identical — the
+byte-copied loop can no longer drift without a red test naming the first divergent (curve,bin).
 
 **Reference-cache generation (2b ruling):** on the **laptop**, conductor-sorted chunked, **2¹⁶
 first, then 2¹⁷**. The FreeBSD box stays reserved, in order, for: 2¹⁷ completion → R2 → the 2¹⁸
