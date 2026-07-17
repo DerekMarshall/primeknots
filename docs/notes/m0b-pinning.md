@@ -237,6 +237,22 @@ bottleneck, ~3 h → ~4.6 min at 2¹⁷). **Pending:** x18 tail-weighted sample,
 PRODUCTION-CAPABLE. E3 three-algorithm clause licensed + shipped (x16 **and** x17); the former
 "two-platform" clause is **retired** in favour of the honest cross-algorithm framing above.
 
+**Production wiring gate (2026-07-17) — GREEN.** `at ss-run --ap m0b` swaps the statistic's
+a_p source to Shanks–Mestre via a separate TU (`ss_empirical_partials_m0b`), leaving
+`ss_empirical.cpp` (the hashed statistic source, `SS_GENERATOR_HASH`) **untouched** so committed
+runs stay readable and CI green. At **2¹⁶ (macOS, threads=12)** and **2¹⁷ (FreeBSD, threads=48)**
+the M0b-backed run reproduces the committed artifacts **byte-for-byte**: all **5042 / 9014**
+curves' full-precision partials identical, the run-file shape+density data lines identical, and
+the same `generator_hash` (`b87ebd1e…`). The a_p swap changes **zero** numbers, as designed (a_p
+are equal integers; the prime-major iteration + accumulation order are unchanged) — M0b is a
+verified drop-in. M0b 2¹⁷ ss-run wall: **272 s on 48 threads** (vs the ~14.6 h charsum path).
+Default provider stays `fast`; `--ap m0b` opts in, and the default is not switched until
+PRODUCTION-CAPABLE. **Remaining before any 2¹⁸ production run: PRODUCTION-CAPABLE** = x18
+tail-weighted sample twin + `oracle_ellap` spot (the committed 2b acceptance). *Open (data-note
+B1): M0b-produced files carry no a_p-provider provenance field yet — they stamp the statistic's
+hash (honest for the statistic, silent on which a_p algorithm ran); to be resolved with B1
+before any M0b-produced file becomes a committed artifact.*
+
 **Reference-cache generation (2b ruling):** on the **laptop**, conductor-sorted chunked, **2¹⁶
 first, then 2¹⁷**. The FreeBSD box stays reserved, in order, for: 2¹⁷ completion → R2 → the 2¹⁸
 tail-weighted brute-force sample (§7.3, hours) → M0b's **first production run at 2¹⁸** (launched
