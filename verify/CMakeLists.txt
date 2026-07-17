@@ -438,11 +438,12 @@ add_executable(verify_m5
   m5/rank_split_tests.cpp
   m5/ap_cache_tests.cpp
   m5/ap_shanks_mestre_tests.cpp
-  m5/ss_provider_tests.cpp)
+  m5/ss_provider_tests.cpp
+  m5/ss_x18_gate_tests.cpp)
 target_include_directories(verify_m5 PRIVATE
   ${CMAKE_SOURCE_DIR}/third_party
   ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(verify_m5 PRIVATE at_murm at_core)
+target_link_libraries(verify_m5 PRIVATE at_murm at_core at_oracle)
 target_compile_definitions(verify_m5 PRIVATE
   AT_M4_DATA_DIR="${CMAKE_SOURCE_DIR}/data/m4"
   AT_M5_DATA_DIR="${CMAKE_SOURCE_DIR}/data/m5")
@@ -458,6 +459,17 @@ foreach(case twin_ss_partials_chunked_vs_single twin_ss_partials_file_roundtrip
   # local) a_p cache is absent — exit 77, rendered SKIP not FAIL (the visible-skip contract).
   set_tests_properties(m5.${case} PROPERTIES LABELS "m5" SKIP_RETURN_CODE 77)
 endforeach()
+
+# PRODUCTION-CAPABLE gate (m0b-pinning §7 concrete spec) — NOT in the routine `m5` label: the
+# tail-weighted brute-force twin is a deliberate ~1–2 h run (48-core box), invoked explicitly.
+add_test(NAME m5gate.twin_m0b_bruteforce_x18_tailweighted
+         COMMAND verify_m5 --test-case=twin_m0b_bruteforce_x18_tailweighted)
+set_tests_properties(m5gate.twin_m0b_bruteforce_x18_tailweighted PROPERTIES
+  LABELS "m5gate;heavy" SKIP_RETURN_CODE 77 TIMEOUT 14400)
+add_test(NAME m5gate.oracle_ellap_m0b_spot
+         COMMAND verify_m5 --test-case=oracle_ellap_m0b_spot)
+set_tests_properties(m5gate.oracle_ellap_m0b_spot PROPERTIES
+  LABELS "m5gate;oracle" SKIP_RETURN_CODE 77 RESOURCE_LOCK "gp" TIMEOUT 600)
 
 # --- deck: the explainer deck is an emitted artifact, validated like one -------
 # Every data-claim="ID" in docs/deck/index.html must have a CLAIMS.md row.
