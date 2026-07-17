@@ -213,3 +213,113 @@ TEST_CASE("twin_m0b_vs_charsum_x16") {
     MESSAGE("M0b SPEEDUP: x16 twin wall " << secs << "s vs charsum reference-gen 36860s (same grid) -> "
             << (secs > 0 ? 36860.0 / secs : 0.0) << "x");
 }
+
+TEST_CASE("twin_m0b_vs_charsum_x17") {
+    // M0b full-cache twin at 2^17 — Shanks-Mestre reproduces the checksummed 2^17 a_p reference
+    // cache EXACTLY (385,792,535 values), same §7.1+P1+R1 contract as x16. The data-note gate:
+    // must be green before the note cites M0b. Cross-ALGORITHM (SM vs charsum); the cache and M0b
+    // both run on FreeBSD (a_p is a platform-independent integer, so "same platform" is moot).
+    using at::ell::ApCacheHeader;
+    using at::ell::read_ap_cache;
+    using at::murm::NeCacheHeader;
+    using at::murm::NeRow;
+    using at::murm::read_ne_cache;
+    using at::murm::naive_height;
+
+    const std::string cache_path = std::string(AT_M5_DATA_DIR) + "/ap_cache_x131072.bin";
+    {
+        std::ifstream probe(cache_path, std::ios::binary);
+        if (!probe.good()) {
+            MESSAGE("[SKIP] 2^17 a_p cache absent (local/gitignored) — run `at ap-cache --X 131072` first.");
+            at::verify::g_oracle_skipped = true;
+            return;
+        }
+    }
+
+    ApCacheHeader ch;
+    std::vector<int16_t> cv = read_ap_cache(cache_path, ch);   // R1: COMPLETE required (refuses partial)
+    CHECK(ch.complete == true);
+
+    NeCacheHeader nh;
+    std::vector<NeRow> allrows = read_ne_cache(std::string(AT_M5_DATA_DIR) + "/ne_cache_x131072.txt", nh);
+    const i64 X = 131072;
+    std::vector<NeRow> rows;
+    for (const NeRow& r : allrows) if (naive_height(r.A, r.B) <= X) rows.push_back(r);
+    const std::size_t C = rows.size();
+    REQUIRE(C > 0);
+
+    // P1: header-grid identity (the generator was run with --cache data/m5/ne_cache_x131072.txt).
+    const std::string expected_desc =
+        "family=height(X=131072,fam=" + std::to_string(C) + ")"
+        "|order=conductor-asc(N,idx)|prime_rule=3<p<=N,p_ndiv_(4A^3+27B^2)"
+        "|ne=data/m5/ne_cache_x131072.txt,ne_gen=" + nh.generator_hash +
+        ",ne_X=" + std::to_string(nh.X) + ",ne_count=" + std::to_string(nh.count) +
+        "|algo=charsum_referee(ap_fast;spot=ap_charsum)";
+    REQUIRE(ch.curve_set == expected_desc);
+
+    std::vector<i64> disc(C);
+    i64 maxN = 0;
+    for (std::size_t c = 0; c < C; ++c) {
+        disc[c] = 4 * rows[c].A * rows[c].A * rows[c].A + 27 * rows[c].B * rows[c].B;
+        if (rows[c].N > maxN) maxN = rows[c].N;
+    }
+    std::vector<std::size_t> order(C);
+    std::iota(order.begin(), order.end(), std::size_t{0});
+    std::sort(order.begin(), order.end(), [&](std::size_t a, std::size_t b) {
+        if (rows[a].N != rows[b].N) return rows[a].N < rows[b].N;
+        return a < b;
+    });
+    std::vector<i64> gp;
+    {
+        std::vector<char> sv(static_cast<std::size_t>(maxN) + 1, 1);
+        for (i64 i = 2; i <= maxN; ++i)
+            if (sv[i]) { if (i > 3) gp.push_back(i); for (i64 j = i * i; j <= maxN; j += i) sv[j] = 0; }
+    }
+
+    std::size_t off = 0;
+    long long checked = 0, band_le229 = 0;
+    bool mismatch = false, overrun = false, threw = false;
+    at::verify::Progress prog("twin_m0b_vs_charsum_x17", static_cast<long long>(C), 256);
+    for (std::size_t i = 0; i < C && !mismatch && !overrun && !threw; ++i) {
+        const std::size_t c = order[i];
+        const Curve E{0, 0, 0, rows[c].A, rows[c].B};
+        const i64 d = disc[c], N = rows[c].N;
+        for (i64 p : gp) {
+            if (p > N) break;
+            if (d % p == 0) continue;
+            if (off >= cv.size()) { overrun = true; break; }
+            const int cache_ap = static_cast<int>(cv[off++]);
+            int side = -2, m0b_ap = 0;
+            try {
+                m0b_ap = ap_shanks_mestre(E, static_cast<u64>(p), &side);
+            } catch (const std::exception& e) {
+                MESSAGE("x17 TWIN THREW — curve A=" << rows[c].A << " B=" << rows[c].B
+                        << " N=" << N << " p=" << p << " : " << e.what());
+                threw = true; break;
+            }
+            if (m0b_ap != cache_ap) {
+                MESSAGE("x17 TWIN MISMATCH — curve A=" << rows[c].A << " B=" << rows[c].B
+                        << " N=" << N << " p=" << p << " | cache(charsum)=" << cache_ap
+                        << " M0b(shanks-mestre)=" << m0b_ap << " | resolved_by="
+                        << (side == -1 ? "charsum-fallback" : side == 0 ? "E-side"
+                            : side == 1 ? "twist-side" : "?"));
+                mismatch = true; break;
+            }
+            if (p <= static_cast<i64>(at::ell::kMestreThreshold)) ++band_le229;
+            ++checked;
+        }
+        prog.tick(static_cast<long long>(i) + 1, checked);
+    }
+    const double secs = prog.elapsed();
+
+    CHECK(threw == false);
+    CHECK(overrun == false);
+    CHECK(off == cv.size());
+    CHECK(band_le229 > 0);
+    CHECK(mismatch == false);
+    MESSAGE("x17 twin: " << checked << " (curve,prime) a_p compared EXACT (" << band_le229
+            << " in the p<=229 charsum-fallback band); " << secs << "s, "
+            << (secs > 0 ? static_cast<double>(checked) / secs : 0.0) << " evals/s");
+    MESSAGE("M0b SPEEDUP: x17 twin wall " << secs << "s vs charsum reference-gen 52711s / 48-thread "
+            << "(same grid) -> " << (secs > 0 ? 52711.0 / secs : 0.0) << "x wall");
+}
