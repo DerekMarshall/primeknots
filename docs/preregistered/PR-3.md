@@ -211,7 +211,64 @@ precedes it; the §0d envelope is the pre-registered content, fixed before U and
   reported as an anomaly demanding scrutiny (a measurement of β, a check of δ) before any claim.
 - **D1 (contingent, unrun):** evaluated only if D2 leaves a structured residual (trigger above).
 
-## Postscript
-*(empty at commit — the D2 estimator above is pinned before any of its numbers are computed;
-the measured outcome is written here by the same-session D2 run. Derek rules on D1 only if the
-trigger fires.)*
+## Postscript — D2 measured (2026-07-17), commit 21060a0 pinned the estimator first
+
+Run: `at ss-leakage` (read-only, no a_p recompute) over the committed partials + ne_caches,
+D = `ss_density(u, 2000, 2000)`. Both files passed the free **S-twin** (my aggregated S vs the
+committed `ss_x*.txt` density column: max|ΔS| = 4.9×10⁻⁶ = the 6-sig-fig print floor). A free
+**cross-platform twin** fell out too: the ≤2¹⁶ ladder rows aggregated from the FreeBSD-computed
+2¹⁷ partials are identical (to printed precision) to those from the laptop 2¹⁶ partials.
+
+**Cumulative per-rung table** (all densities in emitted units; b\* = trough bin, u\*≈0.8875):
+
+| X | δ | U(u\*) | L(u\*)=δ·U | S(u\*) | D(u\*) | dep\*=S−D | f=L/dep | sign |
+|---|---|---|---|---|---|---|---|---|
+| 4000 | −0.06897 | +0.800 | −0.05518 | −3.642 | +0.515 | −4.158 | **+0.0133** | same |
+| 6000 | −0.05422 | −1.299 | +0.07044 | −3.302 | +0.161 | −3.463 | **−0.0203** | OPP |
+| 8000 | −0.05058 | +0.653 | −0.03302 | −3.483 | +0.515 | −3.998 | **+0.0083** | same |
+| 10000 | −0.05344 | +0.345 | −0.01842 | −3.471 | +0.515 | −3.986 | **+0.0046** | same |
+| 2¹⁶ | −0.01150 | −0.326 | +0.00375 | −3.715 | +0.515 | −4.230 | **−0.0009** | OPP |
+| 2¹⁷ | −0.00777 | −0.327 | +0.00254 | −3.652 | +0.515 | −4.168 | **−0.0006** | OPP |
+
+Annulus increments (quasi-independent shells) tell the same story: f ∈ {+0.013, 0.000,
++0.001, −0.020, −0.0001, −0.0002}; the (4000,6000] shell has n₊=n₋ exactly ⇒ δ=0 ⇒ L=0
+(the mechanism's necessary condition, cleanly visible). The descending-branch profile (u>zero_u)
+has |L(u)| ≤ 0.0036 across the *entire* branch at 2¹⁷ while |dep(u)| ranges 0.07–4.2 — L is
+negligible everywhere, with no structure.
+
+### Verdict — leakage **bounded out** (the §0d EXPECTED outcome, sharper than expected)
+
+- **f ≪ 1 at every rung**: |f| ≤ 0.021 (cumulative) and ≤ 0.020 (annulus). At the two largest,
+  least-noisy rungs (2¹⁶, 2¹⁷) f = −0.0009, −0.0006 — i.e. the leakage accounts for < 0.1% of
+  the trough departure.
+- **The absolute leakage is tiny and denominator-robust**: |L(u\*)| ≤ 0.07 density units (and
+  ≤ 0.003 at 2¹⁶/2¹⁷), against a trough departure ≈ 4 and a signed trough depth ≈ 3.7. Even
+  divided by §0d's smaller O(0.5–1) "deficit," f ≈ 0.005 at 2¹⁶ — still ≪ 1. The conclusion
+  does not depend on the denominator choice, because the *numerator* is negligible.
+- **The sign is UNSTABLE** (cumulative: same, OPP, same, same, OPP, OPP), because U(u\*) — the
+  unsigned bias *at the trough bin* — itself flips sign across rungs (+0.80, −1.30, +0.65,
+  +0.34, −0.33, −0.33). At the two most reliable rungs the leakage points *against* the deficit.
+  A material leakage would be a stable, same-sign offset; this is noise-like scatter about zero.
+- **§0d's implausibility argument confirmed, decisively**: f ≈ 1 would need |U(u\*)| ≈
+  |dep\*|/|δ| ≈ 368 at 2¹⁶; measured |U(u\*)| = 0.33 — short by ~3 orders of magnitude (§0d
+  predicted ~2 from the β≈45–90 heuristic; the direct measurement is even more decisive).
+
+**Claim licensed (per the pre-committed branch language, Wachs- and Sutherland-attribution-bound):**
+*root-number-imbalance leakage of Sutherland's parity-independent unsigned bias does NOT
+materially contribute to the height-murmuration tail deficit at H ≤ 2¹⁷ — the leakage fraction
+is |f| ≤ 2% with unstable sign (< 0.1% and pointing against the deficit at 2¹⁶/2¹⁷), a citable
+null.* This is a **bound**, not an explanation; not a rank claim. **The tail deficit (PR-1's
+persistent trough displacement) remains unexplained by this mechanism.**
+
+**D1 (congruence stratification) — recorded as DIED** (the pre-committed trigger, hypotheses-die-
+in-public): D2 bounds the mechanism out (small f, sign-unstable/wrong-sign at the reliable rungs,
+no structured descending-branch residual pointing at the named classes p≡1 mod 24, p≡□ mod 5,7).
+Per the trigger, the referee's prime-class mechanism is closed by the D2 bound **without** running
+the expensive stratified pass. D1's own pre-registration is NOT written; the partials-v2
+(u-bin × prime-class) re-run is not undertaken.
+
+*Caveat (rule 5, honest): the single-bin f mixes the trough displacement with the trough depth,
+because the conjectured trough (u≈0.805) and the empirical trough (u≈0.8875) are misaligned in u
+(hence D(u\*)>0 while S(u\*)<0). The descending-branch profile is the fuller picture and carries
+the same verdict (L negligible across the whole branch). And D2 is a pre-committed plausibility
+bound, not a blind-holdout confirmation — see the epistemic-status note above.*
