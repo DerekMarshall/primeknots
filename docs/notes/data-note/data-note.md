@@ -132,13 +132,14 @@ a certified sample. <!-- claim:N2-7 --> Published values are pinned as anchor te
 oracle skips visibly rather than passing silently. <!-- claim:N2-8 --> The full method is
 described in the companion method explainer (E3). <!-- claim:N2-9 -->
 
-<!-- GATED sentence (R2) — appears ONLY if the 2¹⁷ full twin is green at publication time;
-     [PENDING x17]. Drafted and gated here, same pattern as the E3 amendment:
-     "In fact `a_p` is computed by three independent algorithms — the frozen `ap_charsum`
-     referee, the fast QR-table `ap_fast`, and Shanks–Mestre point counting — agreeing exactly
-     over the full 2¹⁶ `a_p` grid (112 M values) at roughly 145× less CPU (O(p^{1/4}) point
-     counting vs. O(p) character sum); the cross-platform 2¹⁷ extension is the completeness
-     gate." (source: E3-2b; m0b-pinning.md §7; test twin_m0b_vs_charsum_x16, and x17 [PENDING]) -->
+<!-- x17 gate RESOLVED 2026-07-17 (twin_m0b_vs_charsum_x17 GREEN, commit fbe51a5): the sentence
+     below, drafted-and-gated per R2, is now live prose. Recorded non-silently (R5). -->
+In fact `a_p` is computed by **three** independent algorithms — the frozen `ap_charsum` referee,
+the fast QR-table `ap_fast`, and Shanks–Mestre point counting — agreeing **exactly** over the full
+2¹⁶ and 2¹⁷ `a_p` grids (112 M and 385 M values, 0 mismatches) at ~145× less CPU (O(p^{1/4}) point
+counting vs. O(p) character sum). This is a **cross-algorithm** check (Shanks–Mestre vs. the
+charsum reference cache); a_p is a platform-independent integer, so it is verified same-platform by
+design — not a two-platform claim. <!-- claim:N2-14 -->
 
 **Pre-registration.** Every decision rule, tolerance, and threshold is committed to version
 control *before* the data it judges exists (commit-before-run). Three pre-registrations govern

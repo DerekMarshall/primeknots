@@ -86,8 +86,8 @@ arXiv:2504.12295.
 | ID | Claim | Source |
 |----|-------|--------|
 | E3-1 | Every load-bearing function has two independent implementations, or an oracle check | CLAUDE.md rule 2 |
-| E3-2 | `a_p` by **three independent algorithms** (frozen `ap_charsum` referee, fast QR-table `ap_fast`, Shanks–Mestre point counting) agreeing exactly — a certified M4 sample + the full 2¹⁶ grid for M0b | tests `twin_ap_fast_vs_charsum_m4`, `twin_m0b_vs_charsum_x16` |
-| E3-2b | Shanks–Mestre reproduces the full 2¹⁶ a_p grid (112 M values) EXACTLY at ~145× less CPU (O(p^{1/4}) point counting vs O(p) charsum); the cross-platform 2¹⁷ extension is the pending completeness gate | `twin_m0b_vs_charsum_x16`; m0b-pinning.md §7 |
+| E3-2 | `a_p` by **three independent algorithms** (frozen `ap_charsum` referee, fast QR-table `ap_fast`, Shanks–Mestre point counting) agreeing exactly — a certified M4 sample + the full 2¹⁶ and 2¹⁷ grids for M0b | tests `twin_ap_fast_vs_charsum_m4`, `twin_m0b_vs_charsum_x16`, `twin_m0b_vs_charsum_x17` |
+| E3-2b | Shanks–Mestre reproduces the full 2¹⁶ **and 2¹⁷** a_p grids EXACTLY (112 M and 385 M values, 0 mismatches) at ~145× less CPU (O(p^{1/4}) point counting vs O(p) charsum); a **cross-ALGORITHM** twin (SM vs the charsum reference cache) — a_p is a platform-independent integer, so it is same-platform by design, not a two-platform claim | `twin_m0b_vs_charsum_x16`, `twin_m0b_vs_charsum_x17`; m0b-pinning.md §7 |
 | E3-3 | Optimize one twin; keep the naive twin as referee, never optimize both | CLAUDE.md "Working style" (performance after correctness) |
 | E3-4 | Oracles (PARI/LMFDB/Odlyzko) referee, are never called from src/ | CLAUDE.md rule 3 |
 | E3-5 | An absent oracle SKIPs visibly (skip code), never a silent pass | CLAUDE.md rule 3; ctest SKIP_RETURN_CODE 77 (verify/CMakeLists.txt) |
@@ -104,5 +104,5 @@ arXiv:2504.12295.
 | E3-16 | #26: a self-caught breach with consequences — the peek appeared to show trough agreement, which the clean confirmation overturned (trough is a persistent deviation) | docs/ERRATA.md #26; m4-pinning (confirmation §); docs/preregistered/PR-1.md postscript |
 | E3-17 | Committed viz/data JSON is byte-identical to what the code emits at HEAD | verify/freshness_check.py |
 | E3-18 | Only the build stamp is normalized; emitters are compiled for cross-platform bit-reproducibility | freshness_check.py (generated_by normalized); memory `cross-compiler-emit-determinism` (-ffp-contract=off) |
-| E3-19 | Every headline number is twinned, anchored, or oracle-refereed; research claims pre-registered; mistakes in a ledger (a_p high-water mark: three independent algorithms agree exactly over the full 2¹⁶ grid) | CLAUDE.md rules 1–3, 6; docs/preregistered/, docs/ERRATA.md; m0b-pinning.md |
+| E3-19 | Every headline number is twinned, anchored, or oracle-refereed; research claims pre-registered; mistakes in a ledger (a_p high-water mark: three independent algorithms agree exactly over the full 2¹⁶ and 2¹⁷ grids) | CLAUDE.md rules 1–3, 6; docs/preregistered/, docs/ERRATA.md; m0b-pinning.md |
 | E3-20 | No formal proof / new theorem claimed; the machinery makes open questions legible | CLAUDE.md rule 7 |

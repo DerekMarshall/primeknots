@@ -44,7 +44,7 @@ Status: **§1 + §2 rows complete; §3–§6 [PENDING]** (drafted after §1+§2 
 | N2-11 | Every exploratory statistic logged in the looks ledger | docs/preregistered/LOOKS.md; RESEARCH-M §7 |
 | N2-12 | `D(u)` evaluated in a separate TU: Bessel-`J₁` double sum, Lemmas 3–4 local factors, in-house `J₁`, generated (not typed) constants, truncated `q,m ≤ 2000` | src/murm/ss_density.h; m4-pinning.md §P3; src/emit/emit_sawin_sutherland.cpp (`kDensB = 2000`); CLAUDE.md rule 8 |
 | N2-13 | Emitted density byte-portable across compilers/platforms (verified) | verify/freshness_check.py; memory `cross-compiler-emit-determinism` (`-ffp-contract=off`); CLAIMS-E E3-17, E3-18 |
-| N2-14 | **[GATED, x17 — PENDING]** `a_p` by three independent algorithms (`ap_charsum`, `ap_fast`, Shanks–Mestre) agreeing exactly over the full 2¹⁶ grid (112 M values) at ~145× less CPU; 2¹⁷ extension the completeness gate | CLAIMS-E E3-2b; docs/notes/m0b-pinning.md §7; test `twin_m0b_vs_charsum_x16` (x16 ✓); `twin_m0b_vs_charsum_x17` [PENDING] |
+| N2-14 | **[x17 GREEN 2026-07-17, ungated]** `a_p` by three independent algorithms (`ap_charsum`, `ap_fast`, Shanks–Mestre) agreeing exactly over the full 2¹⁶ **and 2¹⁷** grids (112 M + 385 M values, 0 mismatches) at ~145× less CPU; cross-algorithm (a_p platform-independent integer), not a two-platform claim | CLAIMS-E E3-2b; docs/notes/m0b-pinning.md §7 (ladder); tests `twin_m0b_vs_charsum_x16` ✓, `twin_m0b_vs_charsum_x17` ✓ (commit fbe51a5) |
 
 ## §3–§6 — [PENDING]
 
