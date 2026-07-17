@@ -203,6 +203,28 @@ M0b is accepted only when ALL of the following are green (a_p is an **integer** 
 4. **`oracle_ellap_m0b_spot`** — a spot sample checked against **PARI `ellap`** (independent
    oracle); SKIPs cleanly (visible SKIP) when `gp` is absent.
 
+**Concrete size + strata for 3 & 4 (concretized 2026-07-17, Derek-approved; the qualitative
+pin above left these open — this fills them, commit-before-run, before the gate runs):**
+- **Strata** = conductor quartiles of the committed 2¹⁸ family (`ne_cache_x262144.txt`, cd8c157,
+  15936 curves): **Q1** N≤103,248 · **Q2** N≤548,608 · **Q3** N≤1,593,184 · **Q4** N≤8,244,928
+  (3984 curves each). Q4 is the high-conductor tail where M0b's large-p path — and any large-p
+  bug — concentrates.
+- **Sample (tail-weighted)** = **30 / 50 / 70 / 100** curves from Q1 / Q2 / Q3 / Q4 = **250
+  curves**. **Deterministic selection:** within each stratum (conductor-ascending, ties by ne-row
+  index) take positions ⌊i·|stratum|/count⌋, i = 0…count−1 (evenly spread); the selected (A,B)
+  list is logged for reproducibility (R1 determinism, no RNG).
+- **`twin_m0b_bruteforce_x18_tailweighted`** = for each sampled curve, ALL good primes
+  (3 < p ≤ N, p ∤ 4A³+27B²): M0b (`ap_shanks_mestre`) vs the **O(p) referee `ap_fast`** (the
+  algorithm that generated the trusted 2¹⁶/2¹⁷ reference caches — genuinely different from M0b's
+  O(p^{1/4}) point counting), **exact integer**, parallel, **first mismatch by canonical order
+  ABORTS with full witness** (A, B, N, p, referee a_p, M0b a_p, resolved_by). An `ap_charsum`
+  (frozen modpow referee) spot-check on a sub-sample ties `ap_fast` to the frozen referee.
+- **`oracle_ellap_m0b_spot`** = ~200 tail-weighted (curve, prime) pairs (largest primes of the
+  Q4/Q3 sampled curves) vs **PARI `ellap`** (gp 2.17.4); SKIP-clean (exit 77) when `gp` absent.
+- **Runtime** ≈ 1–2 h on 48 FreeBSD cores (referee-bound). Both green ⇒ mark PRODUCTION-CAPABLE
+  in the ladder with commit hashes. **HARD GATE: no 2¹⁸ production launch before that line is
+  in the doc.**
+
 **Grid-equality REQUIRE (P1, all cache twins).** Before comparing any value, twins 1 & 2 assert the
 reference cache's **header grid-definition** (ne_cache checksum; prime rule `3 < p ≤ N(E), p ∤
 (4A³+27B²)`; curve-set descriptor; chunk layout) equals the M0b grid — intersecting-but-different
