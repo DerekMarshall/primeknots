@@ -52,6 +52,13 @@ struct SSPartials {
 // Deterministic given n_threads (prime-major, primes interleaved across threads).
 SSPartials ss_empirical_partials(const std::vector<NeRow>& rows, double du, int n_threads);
 
+// M0b production-path variant (src/murm/ss_empirical_m0b.cpp): byte-exact copy of the above
+// with the a_p source swapped from ell::ap_fast (O(p)) to ell::ap_shanks_mestre (O(p^{1/4})).
+// Same iteration/accumulation order ⇒ BYTE-IDENTICAL partials (a_p are equal integers). Lives
+// in its own TU so ss_empirical.cpp (the hashed statistic source) is untouched. Opted into by
+// `at ss-run --ap=m0b`; the default provider stays ap_fast. See m0b-pinning §7 (wiring gate).
+SSPartials ss_empirical_partials_m0b(const std::vector<NeRow>& rows, double du, int n_threads);
+
 // Aggregate the partials at height cutoff X (filter curves with H ≤ X, sum, divide by
 // Δu·|fam(X)|, extract the two-pass shape). Cheap.
 SSEmpirical ss_aggregate(const SSPartials& P, double X);

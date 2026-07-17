@@ -313,6 +313,18 @@ int main(int argc, char** argv) {
             unsigned hc = std::thread::hardware_concurrency();
             threads = hc ? static_cast<int>(hc) : 4;
         }
+        // a_p provider (m0b-pinning §7, production wiring gate): fast (default, ap_fast O(p))
+        // or m0b (ap_shanks_mestre O(p^{1/4})). The two produce byte-identical partials — same
+        // iteration/accumulation order, a_p equal integers — so --ap=m0b must reproduce the
+        // committed artifacts EXACTLY. Default unchanged until the gate + PRODUCTION-CAPABLE.
+        const std::string ap_mode = opt(argc, argv, "--ap", "fast");
+        const bool use_m0b = (ap_mode == "m0b");
+        if (ap_mode != "fast" && !use_m0b) {
+            std::fprintf(stderr, "at ss-run: --ap must be 'fast' or 'm0b' (got '%s')\n", ap_mode.c_str());
+            return 2;
+        }
+        std::fprintf(stderr, "at ss-run: a_p provider = %s\n",
+                     use_m0b ? "m0b (ap_shanks_mestre, O(p^1/4))" : "fast (ap_fast, O(p))");
 
         at::murm::NeCacheHeader hdr;
         std::vector<at::murm::NeRow> rows = at::murm::read_ne_cache(cache, hdr);
@@ -380,7 +392,8 @@ int main(int argc, char** argv) {
             /* P already populated from the committed partials */
         } else if (!do_checkpoint) {
             // Single-pass (M4 path; also the fast small-X path). Nothing persisted.
-            P = at::murm::ss_empirical_partials(rows, run.du, threads);
+            P = use_m0b ? at::murm::ss_empirical_partials_m0b(rows, run.du, threads)
+                        : at::murm::ss_empirical_partials(rows, run.du, threads);
         } else {
             // ---- chunked pass with crash-safety checkpoint (PR-1 R3) ----
             const int NB = static_cast<int>(std::lround(1.0 / run.du));
@@ -458,7 +471,8 @@ int main(int argc, char** argv) {
                 }
                 if (!crows.empty()) {
                     at::murm::SSPartials cp =
-                        at::murm::ss_empirical_partials(crows, run.du, threads);
+                        use_m0b ? at::murm::ss_empirical_partials_m0b(crows, run.du, threads)
+                                : at::murm::ss_empirical_partials(crows, run.du, threads);
                     for (std::size_t j = 0; j < orig.size(); ++j) {
                         const std::size_t c = orig[j];
                         P.num[c] = cp.num[j]; P.cnt[c] = cp.cnt[j];

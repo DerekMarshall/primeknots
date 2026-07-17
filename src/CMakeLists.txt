@@ -52,6 +52,7 @@ add_library(at_murm STATIC
   murm/rank_cache.cpp
   murm/rank_split.cpp
   murm/ss_empirical.cpp
+  murm/ss_empirical_m0b.cpp
   murm/ss_run_io.cpp)
 target_include_directories(at_murm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 # murm -> {ell, mform}: M1/M2 averaging uses ell (a_p); M3's empirical convergence
