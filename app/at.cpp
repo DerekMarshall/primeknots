@@ -941,6 +941,154 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    if (std::strcmp(argv[1], "ss-leakage") == 0) {
+        // PR-3 D2 — root-number-imbalance leakage (docs/preregistered/PR-3.md §"D2
+        // operationalization", pinned 2026-07-17, commit 21060a0). READ-ONLY: reads the
+        // committed partials + ne_cache and recomputes a_p for NOTHING. All quantities in
+        // emitted density units. delta=(n+−n−)/|fam|; S=signed density; U=unsigned density
+        // (ε divided out: since ε=±1, num/ε = ε·num); D=ss_density (conjectured, X-indep);
+        // departure Δ=S−D; leakage L=delta·U; f=L/Δ at the trough bin b*. Fits nothing.
+        const char* part_path = opt(argc, argv, "--partials", "");
+        const char* ne_path = opt(argc, argv, "--ne", "");
+        const char* check_run = opt(argc, argv, "--check-run", "");  // committed ss_x*.txt for the S twin
+        if (!*part_path || !*ne_path) {
+            std::fprintf(stderr, "usage: at ss-leakage --partials <ss_partials_x*.txt> "
+                         "--ne <ne_cache_x*.txt> [--ladder \"4000,6000,...\"] [--check-run <ss_x*.txt>]\n");
+            return 2;
+        }
+        std::vector<double> ladder;
+        {
+            std::string ls = opt(argc, argv, "--ladder", "4000,6000,8000,10000,65536,131072");
+            std::stringstream ss(ls);
+            std::string tok;
+            while (std::getline(ss, tok, ','))
+                if (!tok.empty()) ladder.push_back(std::strtod(tok.c_str(), nullptr));
+        }
+
+        at::murm::NeCacheHeader nehdr;
+        std::vector<at::murm::NeRow> ne = at::murm::read_ne_cache(ne_path, nehdr);
+        std::map<std::pair<at::core::i64, at::core::i64>, int> eps_of;
+        for (const auto& r : ne) eps_of[{r.A, r.B}] = r.eps;
+
+        at::murm::SSPartialsMeta pmeta;
+        at::murm::SSPartials P = at::murm::read_ss_partials(part_path, pmeta);  // throws if incomplete (R3)
+        const int NB = P.NB;
+        const double du = P.du;
+        const std::size_t C = P.A.size();
+
+        std::vector<int> eps(C);
+        for (std::size_t c = 0; c < C; ++c) {
+            auto it = eps_of.find({P.A[c], P.B[c]});
+            if (it == eps_of.end()) {
+                std::fprintf(stderr, "at ss-leakage: curve (%lld,%lld) absent from ne_cache — "
+                             "mismatched provenance\n", (long long)P.A[c], (long long)P.B[c]);
+                return 4;
+            }
+            eps[c] = it->second;
+        }
+
+        const long long kDensB = 2000;  // same truncation the emitter uses (emit_sawin_sutherland.cpp)
+        std::vector<double> Dc(NB), umid(NB);
+        for (int b = 0; b < NB; ++b) {
+            umid[b] = (b + 0.5) * du;
+            Dc[b] = at::murm::ss_density(umid[b], kDensB, kDensB);
+        }
+
+        // Cumulative aggregation at a height cutoff Xr → (S, U, delta, |fam|, n±, trough bin).
+        struct Rung {
+            double X; at::core::i64 nfam, np, nm; double delta;
+            std::vector<double> S, U; int bstar; double trough_u, zero_u;
+        };
+        auto aggregate = [&](double Xr, bool cumulative, double Xlo) -> Rung {
+            const at::core::i64 Xi = (at::core::i64)Xr, Xloi = (at::core::i64)Xlo;
+            std::vector<double> accS(NB, 0.0), accU(NB, 0.0);
+            at::core::i64 nfam = 0, np = 0, nm = 0;
+            for (std::size_t c = 0; c < C; ++c) {
+                const at::core::i64 h = at::murm::naive_height(P.A[c], P.B[c]);
+                if (h > Xi) continue;
+                if (!cumulative && h <= Xloi) continue;  // annulus shell (Xlo, Xr]
+                nfam++;
+                if (eps[c] == 1) np++; else nm++;
+                for (int b = 0; b < NB; ++b) { accS[b] += P.num[c][b]; accU[b] += eps[c] * P.num[c][b]; }
+            }
+            Rung r{Xr, nfam, np, nm, 0.0, std::vector<double>(NB, 0.0), std::vector<double>(NB, 0.0), 0, 0, 0};
+            if (nfam == 0) return r;
+            r.delta = (double)(np - nm) / (double)nfam;
+            const double denom = du * (double)nfam;
+            for (int b = 0; b < NB; ++b) { r.S[b] = accS[b] / denom; r.U[b] = accU[b] / denom; }
+            const at::murm::SSShape sh = at::murm::extract_shape(umid, r.S);
+            r.trough_u = sh.trough_u; r.zero_u = sh.zero_u;
+            int bstar = (int)std::lround(sh.trough_u / du - 0.5);
+            r.bstar = bstar < 0 ? 0 : (bstar >= NB ? NB - 1 : bstar);
+            return r;
+        };
+
+        std::fprintf(stderr, "at ss-leakage: PR-3 D2 — partials %s (%zu curves, NB=%d, du=%.4f); "
+                     "ne %s; D=ss_density(kDensB=%lld)\n", part_path, C, NB, du, ne_path, kDensB);
+
+        // Optional free consistency twin: my S at X_confirm == committed ss_x density column.
+        if (*check_run) {
+            at::murm::SSRun run = at::murm::read_ss_run(check_run);
+            Rung rc = aggregate(run.X_confirm, true, 0);
+            double maxdev = 0;
+            for (int b = 0; b < NB && b < (int)run.confirm.density.size(); ++b)
+                maxdev = std::max(maxdev, std::fabs(rc.S[b] - run.confirm.density[b]));
+            // The committed run prints density at default ostream precision (6 sig figs,
+            // ss_run_io.cpp), so the floor is ~5e-6 for magnitudes ~few; a real curve-order
+            // or ε-join bug would be O(density)~O(1). 1e-3 cleanly separates the two.
+            const double kSTwinTol = 1e-3;
+            std::fprintf(stderr, "  S-twin vs %s (X=%.0f): max|ΔS|=%.3e (print floor ~5e-6)  -> %s\n",
+                         check_run, run.X_confirm, maxdev, maxdev < kSTwinTol ? "OK" : "MISMATCH");
+            if (maxdev >= kSTwinTol) { std::fprintf(stderr, "  aborting: S aggregation does not reproduce the committed run\n"); return 5; }
+        }
+
+        std::printf("# PR-3 D2 leakage table (docs/preregistered/PR-3.md). Densities in emitted units.\n");
+        std::printf("# CUMULATIVE (nested; H<=X). f = L(u*)/departure(u*) at trough bin u*.\n");
+        std::printf("# X n_curves n+ n- delta trough_u S* U* L*=d.U* D* dep*=S*-D* f sign\n");
+        std::vector<Rung> rungs;
+        for (double Xr : ladder) {
+            Rung r = aggregate(Xr, true, 0);
+            if (r.nfam == 0) continue;
+            rungs.push_back(r);
+            const int b = r.bstar;
+            const double L = r.delta * r.U[b], dep = r.S[b] - Dc[b], f = dep != 0 ? L / dep : 0.0;
+            const bool same = dep != 0 && L != 0 && ((L < 0) == (dep < 0));
+            std::printf("%.0f %lld %lld %lld %.6f %.4f  %.5f %.5f %.6f  %.5f %.6f  %.4f %s\n",
+                        Xr, (long long)r.nfam, (long long)r.np, (long long)r.nm, r.delta, r.trough_u,
+                        r.S[b], r.U[b], L, Dc[b], dep, f, same ? "same" : "OPP");
+        }
+
+        std::printf("# ANNULUS increments (quasi-independent shells H in (X_{k-1},X_k]).\n");
+        std::printf("# shell n_curves n+ n- delta S* U* L*=d.U* dep*=S*-D* f sign  (u* fixed = top-rung trough)\n");
+        const int bref = rungs.empty() ? 0 : rungs.back().bstar;
+        double Xprev = 0;
+        for (double Xr : ladder) {
+            Rung r = aggregate(Xr, false, Xprev);
+            if (r.nfam > 0) {
+                const int b = bref;
+                const double L = r.delta * r.U[b], dep = r.S[b] - Dc[b], f = dep != 0 ? L / dep : 0.0;
+                const bool same = dep != 0 && L != 0 && ((L < 0) == (dep < 0));
+                std::printf("(%.0f,%.0f] %lld %lld %lld %.6f  %.5f %.5f %.6f  %.6f  %.4f %s\n",
+                            Xprev, Xr, (long long)r.nfam, (long long)r.np, (long long)r.nm, r.delta,
+                            r.S[b], r.U[b], L, dep, f, same ? "same" : "OPP");
+            }
+            Xprev = Xr;
+        }
+
+        // Descending-branch profile for the top rung (u > zero_u): L(u) vs departure(u).
+        if (!rungs.empty()) {
+            const Rung& r = rungs.back();
+            std::printf("# DESCENDING-BRANCH profile, top rung X=%.0f (u>zero_u=%.4f): L(u)=d.U(u) vs dep(u)=S-D\n", r.X, r.zero_u);
+            std::printf("# u S U D dep=S-D L=d.U f=L/dep\n");
+            for (int b = 0; b < NB; ++b) {
+                if (umid[b] <= r.zero_u) continue;
+                const double L = r.delta * r.U[b], dep = r.S[b] - Dc[b], f = dep != 0 ? L / dep : 0.0;
+                std::printf("%.4f  %.5f %.5f %.5f  %.6f %.6f  %.4f\n", umid[b], r.S[b], r.U[b], Dc[b], dep, L, f);
+            }
+        }
+        return 0;
+    }
+
     std::fprintf(stderr, "at: unknown command '%s'\n\n", argv[1]);
     print_usage(stderr);
     return 2;
