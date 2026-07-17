@@ -341,6 +341,8 @@ int main(int argc, char** argv) {
 
         at::murm::SSRun run;
         run.generator_hash = at::murm::ss_generator_hash();
+        run.ap_provider = use_m0b ? "m0b" : "fast";       // R1: provider provenance
+        if (use_m0b) run.provider_hash = at::murm::m0b_provider_hash();
         run.du = 0.025;                                   // committed bin width (§R0)
         run.tol = 0.06;                                   // a-priori empirical tolerance (§R0c)
         run.r2_hump = 0.475; run.r2_zero = 0.645; run.r2_trough = 0.805;  // committed R2 (formula side)
@@ -447,6 +449,8 @@ int main(int argc, char** argv) {
 
             at::murm::SSPartialsMeta meta;
             meta.generator_hash = at::murm::ss_generator_hash();
+            meta.ap_provider = use_m0b ? "m0b" : "fast";       // R1: provider provenance
+            if (use_m0b) meta.provider_hash = at::murm::m0b_provider_hash();
             meta.X = run.X_confirm; meta.du = run.du; meta.NB = NB;
             meta.threads = threads; meta.ne_cache = cache;
 

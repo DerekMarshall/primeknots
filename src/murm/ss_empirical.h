@@ -82,6 +82,8 @@ struct SSScaleShape { double X = 0; i64 n_curves = 0; SSShape shape{}; };
 struct SSRun {
     uint32_t format_version = kSSRunFormatVersion;
     std::string generator_hash;
+    std::string ap_provider = "fast";                // a_p algorithm: "fast" (ap_fast) | "m0b" (R1)
+    std::string provider_hash;                        // sha256 of the m0b provider TU; set only when m0b
     double X_confirm = 0, du = 0, tol = 0;           // committed confirmation scale + a-priori τ (§R0c)
     double r2_hump = 0, r2_zero = 0, r2_trough = 0;  // committed R2 targets (formula side)
     std::vector<double> ladder;                      // convergence scales (ascending)
@@ -90,6 +92,9 @@ struct SSRun {
 };
 
 const char* ss_generator_hash();
+// sha256 of murm/ss_empirical_m0b.cpp (the M0b a_p-provider TU). Stamped into a run's
+// provider_hash when --ap m0b, so an M0b-produced file pins the exact provider source (R1).
+const char* m0b_provider_hash();
 void write_ss_run(const std::string& path, const SSRun& run);
 SSRun read_ss_run(const std::string& path);          // throws on format/generator-hash mismatch
 
@@ -106,6 +111,8 @@ constexpr uint32_t kSSPartialsFormatVersion = 1;
 struct SSPartialsMeta {
     uint32_t format_version = kSSPartialsFormatVersion;
     std::string generator_hash;   // SS (statistic) hash — sha256 of murm/ss_empirical.cpp
+    std::string ap_provider = "fast";   // a_p algorithm: "fast" | "m0b" (R1)
+    std::string provider_hash;          // sha256 of the m0b provider TU; set only when m0b
     double X = 0;                 // family cutoff H(E) ≤ X
     double du = 0;
     int NB = 0;

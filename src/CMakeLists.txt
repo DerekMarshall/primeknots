@@ -84,9 +84,13 @@ set_source_files_properties(murm/rank_cache.cpp PROPERTIES
 # (murm/ss_empirical.cpp — the numbers in the committed run). Applied to the IO TU
 # (ss_run_io.cpp), so editing the format/reader/diagnostic does not invalidate a
 # committed run; only a change to the statistic itself does.
+# M0B_PROVIDER_HASH (wiring R1): sha256 of the M0b a_p-provider TU, stamped on
+# --ap m0b runs so an M0b-produced file names its a_p algorithm AND pins the exact
+# provider source (copy-drift is caught by the R2 twin; provenance by this hash).
 file(SHA256 ${CMAKE_CURRENT_SOURCE_DIR}/murm/ss_empirical.cpp AT_SS_GENERATOR_HASH)
+file(SHA256 ${CMAKE_CURRENT_SOURCE_DIR}/murm/ss_empirical_m0b.cpp AT_M0B_PROVIDER_HASH)
 set_source_files_properties(murm/ss_run_io.cpp PROPERTIES
-  COMPILE_DEFINITIONS SS_GENERATOR_HASH="${AT_SS_GENERATOR_HASH}")
+  COMPILE_DEFINITIONS "SS_GENERATOR_HASH=\"${AT_SS_GENERATOR_HASH}\";M0B_PROVIDER_HASH=\"${AT_M0B_PROVIDER_HASH}\"")
 
 add_library(at_linking STATIC
   linking/f2matrix.cpp
