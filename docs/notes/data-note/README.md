@@ -32,9 +32,11 @@ The Wilkes and Poonen guides are the mathematical-writing baseline (words over s
 once, paragraphs for proofs). The Wikipedia field guide is the negative checklist: the tells to
 remove.
 
-**Build (to be wired, [PENDING]).** Like the deck: Markdown source → static HTML for Pages, PDF
-as a build product. The render step is not yet scripted; when it is, it goes here and mirrors the
-deck's pipeline. Until then `data-note.md` is the reviewable source of record.
+**Build (rough render wired).** `render.sh` strips the `claim:`/editorial HTML comments and runs
+pandoc → standalone styled HTML (`data-note.html`), the marker-free artifact a reader sees.
+Requires `pandoc` + `python3`. The HTML is a build product, committed so a reviewer can open it
+directly; regenerate with `./render.sh`. A PDF build product and the full GitHub Pages pipeline are
+Phase-3 polish (no LaTeX engine is installed here yet).
 
 **Reproduce the inputs** (no live oracle needed — committed caches):
 ```

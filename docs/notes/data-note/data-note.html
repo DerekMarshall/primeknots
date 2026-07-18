@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>A pre-registered replication of the Sawin–Sutherland height-ordered murmuration</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    body{max-width:820px;margin:2rem auto;padding:0 1.1rem;
+         font-family:-apple-system,BlinkMacSystemFont,system-ui,"Segoe UI",sans-serif;
+         line-height:1.55;color:#1b1b1b}
+    h1{font-size:1.7rem;line-height:1.25} h2{margin-top:2rem;border-bottom:1px solid #e3e3e3;padding-bottom:.2rem}
+    h3{margin-top:1.4rem}
+    code{background:#f3f3f3;padding:.1em .3em;border-radius:3px;font-size:.92em}
+    pre{background:#f7f7f7;padding:.8rem 1rem;overflow-x:auto;border-radius:6px;border:1px solid #ececec}
+    pre code{background:none;padding:0}
+    table{border-collapse:collapse;margin:1.1rem 0;font-size:.95em;display:block;overflow-x:auto}
+    th,td{border:1px solid #d0d0d0;padding:.35em .7em;text-align:left}
+    th{background:#f5f5f5}
+    blockquote{border-left:3px solid #c9c9c9;margin:1.1rem 0;padding:.2rem 1rem;color:#3a3a3a;background:#fafafa}
+    a{color:#0b62c4}
+    hr{border:none;border-top:1px solid #e3e3e3;margin:2rem 0}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">A pre-registered replication of the Sawin–Sutherland
+height-ordered murmuration</h1>
+</header>
+<p>marker with a row in CLAIMS-N.md. –&gt;</p>
+<h1
+id="a-pre-registered-replication-of-the-sawinsutherland-height-ordered-murmuration">A
+pre-registered replication of the Sawin–Sutherland height-ordered
+murmuration</h1>
+<p><strong>Author:</strong> Derek Marshall (ORCID <a
+href="https://orcid.org/0009-0001-8101-3908">0009-0001-8101-3908</a>).</p>
+<p><strong>Venue:</strong> repo publication (GitHub Pages), PDF build
+product.</p>
+<blockquote>
+<p><strong>Methods disclosure.</strong> The research design, the
+mathematical decisions, the pre-registrations, and all review are the
+author’s. The C++ implementation, the documentation drafts, and the
+execution of the analyses were done by an AI assistant (Anthropic’s
+Claude) under the author’s direction, following the repository’s working
+rules: dual independent implementations, oracles as referees only,
+decision rules committed before the data they judge, no constant taken
+from memory. The author verified the artifacts and is responsible for
+this record.</p>
+</blockquote>
+<hr />
+<h2 id="abstract">Abstract</h2>
+<p>We re-derive the Sawin–Sutherland height-ordered elliptic-curve
+murmuration from scratch and probe it against their conjectured
+Bessel-<code>J₁</code> density. Over a four-rung height ladder,
+<code>X = 10⁴, 2¹⁶, 2¹⁷, 2¹⁸</code>, two calibrated shape invariants
+(the positive hump and the first post-hump zero) agree with the
+conjectured density within an a-priori tolerance, while the trough sits
+at a fixed displacement that exceeds the tolerance at every rung. A
+pre-registered decision rule returns H0: the trough deviation is
+persistent across the ladder, a finite-range statement over
+<code>X ≤ 2¹⁸</code> and not a claim about the large-<code>X</code>
+limit. Two pre-registered follow-ups constrain candidate mechanisms:
+excising the analytic-rank-2 subpopulation does not move the trough, so
+the deficit is not carried by rank-2 over-representation, and leakage of
+the parity-independent unsigned bias through the measured root-number
+imbalance is bounded to <code>|f| ≤ 2%</code> with unstable sign.
+Neither explains the deficit, which we leave open. Every result is
+numerical over a stated finite range, twinned or oracle-refereed, and
+cross-checked for cross-platform reproducibility; the note proves
+nothing.</p>
+<hr />
+<h2 id="introduction">1. Introduction</h2>
+<p>Murmurations are an oscillating correlation between the Frobenius
+traces <code>a_p(E)</code> of a family of elliptic curves and the prime
+<code>p</code>. He–Lee–Oliver–Pozdnyakov discovered them in 2022; the
+phenomenon has since been observed in several arithmetic settings, and
+proved in the first of them, Zubrilina’s weight-2 density. The companion
+explainer (E1) gives a fuller account.</p>
+<p>Sawin–Sutherland [SS25] order the family by naive height rather than
+by conductor and propose an explicit candidate for its limiting density.
+Two of their statements must be kept apart; the distinction fixes what
+this note claims. The first is a conjecture, the second a theorem.</p>
+<ul>
+<li><p><strong>Conjecture 1 (the density).</strong> For
+<code>0 &lt; C₁ &lt; C₂</code>, [SS25] conjecture that the
+<code>X → ∞</code> limit of their statistic (1) equals
+<code>∫_{C₁}^{C₂} D(u) du</code>, where the murmuration density is the
+Bessel-<code>J₁</code> double sum of their equation (2):</p>
+<pre><code>D(u) = 2π√u · Σ_{q square-free} Σ_{m≥1}
+           [ μ(gcd(m,q)) / (q · m · φ(q/gcd(m,q))) ] · J₁(4π√u · m/q)
+           · ∏_{p|m, p∤q} ℓ̂_{p, 2v_p(m)} · ∏_{p|q} ℓ_{p, v_p(m)},      u = p/N,</code></pre>
+<p>Here <code>J₁</code> is the Bessel function of the first kind,
+<code>v_p</code> the <code>p</code>-adic valuation, <code>μ</code> the
+Möbius function, and <code>φ</code> Euler’s totient; the local factors
+<code>ℓ_{p,ν}</code> and <code>ℓ̂_{p,ν}</code> are those of their Lemmas
+3 and 4.</p></li>
+<li><p><strong>Theorem 2 (the proven variant).</strong> [SS25] prove a
+variant in which the prime sum is replaced by a sum over integers with
+no prime factor <code>≤ P</code>, against a smooth weight; the same
+integrand appears, and the <code>P → ∞</code> limit is established. This
+smoothed variant motivates Conjecture 1 without being the prime-sum
+murmuration.</p></li>
+</ul>
+<p>The explicit density of the height-ordered prime-sum murmuration is
+therefore conjectural. The proven Theorem 2 is a rigorous backdrop, not
+the object our empirical curve is compared against. This note replicates
+and probes Conjecture 1; it proves nothing. Throughout, “verified” means
+numerically, over a stated finite range, cross-checked by two
+independent implementations, by a published anchor value, or by an
+external oracle. It never means a formal proof.</p>
+<p><strong>What this note tests.</strong> We compute statistic (1) from
+scratch over the height family up to
+<code>X = 10⁴, 2¹⁶, 2¹⁷, 2¹⁸</code>, bin it by <code>u = p/N(E)</code>,
+and compare the empirical density to the conjectured <code>D(u)</code>
+through three shape invariants fixed in advance: the positive hump, the
+first zero crossing after it, and the trough (§3). Where the empirical
+curve departs from <code>D(u)</code>, two pre-registered follow-ups
+constrain candidate mechanisms (§4).</p>
+<p><strong>What this note does not test.</strong> It makes no asymptotic
+(<code>X → ∞</code>) claim. Our computable range, <code>X ≤ 2¹⁸</code>,
+sits at the bottom of the window over which [SS25] observe the bias and
+expect it to decay, naive height <code>2¹⁶</code> to <code>2²⁸</code>,
+reached only through sub-linear point counting. Every “persistent”
+statement below concerns that finite range, not a limit. The discussion
+(§6) gives a documented precedent in which a small-conductor picture
+does not survive to the asymptotic one; that is why the distinction is
+not pedantic.</p>
+<hr />
+<h2 id="methods">2. Methods</h2>
+<p><strong>Family and ordering.</strong> We use the short Weierstrass
+family <code>E_{A,B}: y² = x³ + Ax + B</code> with integers
+<code>A, B</code>, <em>reduced</em> (no prime <code>p</code> with
+<code>p⁴|A</code> and <code>p⁶|B</code>, the unique minimal
+representative of each isomorphism class) and <em>nonsingular</em>
+(<code>4A³ + 27B² ≠ 0</code>), ordered by the naive height
+<code>H(E) := max(4|A|³, 27B²)</code>, quoted verbatim from [SS25] p.1.
+The family <code>{E_{A,B} : H(E) ≤ X}</code> is enumerated directly over
+the box <code>|A| ≤ (X/4)^{1/3}</code>, <code>|B| ≤ (X/27)^{1/2}</code>;
+its cardinality is certified by a second, independent sieve algorithm
+required to agree with the direct count at every cutoff.</p>
+<p><strong>The two objects, side by side.</strong> The note compares one
+<em>computed</em> quantity with one <em>conjectured</em> one. The
+distinction (§1) governs what the note claims.</p>
+<p><em>Empirical: a binned estimator of [SS25] statistic (1).</em> For a
+prime-ratio window <code>(C₁, C₂)</code>, [SS25]’s statistic (1) is</p>
+<pre><code>E_{E: H(E)≤X} [ ( log N(E)^{(C₁+C₂)/2} / N(E) ) · Σ_{p prime, p/N(E)∈(C₁,C₂)} ε(E)·a_p(E) ].</code></pre>
+<p>We evaluate it as a density on (0,1]: partition into 40 bins of width
+<code>Δu = 0.025</code>, take each bin <code>b = (bΔu, (b+1)Δu]</code>
+as the window (so its midpoint
+<code>(C₁+C₂)/2 = u_mid := (b+½)·Δu</code>), and divide by
+<code>Δu</code>:</p>
+<pre><code>D̂(u_b) = (1 / (Δu · |fam|)) · Σ_{(E,p): p/N(E)∈bin_b} (u_mid · ln N(E) / N(E)) · ε(E) · a_p(E),</code></pre>
+<p>over good primes <code>p &gt; 3</code> with
+<code>p ∤ (4A³ + 27B²)</code> and <code>p ≤ N(E)</code> (so
+<code>u ≤ 1</code>). The <code>u_mid</code> factor is eq (1)’s
+<code>(C₁+C₂)/2</code> normalization exponent evaluated at the bin
+midpoint, not a per-pair weight, so <code>D̂</code> is a binned density
+estimator of statistic (1), one bin per window. For this family the
+reduced short model is <code>p</code>-minimal at every
+<code>p &gt; 3</code>, so <code>p ∤ Δ(model) ⟺ p ∤ N(E)</code> (good
+reduction), and this exact good-prime test keeps <code>a_p</code>’s
+domain computed-only.</p>
+<p><em>Conjectured: [SS25] eq. (2) / Conjecture 1.</em> [SS25]
+conjecture that the <code>X→∞</code> limit of (1) equals
+<code>∫ D(u) du</code>, where <code>D(u)</code> is the
+Bessel-<code>J₁</code> density transcribed verbatim in §1. eq (1) is a
+definition we evaluate; eq (2)’s equality to the limit is the
+<em>conjecture</em>. <code>D̂</code> is compared to <code>D</code>; the
+note reports empirical agreement, never a proof (§1).</p>
+<p><strong>Provenance: computed vs. oracle.</strong> The Frobenius trace
+<code>a_p = p + 1 − #E(𝔽_p)</code> is computed from scratch. The
+conductor <code>N(E)</code> and root number <code>ε(E)</code> are
+oracle-provenance input supplied by PARI/GP, trusted input <em>to</em>
+the statistic and not a referee <em>of</em> our numbers. Every emitted
+column is labelled with its provenance. The oracle <code>N/ε</code> are
+certified before use by a dual-oracle overlap check against
+LMFDB/Cremona data.</p>
+<p><strong>Twin / anchor / oracle architecture.</strong> Each function
+the result depends on has two independent implementations (a different
+algorithm, never a refactor of itself) or an external oracle check.
+<code>a_p</code> is computed by a fast quadratic-residue-table character
+sum (<code>ap_fast</code>) twinned against a frozen
+modular-exponentiation referee (<code>ap_charsum</code>); the two agree
+exactly on a certified sample. Published values are pinned as anchor
+tests; oracles (PARI, LMFDB, Odlyzko) referee and are never called from
+the computational core; an absent oracle skips visibly rather than
+passing silently. The full method is described in the companion method
+explainer (E3).</p>
+<p><code>a_p</code> is computed by three independent algorithms: the
+frozen <code>ap_charsum</code> referee, the fast QR-table
+<code>ap_fast</code>, and Shanks–Mestre point counting. They agree
+exactly over the full 2¹⁶ and 2¹⁷ <code>a_p</code> grids (112 M and 385
+M values, 0 mismatches), at about 145× less CPU aggregated over the 2¹⁶
+grid (O(p^{1/4}) point counting vs. O(p) character sum). At 2¹⁸ the
+equality is verified on a tail-weighted 27.9 M-value sample against the
+O(p) referee and on a PARI <code>ellap</code> spot (204 pairs, p up to
+6.9 M), the pre-registered production-capability gate. This is a
+cross-algorithm check (Shanks–Mestre vs. the charsum referee). Since
+<code>a_p</code> is a platform-independent integer, it is verified
+same-platform by design, not as a two-platform claim.</p>
+<p><strong>Pre-registration.</strong> Every decision rule, tolerance,
+and threshold is committed to version control <em>before</em> the data
+it judges exists (commit-before-run), cited here as (pre-registered →
+read) commit pairs. PR-1, the ladder decision rule and
+finite-<code>X</code>/persistent fork: pre-registered
+<code>dd6beb0</code>, with the 2¹⁸ Rung-3 clause <code>4a17ebe</code>
+committed <em>before the 2¹⁷ rung was read</em>, read
+<code>8f64ba1</code> (verdict H0, ≤2¹⁸). PR-2, the analytic-rank
+contrast threshold: pre-registered <code>f7415a4</code> <em>before any
+split curve</em>, read <code>876999f</code> (null). PR-3, the leakage
+estimator: pre-registered <code>21060a0</code>, read
+<code>0d21b62</code>. Every exploratory statistic looked at is recorded
+in a looks ledger.</p>
+<p><strong>The conjectured density.</strong> <code>D(u)</code> is
+evaluated independently of the empirical statistic (a separate
+translation unit, authored without reference to the empirical side) as
+the Bessel-<code>J₁</code> double sum of Conjecture 1 with the local
+factors of [SS25] Lemmas 3–4, an in-house <code>J₁</code>, and
+<em>generated</em> constants (never typed), truncated at
+<code>q, m ≤ 2000</code>. Because every value is built from IEEE
+operations, generated constants, and the in-house Bessel, the emitted
+curve is byte-portable across compilers and platforms, a property we
+verify (§5).</p>
+<hr />
+<h2 id="results">3. Results</h2>
+<p><strong>The ladder.</strong> Over four height cutoffs the two
+calibrated shape invariants (the positive hump and the first post-hump
+zero) agree with the conjectured density <code>D(u)</code> within the
+a-priori tolerance <code>τ = 0.06</code>, while the trough sits at
+<code>u = 0.8875</code> at every rung, a displacement
+<code>d = |0.8875 − 0.805| = 0.0825</code> that is frozen across the
+ladder. All values are from the committed
+<code>data/m5/ss_x{65536,131072,262144}.txt</code> runs and the M4 run
+<code>data/m4/ss_empirical.txt</code>:</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>X</th>
+<th>|fam|</th>
+<th>hump u (dev)</th>
+<th>first zero u (dev)</th>
+<th>trough u (dev)</th>
+<th>trough v</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10⁴</td>
+<td>1048</td>
+<td>0.4625 (0.0125)</td>
+<td>0.672894 (0.0279)</td>
+<td>0.8875 (0.0825)</td>
+<td>−3.47</td>
+</tr>
+<tr>
+<td>2¹⁶</td>
+<td>5042</td>
+<td>0.4625 (0.0125)</td>
+<td>0.670328 (0.0253)</td>
+<td>0.8875 (0.0825)</td>
+<td>−3.72</td>
+</tr>
+<tr>
+<td>2¹⁷</td>
+<td>9014</td>
+<td>0.4625 (0.0125)</td>
+<td>0.673202 (0.0282)</td>
+<td>0.8875 (0.0825)</td>
+<td>−3.65</td>
+</tr>
+<tr>
+<td>2¹⁸</td>
+<td>15936</td>
+<td>0.4625 (0.0125)</td>
+<td>0.671945 (0.0269)</td>
+<td>0.8875 (0.0825)</td>
+<td>−3.58</td>
+</tr>
+</tbody>
+</table>
+<p>Hump dev 0.0125 and first-zero dev ≤ 0.0282 are both within
+<code>τ = 0.06</code> (agreement with <code>D(u)</code>). The trough dev
+0.0825 exceeds <code>τ</code> at every rung, a persistent open
+deviation. (Fig. 1, the empirical-vs-<code>D(u)</code> overlay, is
+regenerated from these committed runs by
+<code>figures/make_figures.py</code>.)</p>
+<p><strong>Verdict: H0 (persistent, ≤ 2¹⁸).</strong> The decision rule
+was pre-registered before the data (PR-1, <code>dd6beb0</code>; the 2¹⁸
+Rung-3 clause <code>4a17ebe</code> committed <em>before the 2¹⁷ rung was
+read</em>). With <code>d(X) = |trough_u − 0.805|</code> and
+<code>Δu = 0.025</code>, the Rung-3 clause reads, verbatim:</p>
+<blockquote>
+<p><strong>H1 (finite-X, ≤2¹⁸)</strong> iff the trough recovers
+monotonically by ≥ Δu at <strong>both</strong> steps: d(2¹⁷) ≤ d(2¹⁶) −
+Δu <strong>and</strong> d(2¹⁸) ≤ d(2¹⁷) − Δu … <strong>H0 (persistent,
+≤2¹⁸)</strong> iff the trough stays flat across the ladder (no ≥ Δu
+recovery at either step).</p>
+</blockquote>
+<p>Observed <code>d = 0.0825</code> at 2¹⁶, 2¹⁷, and 2¹⁸: flat, with no
+recovery at either step, hence H0 (persistent, ≤ 2¹⁸), read at
+<code>8f64ba1</code>. This is the first rung at which the full-ladder
+verdict PR-1’s R0 clause reserved could be pronounced. It is a
+finite-range statement (≤ 2¹⁸), explicitly not the <code>X→∞</code>
+verdict [SS25] describe. 2¹⁸ is the bottom of their 2¹⁶–2²⁸ decay
+window.</p>
+<p><strong>Supporting register (not the gate).</strong> (i) The
+first-zero series <code>0.672894 → 0.670328 → 0.673202 → 0.671945</code>
+is flat near about 0.671, non-monotone, converging to neither the 0.645
+target nor away, direction only. (ii) The trough <em>depth</em> eases
+monotonically across the three extension rungs
+<code>−3.715 → −3.652 → −3.580</code> even as its <em>position</em>
+holds at 0.8875. The 10⁴ depth (−3.47) is shallower than 2¹⁶, so this
+easing is a three-rung observation, not a monotone four-rung trend. It
+is a hint of amplitude decay consistent with the expected large-X
+behaviour, but the committed rule gates on position, so it does not move
+the verdict; logged as an observation, not a claim.</p>
+<h2 id="mechanism-constraints">4. Mechanism constraints</h2>
+<p>Two pre-registered follow-ups constrain candidate mechanisms for the
+trough deviation. Both are bounds/nulls; neither explains it.</p>
+<p><strong>PR-2: analytic-rank split (null).</strong> Pre-registered
+<code>f7415a4</code> (the contrast threshold fixed before any curve was
+split) → read <code>876999f</code>. Excising the analytic-rank-2
+subpopulation leaves the trough position unchanged. The pre-committed
+recovery gate (leave-out trough moves &lt; 1 bin, on the full family and
+on a virgin conductor annulus) is not met, so the deficit is not carried
+by rank-2 over-representation. A secondary contrast (rank-2 curves carry
+an enhanced downward bias) is significant but too dilute to move the
+location gate; the two gate outcomes are coherent. <em>Wachs clause
+(verbatim):</em> this design does not distinguish rank per se from BSD
+invariants (Tamagawa product, |Ш|, real period) correlated with rank;
+“carried by” is a statement about the subpopulation, not the
+mechanism.</p>
+<p><strong>PR-3: root-number-imbalance leakage (bounded out).</strong>
+Pre-registered <code>21060a0</code> → read <code>0d21b62</code> (the 2¹⁸
+row appended with the Rung-3 run, <code>8f64ba1</code>). With
+<code>δ = (n₊−n₋)/|fam|</code> the root-number imbalance, <code>U</code>
+the unsigned bias, leakage <code>L = δ·U</code>, and
+<code>f = L / departure</code> at the trough:</p>
+<table>
+<thead>
+<tr>
+<th>X</th>
+<th>δ</th>
+<th>leakage L(u*)</th>
+<th>f = L/departure</th>
+<th>sign vs. deficit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10⁴</td>
+<td>−0.0534</td>
+<td>−0.0184</td>
+<td>+0.0046</td>
+<td>same</td>
+</tr>
+<tr>
+<td>2¹⁶</td>
+<td>−0.0115</td>
+<td>+0.0037</td>
+<td>−0.0009</td>
+<td>opposite</td>
+</tr>
+<tr>
+<td>2¹⁷</td>
+<td>−0.0078</td>
+<td>+0.0025</td>
+<td>−0.0006</td>
+<td>opposite</td>
+</tr>
+<tr>
+<td>2¹⁸</td>
+<td>−0.0103</td>
+<td>+0.0032</td>
+<td>−0.0008</td>
+<td>opposite</td>
+</tr>
+</tbody>
+</table>
+<p><code>|f| ≤ 2%</code> at every rung, it is opposite-signed (points
+<em>against</em> the deficit) at the three reliable rungs, and it does
+not grow with X. Leakage of Sutherland’s parity-independent bias through
+the measured imbalance is bounded out as a material contributor
+(<code>f ≈ 1</code> would require the unsigned bias about 3 orders
+larger than measured). A citable null; a bound, not an explanation.
+<em>Sutherland-bias attribution (verbatim):</em> the parity-independent
+unsigned bias, the named congruence classes, and its cancellation in the
+signed average are Sutherland’s (Sept-2023 talk); PR-3 tests only the
+leakage <em>relationship</em>, which is PR-3’s hypothesis, not
+Sutherland’s claim.</p>
+<p><strong>D1 (congruence stratification): died, unrun.</strong> Per
+PR-3’s pre-committed trigger, D2 bounding the mechanism out (small
+<code>f</code>, wrong sign, no structured residual at the named classes)
+closes the prime-class mechanism without the expensive stratified pass.
+D1’s own pre-registration was never written (hypotheses die in
+public).</p>
+<p>The tail deficit remains unexplained by either constrained mechanism,
+stated as such and not smoothed. What could carry it is future work
+(§6).</p>
+<h2 id="reproducibility">5. Reproducibility</h2>
+<p><strong>A byte-identical published curve.</strong> The emitted
+density JSON is byte-for-byte identical across compilers and platforms.
+The density evaluator and its emitter
+(<code>src/murm/ss_density.cpp</code>,
+<code>src/emit/emit_sawin_sutherland.cpp</code>) are compiled with
+fused-multiply-add contraction disabled
+(<code>-ffp-contract=off</code>), so their IEEE operations round the
+same way under GCC and clang. A freshness check re-emits the snapshot at
+the current commit and requires byte-equality with the committed file,
+on CI’s GCC as well as a local build.</p>
+<p><strong>Integer <code>a_p</code> is platform-independent.</strong> A
+pre-registered, tail-weighted sample of 79,268 (curve, prime) pairs,
+with primes up to about 4.15 million, was computed by the frozen referee
+<code>ap_charsum</code> on the laptop (<code>g++-16</code>, macOS) and
+on the compute box (<code>clang 21.1.8</code>, FreeBSD 15.1). The two
+outputs are byte-identical, with zero mismatches. This sample
+corroborates on the 2¹⁷ family; the primary evidence that
+<code>a_p</code> is platform-independent is the exact agreement of the
+three <code>a_p</code> algorithms over the full 2¹⁶ and 2¹⁷ grids
+together with the byte-identical emit above.</p>
+<p><strong>The raw partials are the deliberate exception (the
+contrast).</strong> Contraction is off for the density path but left at
+the compiler default for the empirical partial-sum generator
+(<code>src/murm/ss_empirical.cpp</code> is outside the
+<code>-ffp-contract=off</code> list). So the raw per-curve partial sums
+drift across toolchains while the emitted density does not. Measured on
+the shared 8640-curve 2¹⁷ set, the drift has maximum size
+<code>1.887 × 10⁻¹⁵</code>, the last bit of a value near one. It does
+not reach the published curve, and byte-identity of the emitted density
+is established empirically by the freshness check above, not by rounding
+alone. The precision gap explains it: the emitter writes each value to
+twelve significant figures (<code>std::setprecision(12)</code>,
+<code>src/emit/emit_sawin_sutherland.cpp:28</code>), roughly three
+orders of magnitude coarser than the drift at the density’s order-one
+scale, so a difference this small falls below the last written figure
+except at a rounding boundary, which the freshness check would
+catch.</p>
+<p><strong>Errata and inputs.</strong> Corrections are logged as
+numbered errata entries in the research spec and the pinning notes, not
+edited away. Everything the note’s numbers depend on is committed,
+including the from-scratch code, the oracle
+<code>N</code>/<code>ε</code> caches, the per-curve partials, and the
+<code>at ap-sample</code> subcommand. The one input that cannot be
+regenerated byte-for-byte is the abandoned laptop 2¹⁷ partials
+checkpoint, since it is itself the float-drift artifact; it is
+force-committed through a scoped <code>.gitignore</code> exception
+(<code>data/m5/ss_partials_x131072.txt.ckpt</code>), not left to
+regeneration. The large <code>a_p</code> caches (regenerable by
+<code>at ap-cache</code>) and the cross-platform sample outputs
+(regenerable by <code>at ap-sample</code>) are gitignored and pinned by
+SHA-256 in the reproducibility spec
+(<code>docs/notes/libm-partial-diff-spec.md</code>).</p>
+<p><strong>How to cite and verify.</strong> <em>(Release tag and DOI are
+placeholders, minted after the author’s full review.)</em> Repository:
+<a href="https://github.com/DerekMarshall/primeknots"
+class="uri">https://github.com/DerekMarshall/primeknots</a>, release tag
+<code>[PLACEHOLDER: v1.0.0]</code>, at its tagged commit. Zenodo DOI
+<code>[PLACEHOLDER]</code>. To reproduce the results this note reports,
+from the tagged commit:</p>
+<pre><code>cmake -B build -DCMAKE_BUILD_TYPE=Release &amp;&amp; cmake --build build -j
+ctest --test-dir build -L m5                          # the M5 verification suites
+./build/bin/at emit --stage m5      --out viz/data/   # empirical-vs-D(u) overlay JSON
+./build/bin/at emit --stage m5split --out viz/data/   # rank-split overlay JSON
+python3 docs/notes/data-note/figures/make_figures.py  # Fig. 1 and the rank-split figure</code></pre>
+<p>The cross-platform <code>a_p</code> sample is reproduced by
+<code>./build/bin/at ap-sample --X 131072 --cache data/m5/ne_cache_x131072.txt</code>
+on two toolchains; its output SHA-256 is pinned in the reproducibility
+spec.</p>
+<h2 id="discussion">6. Discussion</h2>
+<p><strong>What could carry the tail deficit.</strong> Neither
+constrained mechanism (§4) explains the trough deficit; both are bounds
+or nulls. A candidate the design has not isolated is the family of BSD
+invariants correlated with analytic rank (the Tamagawa product, the
+analytic order of Ш, and the real period), which Wachs shows modulate
+murmuration profiles at fixed rank. Separating those invariants from
+rank is a pre-registered follow-up (PR-4, a split by BSD invariant at
+fixed rank), named here as future work and not claimed.</p>
+<p><strong>A scale caveat with a documented precedent.</strong> Our
+computable range, <code>X ≤ 2¹⁸</code>, is small and finite.
+Sutherland’s September 2023 talk gives a precedent for reading such a
+range cautiously. One formulation of BSD makes the Mestre–Nagao sum
+<code>lim_{x→∞} (1/log x) Σ_{p≤x} a_p(E) log p / p = −r + 1/2</code>
+(conditional: Kim–Murty 2023 show that if this limit exists, it equals
+that value and the Riemann hypothesis holds for <code>L(E,s)</code>),
+and curves of large rank necessarily have large conductor. In
+Sutherland’s rank-stratified plot of that sum, the ordering by rank
+emerges only at very large conductor. A picture that looks settled at
+the conductors we can reach need not be the asymptotic one.</p>
+<p><strong>A gate for going further.</strong> Across the extension rungs
+the trough depth eases while its position holds (§3). Whether that
+easing is the amplitude decay the large-<code>X</code> picture predicts
+is not something our position-gated rule tests. A pre-registered
+amplitude-trajectory gate (PR-5), a decision rule on the trough’s depth
+trajectory fixed before the data, is the condition under which rungs
+beyond 2¹⁸ would be added. It is named here, not run.</p>
+<p><strong>Register, restated once.</strong> The verdict of §3 is H0
+over the finite range <code>X ≤ 2¹⁸</code>: the trough displacement is
+persistent there. It is not a claim about the <code>X → ∞</code> limit
+[SS25] describe, and nothing in this note bears on that limit.</p>
+<hr />
+</body>
+</html>
