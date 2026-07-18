@@ -1,27 +1,27 @@
 # CLAIMS-N — data-note claims ledger
 
 Provenance for every nontrivial claim in `data-note.md`. One row per `<!-- claim:ID -->` marker
-in the note. **Source** is a paper locus, one of our emitted/committed artifacts, or a test /
-rule / ledger row / PR commit hash — never memory (rule 8; draft rule R3). Same discipline as
+in the note. The `Source` column is a paper locus, one of our emitted or committed artifacts, or a
+test, rule, ledger row, or PR commit hash, never memory (rule 8; draft rule R3). Same discipline as
 `docs/explainers/CLAIMS-E.md` and `docs/deck/CLAIMS.md`.
 
-The checker verifies **existence** (every marker in the prose has a row here). **Content
-accuracy** — that each row faithfully reflects its source, as an understatement or special case
-and never an inversion (register discipline) — is a referee-level read, exactly as CLAIMS-E and
-the deck ledger are refereed, not machine-checked.
+The checker verifies existence: every marker in the prose has a row here. Content accuracy, that
+each row faithfully reflects its source (an understatement or special case, never an inversion,
+per register discipline), is a referee-level read, exactly as CLAIMS-E and the deck ledger are
+refereed, not machine-checked.
 
 Papers (pinned, `docs/papers/`): **HLOP** = He–Lee–Oliver–Pozdnyakov, arXiv:2204.10140;
 **SS25** = Sawin–Sutherland, arXiv:2504.12295. PR docs: `docs/preregistered/PR-{1,2,3}.md`.
 
-**Citation convention (this ledger).** Pre-registration is cited as a **(pre-registered → read)**
-commit pair — the commit that fixed the rule *before* the data, then the commit that recorded the
-result. Every §3/§4 results and mechanism number is traced to a **committed artifact by filename**.
+**Citation convention (this ledger).** Pre-registration is cited as a (pre-registered → read)
+commit pair: the commit that fixed the rule *before* the data, then the commit that recorded the
+result. Every §3/§4 results and mechanism number is traced to a committed artifact by filename.
 Verbatim SS25 quotes (eq (1)/(2)) are transcription-checked against the note's rendering in the
-"SS25 transcription check" section below (character level; register rule 1 — faithful, an
+"SS25 transcription check" section below (character level; register rule 1, faithful, an
 understatement or special case, never an inversion).
 
-Status: **§1–§4 rows complete; §5–§6 + Abstract [PENDING]** (drafted per the ENDGAME sequence;
-§3/§4 land at CHECKPOINT A for the referee pass).
+Status: §1–§4 rows complete; §5–§6 and the Abstract are [PENDING] (drafted per the ENDGAME
+sequence).
 
 ## §1 — Introduction
 
@@ -45,7 +45,7 @@ Status: **§1–§4 rows complete; §5–§6 + Abstract [PENDING]** (drafted per
 | N2-4 | Good primes `p>3`, `p ∤ (4A³+27B²)`, `p ≤ N` (`u≤1`); reduced short model `p`-minimal at `p>3` ⇒ `p∤Δ(model) ⟺ p∤N` | src/murm/ss_empirical.h:23–25; src/murm/ss_empirical.cpp:64–71 |
 | N2-5 | `a_p = p+1−#E(𝔽_p)` computed from scratch; `N, ε` oracle-provenance INPUT (PARI), every column provenance-labelled | RESEARCH-M §0 rule 6 (provenance); src/murm/ne_cache.h (header comment); data/m5/ne_cache_x65536.txt header |
 | N2-6 | Oracle `N/ε` certified before use by a dual-oracle overlap check vs LMFDB/Cremona | src/murm/ne_cache.h (dual-oracle overlap note); test `oracle_dual_overlap_NE` (verify/m4) |
-| N2-7 | Load-bearing functions dual-implemented; `a_p` by `ap_fast` twinned vs frozen `ap_charsum`, exact on a certified sample | CLAUDE.md rule 2; test `twin_ap_fast_vs_charsum_m4`; CLAIMS-E E3-1, E3-2 |
+| N2-7 | Functions the result depends on are dual-implemented; `a_p` by `ap_fast` twinned vs frozen `ap_charsum`, exact on a certified sample | CLAUDE.md rule 2; test `twin_ap_fast_vs_charsum_m4`; CLAIMS-E E3-1, E3-2 |
 | N2-8 | Anchors pinned; oracles referee-only (never in `src/`); absent oracle SKIPs visibly | CLAUDE.md rules 1, 3; ctest `SKIP_RETURN_CODE 77` (verify/CMakeLists.txt); CLAIMS-E E3-4, E3-5, E3-7 |
 | N2-9 | Full method in the E3 method explainer | docs/explainers/E3-method.md; docs/explainers/CLAIMS-E.md (E3-*) |
 | N2-10 | Commit-before-run pre-registration, cited as (pre-registered → read) pairs: PR-1 `dd6beb0` + Rung-3 clause `4a17ebe` (before 2¹⁷ read) → `8f64ba1`; PR-2 `f7415a4` (threshold, before split) → `876999f`; PR-3 `21060a0` → `0d21b62` | RESEARCH-M §7; docs/preregistered/PR-{1,2,3}.md; `git log` of each PR doc (pairs verified: rule-introducing commit precedes its read) |
@@ -80,14 +80,14 @@ Status: **§1–§4 rows complete; §5–§6 + Abstract [PENDING]** (drafted per
 The two SS25 formulas the note renders, quoted from cited loci beside the note's rendering,
 character-checked so a skeptical [SS25] reader confirms fidelity (register rule 1).
 
-- **eq (1) — statistic.** SS25 p.2, quoted in m4-pinning §P2:
+- **eq (1): statistic.** SS25 p.2, quoted in m4-pinning §P2:
   `E_{E:H(E)≤X}[ (log N(E)^{(C₁+C₂)/2}/N(E)) · Σ_{p∈(C₁N,C₂N)} ε(E)·a_p(E) ]`. Note (§2) renders it
   as a binned density: window (C₁,C₂) = the bin (bΔu,(b+1)Δu], so (C₁+C₂)/2 = u_mid, ÷Δu.
-  **u_mid vs per-pair-u — resolved against `src/murm/ss_empirical.cpp:69–76`:** the weight uses the
-  bin-midpoint `u_mid=(b+½)Δu`, which IS eq (1)'s `(C₁+C₂)/2` exponent, NOT the per-pair `u=p/N`;
-  so `D̂` is a faithful **binned density estimator** of (1), not a re-definition. No discrepancy;
+  **u_mid vs per-pair-u, resolved against `src/murm/ss_empirical.cpp:69–76`:** the weight uses the
+  bin-midpoint `u_mid=(b+½)Δu`, which is eq (1)'s `(C₁+C₂)/2` exponent, not the per-pair `u=p/N`,
+  so `D̂` is a binned density estimator of (1), not a re-definition. No discrepancy;
   prose aligned ("a binned estimator of").
-- **eq (2) — density.** SS25 eq (2) p.2, quoted in m4-pinning §P3: the
+- **eq (2): density.** SS25 eq (2) p.2, quoted in m4-pinning §P3: the
   `2π√u · Σ_q Σ_m [μ(gcd(m,q))/(q·m·φ(q/gcd(m,q)))] · J₁(4π√u·m/q) · ∏_{p|m,p∤q} ℓ̂_{p,2v_p(m)} ·
   ∏_{p|q} ℓ_{p,v_p(m)}` double sum. Note (§1) renders the integrand `D(u)` character-identically;
   local factors ℓ,ℓ̂ per Lemmas 3–4 (`src/murm/ss_density.h`). No discrepancy.

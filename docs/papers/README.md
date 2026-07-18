@@ -58,3 +58,16 @@ Normative M-stage sources (M0–M4): the M-ladder above (HLOP arXiv:2204.10140 [
 LOP arXiv:2307.00256 [M2], Zubrilina arXiv:2310.07681 = Invent. math. 2025 [M3],
 Sawin–Sutherland arXiv:2504.12295 [M4], Cowan arXiv:2408.12723 context, Sarnak letter
 framing). M0 (fast a_p / height family) rests on Cremona `ecdata`, not a paper.
+
+### Writing-style references (data-note house style) — vendored, gitignored
+
+The data note (`docs/notes/data-note/`) follows a house style documented in its README. The two
+mathematical-writing guides below are vendored here (title-page verified, gitignored per the
+copyright rule above; fetch from the URLs). The Wikipedia field guide is a living page, cited by
+URL and not fetched.
+
+| Filename (expected) | Work | Source |
+|---|---|---|
+| `Writing_Guide.pdf` | G. Wilkes — *A Brief Guide to Mathematical Writing* (University of Cambridge, DPMMS; revised 8 October 2023) | https://www.dpmms.cam.ac.uk/~grw46/Writing_Guide.pdf |
+| `writing.pdf` | B. Poonen — *Practical Suggestions for Mathematical Writing* (MIT; dated 6 January 2026) | https://math.mit.edu/~poonen/papers/writing.pdf |
+| (not fetched) | *Wikipedia: Signs of AI writing* (living page) | https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing |

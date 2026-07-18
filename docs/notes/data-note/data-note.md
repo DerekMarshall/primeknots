@@ -98,24 +98,24 @@ to the asymptotic one; that is why the distinction is not pedantic.
 ## 2. Methods
 
 **Family and ordering.** We use the short Weierstrass family `E_{A,B}: y² = x³ + Ax + B` with
-integers `A, B`, **reduced** (no prime `p` with `p⁴|A` and `p⁶|B` — the unique minimal
-representative of each isomorphism class) and **nonsingular** (`4A³ + 27B² ≠ 0`), ordered by the
+integers `A, B`, *reduced* (no prime `p` with `p⁴|A` and `p⁶|B`, the unique minimal
+representative of each isomorphism class) and *nonsingular* (`4A³ + 27B² ≠ 0`), ordered by the
 naive height `H(E) := max(4|A|³, 27B²)`, quoted verbatim from [SS25] p.1. <!-- claim:N2-1 --> The
 family `{E_{A,B} : H(E) ≤ X}` is enumerated directly over the box `|A| ≤ (X/4)^{1/3}`,
 `|B| ≤ (X/27)^{1/2}`; its cardinality is certified by a second, independent sieve algorithm
 required to agree with the direct count at every cutoff. <!-- claim:N2-2 -->
 
-**The two objects, side by side.** The note pits one *computed* quantity against one *conjectured*
-one; the distinction (§1) is load-bearing.
+**The two objects, side by side.** The note compares one *computed* quantity with one
+*conjectured* one. The distinction (§1) governs what the note claims.
 
-*Empirical — a binned estimator of [SS25] statistic (1).* For a prime-ratio window `(C₁, C₂)`,
+*Empirical: a binned estimator of [SS25] statistic (1).* For a prime-ratio window `(C₁, C₂)`,
 [SS25]'s statistic (1) is
 
 ```
 E_{E: H(E)≤X} [ ( log N(E)^{(C₁+C₂)/2} / N(E) ) · Σ_{p prime, p/N(E)∈(C₁,C₂)} ε(E)·a_p(E) ].
 ```
 
-We evaluate it as a **density on (0,1]**: partition into 40 bins of width `Δu = 0.025`, take each
+We evaluate it as a density on (0,1]: partition into 40 bins of width `Δu = 0.025`, take each
 bin `b = (bΔu, (b+1)Δu]` as the window (so its midpoint `(C₁+C₂)/2 = u_mid := (b+½)·Δu`), and
 divide by `Δu`:
 
@@ -124,24 +124,24 @@ D̂(u_b) = (1 / (Δu · |fam|)) · Σ_{(E,p): p/N(E)∈bin_b} (u_mid · ln N(E) 
 ```
 
 over good primes `p > 3` with `p ∤ (4A³ + 27B²)` and `p ≤ N(E)` (so `u ≤ 1`). The `u_mid` factor is
-**exactly eq (1)'s `(C₁+C₂)/2` normalization exponent at the bin midpoint** — not a per-pair weight
-and not ad hoc — so `D̂` is a faithful **binned density estimator** of statistic (1), one bin per
+eq (1)'s `(C₁+C₂)/2` normalization exponent evaluated at the bin midpoint, not a per-pair weight,
+so `D̂` is a binned density estimator of statistic (1), one bin per
 window. <!-- claim:N2-3 --> For this family the reduced short model is `p`-minimal at every `p > 3`,
 so `p ∤ Δ(model) ⟺ p ∤ N(E)` (good reduction), and this exact good-prime test keeps `a_p`'s domain
 computed-only. <!-- claim:N2-4 -->
 
-*Conjectured — [SS25] eq. (2) / Conjecture 1.* [SS25] conjecture that the `X→∞` limit of (1)
-equals `∫ D(u) du`, where `D(u)` is the Bessel-`J₁` density transcribed verbatim in §1. **eq (1)
-is a definition we evaluate; eq (2)'s equality to the limit is the CONJECTURE.** `D̂` is compared
+*Conjectured: [SS25] eq. (2) / Conjecture 1.* [SS25] conjecture that the `X→∞` limit of (1)
+equals `∫ D(u) du`, where `D(u)` is the Bessel-`J₁` density transcribed verbatim in §1. eq (1)
+is a definition we evaluate; eq (2)'s equality to the limit is the *conjecture*. `D̂` is compared
 to `D`; the note reports empirical agreement, never a proof (§1). <!-- claim:N2-15 -->
 
-**Provenance — computed vs. oracle.** The Frobenius trace `a_p = p + 1 − #E(𝔽_p)` is **computed
-from scratch**; the conductor `N(E)` and root number `ε(E)` are **oracle-provenance input**
-supplied by PARI/GP — trusted input *to* the statistic, not a referee *of* our numbers — and
-every emitted column is labelled with its provenance. <!-- claim:N2-5 --> The oracle `N/ε` are
+**Provenance: computed vs. oracle.** The Frobenius trace `a_p = p + 1 − #E(𝔽_p)` is computed
+from scratch. The conductor `N(E)` and root number `ε(E)` are oracle-provenance input
+supplied by PARI/GP, trusted input *to* the statistic and not a referee *of* our numbers. Every
+emitted column is labelled with its provenance. <!-- claim:N2-5 --> The oracle `N/ε` are
 certified before use by a dual-oracle overlap check against LMFDB/Cremona data. <!-- claim:N2-6 -->
 
-**Twin / anchor / oracle architecture.** Every mathematically load-bearing function has two
+**Twin / anchor / oracle architecture.** Each function the result depends on has two
 independent implementations (a different algorithm, never a refactor of itself) or an external
 oracle check. `a_p` is computed by a fast quadratic-residue-table character sum (`ap_fast`)
 twinned against a frozen modular-exponentiation referee (`ap_charsum`); the two agree exactly on
@@ -152,93 +152,93 @@ described in the companion method explainer (E3). <!-- claim:N2-9 -->
 
 <!-- x17 gate RESOLVED 2026-07-17 (twin_m0b_vs_charsum_x17 GREEN, commit fbe51a5): the sentence
      below, drafted-and-gated per R2, is now live prose. Recorded non-silently (R5). -->
-In fact `a_p` is computed by **three** independent algorithms — the frozen `ap_charsum` referee,
-the fast QR-table `ap_fast`, and Shanks–Mestre point counting — agreeing **exactly** over the full
-2¹⁶ and 2¹⁷ `a_p` grids (112 M and 385 M values, 0 mismatches) at ~145× less CPU aggregated over
-the 2¹⁶ grid (O(p^{1/4}) point counting vs. O(p) character sum); at 2¹⁸ the equality is verified
-on a tail-weighted 27.9 M-value
-sample against the O(p) referee **and** on a PARI `ellap` spot (204 pairs, p up to 6.9 M) — the
-pre-registered production-capability gate. This is a **cross-algorithm** check (Shanks–Mestre vs.
-the charsum referee); `a_p` is a platform-independent integer, so it is verified same-platform by
-design — not a two-platform claim. <!-- claim:N2-14 -->
+`a_p` is computed by three independent algorithms: the frozen `ap_charsum` referee,
+the fast QR-table `ap_fast`, and Shanks–Mestre point counting. They agree exactly over the full
+2¹⁶ and 2¹⁷ `a_p` grids (112 M and 385 M values, 0 mismatches), at about 145× less CPU aggregated
+over the 2¹⁶ grid (O(p^{1/4}) point counting vs. O(p) character sum). At 2¹⁸ the equality is
+verified on a tail-weighted 27.9 M-value sample against the O(p) referee and on a PARI `ellap`
+spot (204 pairs, p up to 6.9 M), the pre-registered production-capability gate. This is a
+cross-algorithm check (Shanks–Mestre vs. the charsum referee). Since `a_p` is a
+platform-independent integer, it is verified same-platform by design, not as a two-platform
+claim. <!-- claim:N2-14 -->
 
 **Pre-registration.** Every decision rule, tolerance, and threshold is committed to version
-control *before* the data it judges exists (commit-before-run), cited here as **(pre-registered →
-read)** commit pairs: **PR-1** ladder decision rule + finite-`X`/persistent fork — pre-registered
-`dd6beb0`, with the 2¹⁸ Rung-3 clause `4a17ebe` committed *before the 2¹⁷ rung was read* → read
-`8f64ba1` (verdict H0, ≤2¹⁸); **PR-2** analytic-rank contrast threshold pre-registered `f7415a4`
-*before any split curve* → read `876999f` (null); **PR-3** leakage estimator pre-registered
-`21060a0` → read `0d21b62`. <!-- claim:N2-10 --> Every exploratory statistic looked at is recorded
+control *before* the data it judges exists (commit-before-run), cited here as (pre-registered →
+read) commit pairs. PR-1, the ladder decision rule and finite-`X`/persistent fork: pre-registered
+`dd6beb0`, with the 2¹⁸ Rung-3 clause `4a17ebe` committed *before the 2¹⁷ rung was read*, read
+`8f64ba1` (verdict H0, ≤2¹⁸). PR-2, the analytic-rank contrast threshold: pre-registered `f7415a4`
+*before any split curve*, read `876999f` (null). PR-3, the leakage estimator: pre-registered
+`21060a0`, read `0d21b62`. <!-- claim:N2-10 --> Every exploratory statistic looked at is recorded
 in a looks ledger. <!-- claim:N2-11 -->
 
-**The conjectured density.** `D(u)` is evaluated independently of the empirical statistic — a
-separate translation unit, authored without reference to the empirical side — as the Bessel-`J₁`
+**The conjectured density.** `D(u)` is evaluated independently of the empirical statistic (a
+separate translation unit, authored without reference to the empirical side) as the Bessel-`J₁`
 double sum of Conjecture 1 with the local factors of [SS25] Lemmas 3–4, an in-house `J₁`, and
-*generated* (never typed) constants, truncated at `q, m ≤ 2000`. <!-- claim:N2-12 --> Because
-every value is built from IEEE operations plus generated constants plus the in-house Bessel, the
-emitted curve is byte-portable across compilers and platforms — a property we verify (§5). <!-- claim:N2-13 -->
+*generated* constants (never typed), truncated at `q, m ≤ 2000`. <!-- claim:N2-12 --> Because
+every value is built from IEEE operations, generated constants, and the in-house Bessel, the
+emitted curve is byte-portable across compilers and platforms, a property we verify (§5). <!-- claim:N2-13 -->
 
 ---
 
 ## 3. Results
 
-**The ladder.** Over four height cutoffs the two calibrated shape invariants — the positive hump
-and the first post-hump zero — agree with the conjectured density `D(u)` within the a-priori
-tolerance `τ = 0.06`, while the trough sits at `u = 0.8875` at **every** rung, a displacement
-`d = |0.8875 − 0.805| = 0.0825` that is **frozen** across the ladder (all values from the committed
-`data/m5/ss_x{65536,131072,262144}.txt` runs and the M4 run `data/m4/ss_empirical.txt`):
+**The ladder.** Over four height cutoffs the two calibrated shape invariants (the positive hump
+and the first post-hump zero) agree with the conjectured density `D(u)` within the a-priori
+tolerance `τ = 0.06`, while the trough sits at `u = 0.8875` at every rung, a displacement
+`d = |0.8875 − 0.805| = 0.0825` that is frozen across the ladder. All values are from the committed
+`data/m5/ss_x{65536,131072,262144}.txt` runs and the M4 run `data/m4/ss_empirical.txt`:
 
 | X | \|fam\| | hump u (dev) | first zero u (dev) | trough u (dev) | trough v |
 |---|---|---|---|---|---|
-| 10⁴ | 1048 | 0.4625 (0.0125) | 0.672894 (0.0279) | 0.8875 (**0.0825**) | −3.47 |
-| 2¹⁶ | 5042 | 0.4625 (0.0125) | 0.670328 (0.0253) | 0.8875 (**0.0825**) | −3.72 |
-| 2¹⁷ | 9014 | 0.4625 (0.0125) | 0.673202 (0.0282) | 0.8875 (**0.0825**) | −3.65 |
-| 2¹⁸ | 15936 | 0.4625 (0.0125) | 0.671945 (0.0269) | 0.8875 (**0.0825**) | −3.58 |
+| 10⁴ | 1048 | 0.4625 (0.0125) | 0.672894 (0.0279) | 0.8875 (0.0825) | −3.47 |
+| 2¹⁶ | 5042 | 0.4625 (0.0125) | 0.670328 (0.0253) | 0.8875 (0.0825) | −3.72 |
+| 2¹⁷ | 9014 | 0.4625 (0.0125) | 0.673202 (0.0282) | 0.8875 (0.0825) | −3.65 |
+| 2¹⁸ | 15936 | 0.4625 (0.0125) | 0.671945 (0.0269) | 0.8875 (0.0825) | −3.58 |
 
-Hump dev 0.0125 and first-zero dev ≤ 0.0282 are both **within `τ = 0.06`** (agreement with `D(u)`);
-the trough dev 0.0825 **exceeds `τ`** at every rung — a persistent open deviation. <!-- claim:N3-1 --><!-- claim:N3-2 -->
+Hump dev 0.0125 and first-zero dev ≤ 0.0282 are both within `τ = 0.06` (agreement with `D(u)`).
+The trough dev 0.0825 exceeds `τ` at every rung, a persistent open deviation. <!-- claim:N3-1 --><!-- claim:N3-2 -->
 (Fig. 1, the empirical-vs-`D(u)` overlay, is regenerated from these committed runs by
 `figures/make_figures.py`.)
 
-**Verdict — H0 (persistent, ≤ 2¹⁸).** The decision rule was pre-registered before the data (PR-1,
+**Verdict: H0 (persistent, ≤ 2¹⁸).** The decision rule was pre-registered before the data (PR-1,
 `dd6beb0`; the 2¹⁸ Rung-3 clause `4a17ebe` committed *before the 2¹⁷ rung was read*). With
-`d(X) = |trough_u − 0.805|` and `Δu = 0.025`, the Rung-3 clause reads, **verbatim**:
+`d(X) = |trough_u − 0.805|` and `Δu = 0.025`, the Rung-3 clause reads, verbatim:
 
 > **H1 (finite-X, ≤2¹⁸)** iff the trough recovers monotonically by ≥ Δu at **both** steps:
 > d(2¹⁷) ≤ d(2¹⁶) − Δu **and** d(2¹⁸) ≤ d(2¹⁷) − Δu … **H0 (persistent, ≤2¹⁸)** iff the trough
 > stays flat across the ladder (no ≥ Δu recovery at either step).
 
-Observed `d = 0.0825` at 2¹⁶, 2¹⁷, and 2¹⁸ — flat, no recovery at either step ⇒ **H0 (persistent,
-≤ 2¹⁸)**, read at `8f64ba1`. <!-- claim:N3-3 --> This is the first rung at which the full-ladder
-verdict PR-1's R0 clause reserved could be pronounced. It is a **finite-range** statement (≤ 2¹⁸),
-explicitly **not** the `X→∞` verdict [SS25] describe — 2¹⁸ is the very bottom of their 2¹⁶–2²⁸
+Observed `d = 0.0825` at 2¹⁶, 2¹⁷, and 2¹⁸: flat, with no recovery at either step, hence H0
+(persistent, ≤ 2¹⁸), read at `8f64ba1`. <!-- claim:N3-3 --> This is the first rung at which the
+full-ladder verdict PR-1's R0 clause reserved could be pronounced. It is a finite-range statement
+(≤ 2¹⁸), explicitly not the `X→∞` verdict [SS25] describe. 2¹⁸ is the bottom of their 2¹⁶–2²⁸
 decay window.
 
-**Supporting register (NOT the gate).** (i) The first-zero series `0.672894 → 0.670328 → 0.673202
-→ 0.671945` is flat near ~0.671, non-monotone, converging to neither the 0.645 target nor away —
-direction only. <!-- claim:N3-4 --> (ii) The trough **depth** eases monotonically across the three
-extension rungs `−3.715 → −3.652 → −3.580` even as its **position** holds at 0.8875. The 10⁴ depth
-(−3.47) is shallower than 2¹⁶, so this easing is a three-rung observation, not a monotone four-rung
-trend. It is a hint of amplitude decay consistent with the expected large-X behaviour, but the
-committed rule gates on **position**, so it does not move the verdict; logged as an observation,
-not a claim. <!-- claim:N3-5 -->
+**Supporting register (not the gate).** (i) The first-zero series `0.672894 → 0.670328 → 0.673202
+→ 0.671945` is flat near about 0.671, non-monotone, converging to neither the 0.645 target nor
+away, direction only. <!-- claim:N3-4 --> (ii) The trough *depth* eases monotonically across the
+three extension rungs `−3.715 → −3.652 → −3.580` even as its *position* holds at 0.8875. The 10⁴
+depth (−3.47) is shallower than 2¹⁶, so this easing is a three-rung observation, not a monotone
+four-rung trend. It is a hint of amplitude decay consistent with the expected large-X behaviour,
+but the committed rule gates on position, so it does not move the verdict; logged as an
+observation, not a claim. <!-- claim:N3-5 -->
 
 ## 4. Mechanism constraints
 
 Two pre-registered follow-ups constrain candidate mechanisms for the trough deviation. Both are
 bounds/nulls; neither explains it.
 
-**PR-2 — analytic-rank split (null).** Pre-registered `f7415a4` (the contrast threshold fixed
+**PR-2: analytic-rank split (null).** Pre-registered `f7415a4` (the contrast threshold fixed
 before any curve was split) → read `876999f`. Excising the analytic-rank-2 subpopulation leaves
-the trough **position** unchanged — the pre-committed recovery gate (leave-out trough moves < 1
-bin, on the full family and on a virgin conductor annulus) is not met — so **the deficit is NOT
-carried by rank-2 over-representation.** A secondary contrast (rank-2 curves carry an enhanced
+the trough position unchanged. The pre-committed recovery gate (leave-out trough moves < 1
+bin, on the full family and on a virgin conductor annulus) is not met, so the deficit is not
+carried by rank-2 over-representation. A secondary contrast (rank-2 curves carry an enhanced
 downward bias) is significant but too dilute to move the location gate; the two gate outcomes are
 coherent. <!-- claim:N4-1 --> *Wachs clause (verbatim):* this design does not distinguish rank per
 se from BSD invariants (Tamagawa product, \|Ш\|, real period) correlated with rank; "carried by"
 is a statement about the subpopulation, not the mechanism. <!-- claim:N4-4 -->
 
-**PR-3 — root-number-imbalance leakage (bounded out).** Pre-registered `21060a0` → read `0d21b62`
+**PR-3: root-number-imbalance leakage (bounded out).** Pre-registered `21060a0` → read `0d21b62`
 (the 2¹⁸ row appended with the Rung-3 run, `8f64ba1`). With `δ = (n₊−n₋)/|fam|` the root-number
 imbalance, `U` the unsigned bias, leakage `L = δ·U`, and `f = L / departure` at the trough:
 
@@ -249,20 +249,21 @@ imbalance, `U` the unsigned bias, leakage `L = δ·U`, and `f = L / departure` a
 | 2¹⁷ | −0.0078 | +0.0025 | −0.0006 | opposite |
 | 2¹⁸ | −0.0103 | +0.0032 | −0.0008 | opposite |
 
-**`|f| ≤ 2%` at every rung, opposite-signed (points *against* the deficit) at the three reliable
-rungs, and it does not grow with X** — leakage of Sutherland's parity-independent bias through the
-measured imbalance is bounded out as a material contributor (`f ≈ 1` would require the unsigned
-bias ~3 orders larger than measured). A citable null; a bound, not an explanation. <!-- claim:N4-2 -->
+`|f| ≤ 2%` at every rung, it is opposite-signed (points *against* the deficit) at the three
+reliable rungs, and it does not grow with X. Leakage of Sutherland's parity-independent bias
+through the measured imbalance is bounded out as a material contributor (`f ≈ 1` would require the
+unsigned bias about 3 orders larger than measured). A citable null; a bound, not an
+explanation. <!-- claim:N4-2 -->
 *Sutherland-bias attribution (verbatim):* the parity-independent unsigned bias, the named
 congruence classes, and its cancellation in the signed average are Sutherland's (Sept-2023 talk);
 PR-3 tests only the leakage *relationship*, which is PR-3's hypothesis, not Sutherland's claim. <!-- claim:N4-5 -->
 
-**D1 (congruence stratification) — DIED, unrun.** Per PR-3's pre-committed trigger, D2 bounding
+**D1 (congruence stratification): died, unrun.** Per PR-3's pre-committed trigger, D2 bounding
 the mechanism out (small `f`, wrong sign, no structured residual at the named classes) closes the
-prime-class mechanism *without* the expensive stratified pass; D1's own pre-registration was never
-written (hypotheses-die-in-public). <!-- claim:N4-3 -->
+prime-class mechanism without the expensive stratified pass. D1's own pre-registration was never
+written (hypotheses die in public). <!-- claim:N4-3 -->
 
-**The tail deficit remains unexplained by either constrained mechanism** — stated as such, not
+The tail deficit remains unexplained by either constrained mechanism, stated as such and not
 smoothed. What could carry it is future work (§6).
 
 ## 5. Reproducibility *(stub — [PENDING])*
