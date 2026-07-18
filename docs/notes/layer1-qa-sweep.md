@@ -63,7 +63,7 @@ list) ✓.
 **FINDING:** `src/emit/emit_sawin_sutherland.cpp:28` (cited in §5 / N5-3 for `setprecision(12)`)
 has ROTTED — the `#include <stdexcept>` added during the math conversion shifted `setprecision(12)`
 to **line 29** (line 28 is now `std::ostringstream o;`).
-**Fix:** update the cite `:28`→`:29` — commit `[FIX-LINK]`.
+**Fix:** update the cite `:28`→`:29` — commit `fedc198`.
 
 ### 5. Placeholder audit — **FINDING (stale placeholders + dirty stamps)**
 Sanctioned, kept: release tag `[PLACEHOLDER: v1.0.0]` and Zenodo DOI `[PLACEHOLDER]` (data-note §5,
@@ -81,8 +81,8 @@ N5-5, README, HTML).
 snapshots carry a `-dirty` `generated_by`: `dirichlet_murmuration.json` +
 `zubrilina_murmuration.json` (`601ecfc-dirty`), `ss_x_extension_murmuration.json`
 (`749c900-dirty`). Freshness normalizes the stamp (not a test failure) — cosmetic provenance.
-**Fix:** (a) update the stale status/comments — commit `[FIX-PLACEHOLDER]`; (b) clean-re-emit the 3
-snapshots at a clean tree — commit `[FIX-STAMPS]`.
+**Fix:** (a) update the stale status/comments — commit `b835350`; (b) clean-re-emit the 3
+snapshots at a clean tree — commit `e09f2e7`.
 
 ### 6. `.gitignore` exception — ckpt present + sha — **PASS**
 `data/m5/ss_partials_x131072.txt.ckpt` is present in the clean clone; its sha256 =
@@ -112,7 +112,7 @@ committed (gitignored from the start), not merely currently-ignored.
 - All-snapshot-stamps audit: **DONE** — 3 dirty (dirichlet, zubrilina, ss_x_extension); the rest are
   clean (`558efe8`, `81501a0`, `8672b2d`×6, `d591f10`, `f16d927`×3).
 - Deck M-stage rows: **DEFERRED** (the RESEARCH/deck extension is deferred; out of Layer-1 scope).
-- README scope note: applied — commit `[FIX-README]`.
+- README scope note: applied — commit `9953a10`.
 - CITATION.cff (Phase 3) / Zenodo deposit metadata (Phase 4): deferred (item 8).
 
 ## Residual decision recorded
