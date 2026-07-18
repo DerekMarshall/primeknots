@@ -98,7 +98,7 @@ character-checked so a skeptical [SS25] reader confirms fidelity (register rule 
 |----|-------|--------|
 | N5-1 | Emitted density JSON byte-identical across compilers/platforms; the density evaluator + emitter are built `-ffp-contract=off`; a freshness check re-emits at the commit and requires byte-equality on CI GCC + local | src/CMakeLists.txt:163–173 (`ss_density.cpp`, `emit_sawin_sutherland.cpp`); verify/freshness_check.py; CLAIMS-E E3-17/E3-18; N2-13 |
 | N5-2 | Integer a_p platform-independent: pre-registered tail-weighted sample of 79,268 (curve,prime) pairs (p≤4.15M) via `ap_charsum` on laptop `g++-16`/macOS + FreeBSD `clang 21.1.8`/15.1 is byte-identical, 0 mismatches; primary evidence = 3-algorithm exact agreement over full 2¹⁶/2¹⁷ grids + byte-identical emit | docs/notes/libm-partial-diff-spec.md (Q1, sha e7ba27d7, `at ap-sample`); tests `twin_m0b_vs_charsum_x16/x17`; N2-14 |
-| N5-3 | Raw partials NOT `-ffp-contract=off` (`ss_empirical.cpp` outside the list) ⇒ cross-toolchain float drift, max 1.887e-15 on the shared 8640-curve 2¹⁷ set; ~3 orders finer than the emitter's 12-significant-figure precision, so it rounds away and does not reach the published curve | docs/notes/libm-partial-diff-spec.md (Q2); src/CMakeLists.txt:54–55 vs 163–173; src/emit/emit_sawin_sutherland.cpp:28 (`setprecision(12)`); docs/notes/libm_float_diff.py |
+| N5-3 | Raw partials NOT `-ffp-contract=off` (`ss_empirical.cpp` outside the list) ⇒ cross-toolchain float drift, max 1.887e-15 on the shared 8640-curve 2¹⁷ set; does not reach the published curve — byte-identity is established empirically by the freshness check, and the 12-significant-figure emit precision (~3 orders coarser than the drift) explains why | docs/notes/libm-partial-diff-spec.md (Q2); src/CMakeLists.txt:54–55 vs 163–173; src/emit/emit_sawin_sutherland.cpp:28 (`setprecision(12)`); docs/notes/libm_float_diff.py |
 | N5-4 | Corrections logged as numbered errata (RESEARCH-M + pinning notes); note inputs committed (code, N/ε caches, partials, `at ap-sample`); the one non-regenerable input — the abandoned laptop 2¹⁷ partials ckpt (the float-drift artifact) — is FORCE-committed via a scoped `.gitignore` exception; a_p caches + sample outputs gitignored, regenerable (`at ap-cache`/`at ap-sample`), SHA-256-pinned | docs/RESEARCH-M.md (ERRATA #NN); .gitignore (`!data/m5/ss_partials_x131072.txt.ckpt`); docs/notes/libm-partial-diff-spec.md (Step-0 manifest) |
 | N5-5 | How to cite/verify: repo URL + release tag [PLACEHOLDER] + Zenodo DOI [PLACEHOLDER]; one-command reproduction (cmake + `ctest -L m5` + `at emit` + figures); `at ap-sample` reproduces the sample (sha pinned) | data-note/README.md; docs/notes/libm-partial-diff-spec.md; venue amendment (Derek 2026-07-17) |
 
@@ -107,9 +107,14 @@ character-checked so a skeptical [SS25] reader confirms fidelity (register rule 
 | ID | Claim | Source |
 |----|-------|--------|
 | N6-1 | §4 mechanisms don't explain the deficit (bounds/nulls); a candidate not isolated = BSD invariants (Tamagawa product, analytic \|Ш\|, real period) correlated with rank, which Wachs shows modulate at fixed rank; separating them = pre-registered PR-4 (split by BSD invariant at fixed rank), named future work, NOT claimed | §4 (N4-1, N4-4); Wachs arXiv:2603.04604 (docs/papers/README context-class); PR-4 = named future work, no written PR |
-| N6-2 | Scale caveat + Sutherland Sept-2023 precedent: BSD/Mestre–Nagao sum `lim (1/log x) Σ_{p≤x} a_p log p/p = −r+1/2` (Kim–Murty 2023: the limit, where it exists, equals this and implies RH for L(E,s)); large rank ⟹ large conductor; rank-ordering emerges only at very large conductor ⇒ a settled small-conductor picture need not be asymptotic | docs/papers/Sutherland_Slides.pdf ("How rank effects trace distributions" slide + the following rank-stratified plot); N1-7 |
+| N6-2 | Scale caveat + Sutherland Sept-2023 precedent: BSD/Mestre–Nagao sum `lim (1/log x) Σ_{p≤x} a_p log p/p = −r+1/2` (Kim–Murty 2023: if the limit exists, it equals this value and RH holds for L(E,s)); large rank ⟹ large conductor; rank-ordering emerges only at very large conductor ⇒ a settled small-conductor picture need not be asymptotic | docs/papers/Sutherland_Slides.pdf ("How rank effects trace distributions" slide + the following rank-stratified plot); N1-7 |
 | N6-3 | Trough depth eases while position holds (§3/N3-5); a pre-registered amplitude-trajectory gate PR-5 (decision rule on the depth trajectory, fixed before data) is the condition for rungs beyond 2¹⁸; named, not run | N3-5; PR-5 = named future work, no written PR |
 | N6-4 | Verdict = H0 over the finite range X≤2¹⁸ (persistent there); NOT an X→∞ claim; nothing in the note bears on that limit | §3 (N3-3); N1-7; SS25 (decay window, p.1) |
 
-## Abstract — [PENDING]
-*(ENDGAME Phase 2: written last, after §3–§6.)*
+## Abstract — summary, unmarked
+
+The Abstract is a one-paragraph summary of §3–§6 and introduces no new claim, so it carries no
+`claim:` markers of its own (the checker enforces marker→row; its statements are the section
+markers): the four-rung ladder and H0 verdict are N3-1/N3-2/N3-3, the two mechanism constraints are
+N4-1/N4-2, the finite-range register is N1-7/N6-4, and the verification/no-proof summary is
+N1-5/N2-7/N2-8/N5-1..N5-3.

@@ -30,13 +30,21 @@
 
 ---
 
-## Abstract *(stub — [PENDING], written last)*
+## Abstract
 
-<!-- One paragraph, drafted after §3–§6 land: we re-derive the Sawin–Sutherland height-ordered
-     murmuration from scratch; confirm hump + first zero within the a-priori tolerance; report
-     the trough as an openly-flagged, finite-range open deviation persistent across a 10⁴→2¹⁷
-     ladder; and constrain two candidate mechanisms (analytic-rank split, null; root-number-
-     imbalance leakage, bounded to |f|≤2% with unstable sign). No asymptotic or proof claim. -->
+We re-derive the Sawin–Sutherland height-ordered elliptic-curve murmuration from scratch and probe
+it against their conjectured Bessel-`J₁` density. Over a four-rung height ladder,
+`X = 10⁴, 2¹⁶, 2¹⁷, 2¹⁸`, two calibrated shape invariants (the positive hump and the first
+post-hump zero) agree with the conjectured density within an a-priori tolerance, while the trough
+sits at a fixed displacement that exceeds the tolerance at every rung. A pre-registered decision
+rule returns H0: the trough deviation is persistent across the ladder, a finite-range statement
+over `X ≤ 2¹⁸` and not a claim about the large-`X` limit. Two pre-registered follow-ups constrain
+candidate mechanisms: excising the analytic-rank-2 subpopulation does not move the trough, so the
+deficit is not carried by rank-2 over-representation, and leakage of the parity-independent
+unsigned bias through the measured root-number imbalance is bounded to a few percent with unstable
+sign. Neither explains the deficit, which we leave open. Every result is numerical over a stated
+finite range, twinned or oracle-refereed, and cross-checked for cross-platform reproducibility; the
+note proves nothing.
 
 ---
 
@@ -283,10 +291,12 @@ density path but left at the compiler default for the empirical partial-sum gene
 (`src/murm/ss_empirical.cpp` is outside the `-ffp-contract=off` list). So the raw per-curve partial
 sums drift across toolchains while the emitted density does not. Measured on the shared 8640-curve
 2¹⁷ set, the drift has maximum size `1.887 × 10⁻¹⁵`, the last bit of a value near one. It does not
-reach the published curve: the emitter writes each density value to twelve significant figures
-(`std::setprecision(12)`, `src/emit/emit_sawin_sutherland.cpp:28`), and the drift is roughly three
-orders of magnitude finer than the last of those figures at the density's order-one scale, so it
-rounds away before the value is written. <!-- claim:N5-3 -->
+reach the published curve, and byte-identity of the emitted density is established empirically by
+the freshness check above, not by rounding alone. The precision gap explains it: the emitter writes
+each value to twelve significant figures (`std::setprecision(12)`, `src/emit/emit_sawin_sutherland.cpp:28`),
+roughly three orders of magnitude coarser than the drift at the density's order-one scale, so a
+difference this small falls below the last written figure except at a rounding boundary, which the
+freshness check would catch. <!-- claim:N5-3 -->
 
 **Errata and inputs.** Corrections are logged as numbered errata entries in the research spec and
 the pinning notes, not edited away. Everything the note's numbers depend on is committed, including
@@ -327,8 +337,8 @@ named here as future work and not claimed. <!-- claim:N6-1 -->
 **A scale caveat with a documented precedent.** Our computable range, `X ≤ 2¹⁸`, is small and
 finite. Sutherland's September 2023 talk gives a precedent for reading such a range cautiously. One
 formulation of BSD makes the Mestre–Nagao sum
-`lim_{x→∞} (1/log x) Σ_{p≤x} a_p(E) log p / p = −r + 1/2` (conditional: Kim–Murty 2023 show that the
-limit, where it exists, equals this value and implies the Riemann hypothesis for `L(E,s)`), and
+`lim_{x→∞} (1/log x) Σ_{p≤x} a_p(E) log p / p = −r + 1/2` (conditional: Kim–Murty 2023 show that if
+this limit exists, it equals that value and the Riemann hypothesis holds for `L(E,s)`), and
 curves of large rank necessarily have large conductor. In Sutherland's rank-stratified plot of that
 sum, the ordering by rank emerges only at very large conductor. A picture that looks settled at the
 conductors we can reach need not be the asymptotic one. <!-- claim:N6-2 -->
