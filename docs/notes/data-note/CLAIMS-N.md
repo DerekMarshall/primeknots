@@ -59,7 +59,7 @@ sequence).
 
 | ID | Claim | Source |
 |----|-------|--------|
-| N3-1 | Four-rung ladder: trough at u=0.8875, d=0.0825 frozen at 10⁴/2¹⁶/2¹⁷/2¹⁸; \|fam\| 1048/5042/9014/15936 | data/m4/ss_empirical.txt; data/m5/ss_x{65536,131072,262144}.txt (`shape` rows) |
+| N3-1 | Four-rung ladder: trough at u=0.8875, d=0.0825 frozen at 10⁴/2¹⁶/2¹⁷/2¹⁸; \|fam\| 1048/5042/9014/15936 | data/m4/ss_empirical.txt; data/m5/ss_x{65536,131072,262144}.txt (`shape` rows); visualized in **Fig 1** (four-rung overlay, `figures/make_figures.py` → `figA_ss_overlay.pdf`) |
 | N3-2 | hump dev 0.0125 + first-zero dev ≤0.0282 within τ=0.06; trough dev 0.0825 > τ (open deviation) | same ss_x*.txt `shape` rows; τ=0.06 committed (PR-1 R0c; ss_x*.txt `# tol`) |
 | N3-3 | Verdict H0 (persistent, ≤2¹⁸): d flat 0.0825 at 2¹⁶/2¹⁷/2¹⁸, no ≥Δu recovery at either step; Rung-3 clause quoted verbatim | docs/preregistered/PR-1.md §"Three completed rungs" (clause 4a17ebe) + Rung-3 postscript (8f64ba1) |
 | N3-4 | Supporting: first-zero series 0.672894/0.670328/0.673202/0.671945 flat/non-monotone (direction only, not the gate) | ss_x*.txt `shape` rows (zero_u) |

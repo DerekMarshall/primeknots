@@ -211,8 +211,9 @@ committed `data/m5/ss_x{65536,131072,262144}.txt` runs and the M4 run `data/m4/s
 
 Hump dev 0.0125 and first-zero dev $\le 0.0282$ are both within $\tau = 0.06$ (agreement with
 $D(u)$). The trough dev 0.0825 exceeds $\tau$ at every rung, a persistent open deviation. <!-- claim:N3-1 --><!-- claim:N3-2 -->
-(Fig. 1, the empirical-vs-$D(u)$ overlay, is regenerated from these committed runs by
-`figures/make_figures.py`.)
+(Fig. 1 overlays all four empirical rungs on the conjectured $D(u)$ — each rung a distinct
+marker, the frozen trough at $u = 0.8875$ marked — and is regenerated from these committed runs
+by `figures/make_figures.py`.)
 
 **Verdict: H0 (persistent, $\le 2^{18}$).** The decision rule was pre-registered before the data
 (PR-1, `dd6beb0`; the $2^{18}$ Rung-3 clause `4a17ebe` committed *before the $2^{17}$ rung was
