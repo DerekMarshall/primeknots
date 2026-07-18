@@ -15,3 +15,13 @@ correctness or freshness (which normalizes the stamps); these are provenance-hyg
 The chore-re-emit pattern (M2/M3 precedent): after all code is committed and the working
 tree is clean, `at emit --stage <s> --out viz/data` so `git describe --dirty` yields a
 clean commit hash, then commit the snapshot alone.
+
+## Release metadata (ENDGAME Phase 3/4)
+
+Author identity (Derek, 2026-07-18): ORCID **0009-0001-8101-3908**. Wired into the data-note
+authorship block already; the two release-engineering obligations below carry it forward.
+
+| item | detail | status |
+|------|--------|--------|
+| CITATION.cff (Phase 3) | author `Derek Marshall` with `orcid: https://orcid.org/0009-0001-8101-3908` — use the cff `orcid:` field so Zenodo **pre-fills** it; add title/version/repository/DOI at the release tag | TODO (Phase 3) |
+| Zenodo deposit metadata (Phase 4) | deposit-metadata confirmation checklist must **flag** that the author shows ORCID 0009-0001-8101-3908 before minting the DOI | TODO (Phase 4) |

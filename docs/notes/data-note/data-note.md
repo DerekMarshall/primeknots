@@ -17,7 +17,7 @@
      from-scratch replication of Sawin–Sutherland Conjecture 1 and two pre-registered
      mechanism constraints." -->
 
-**Author:** Derek Marshall. <!-- authorship block — Derek's decision; co-authorship/affiliation/ORCID PLACEHOLDER -->
+**Author:** Derek Marshall (ORCID [0009-0001-8101-3908](https://orcid.org/0009-0001-8101-3908)). <!-- authorship block — Derek's decision; co-authorship/affiliation PLACEHOLDER; title still [PLACEHOLDER] -->
 
 **Venue:** repo publication (GitHub Pages), PDF build product. <!-- venue block — Derek's decision -->
 
