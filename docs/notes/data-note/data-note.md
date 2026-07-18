@@ -174,7 +174,7 @@ platform-independent integer, it is verified same-platform by design, not as a t
 claim. <!-- claim:N2-14 -->
 
 **Pre-registration.** Every decision rule, tolerance, and threshold is committed to version
-control *before* the data it judges exists (commit-before-run), cited here as (pre-registered
+control *before* the data it judges exists, cited here as (pre-registered
 $\to$ read) commit pairs. PR-1, the ladder decision rule and finite-$X$/persistent fork: pre-registered
 `dd6beb0`, with the $2^{18}$ Rung-3 clause `4a17ebe` committed *before the $2^{17}$ rung was read*,
 read `8f64ba1` (verdict H0, $\le 2^{18}$). PR-2, the analytic-rank contrast threshold: pre-registered `f7415a4`
@@ -223,8 +223,8 @@ clause reads, verbatim:
 
 Observed $d = 0.0825$ at $2^{16}, 2^{17}$, and $2^{18}$: flat, with no recovery at either step,
 hence H0 (persistent, $\le 2^{18}$), read at `8f64ba1`. <!-- claim:N3-3 --> This is the first rung
-at which the full-ladder verdict PR-1's R0 clause reserved could be pronounced. It is a
-finite-range statement ($\le 2^{18}$), explicitly not the $X \to \infty$ verdict [SS25] describe.
+at which the pre-registered full-ladder verdict could be pronounced. It is a finite-range statement
+($\le 2^{18}$), explicitly not the $X \to \infty$ verdict [SS25] describe.
 $2^{18}$ is the bottom of their $2^{16}$–$2^{28}$ decay window.
 
 **Supporting register (not the gate).** (i) The first-zero series
@@ -272,13 +272,14 @@ explanation. <!-- claim:N4-2 -->
 congruence classes, and its cancellation in the signed average are Sutherland's (Sept-2023 talk);
 PR-3 tests only the leakage *relationship*, which is PR-3's hypothesis, not Sutherland's claim. <!-- claim:N4-5 -->
 
-**D1 (congruence stratification): died, unrun.** Per PR-3's pre-committed trigger, D2 bounding
-the mechanism out (small $f$, wrong sign, no structured residual at the named classes) closes the
-prime-class mechanism without the expensive stratified pass. D1's own pre-registration was never
-written (hypotheses die in public). <!-- claim:N4-3 -->
+**A deeper pass, pre-committed to be skipped.** PR-3 fixed in advance the condition under which its
+more expensive follow-up — a congruence-stratified analysis of the same primes — would be
+unnecessary: the leakage fraction $f$ small, opposite-signed, and with no structured residual at
+the named congruence classes. The result above meets that condition, so the stratified pass was not
+run, and no separate pre-registration for it was written. <!-- claim:N4-3 -->
 
-The tail deficit remains unexplained by either constrained mechanism, stated as such and not
-smoothed. What could carry it is future work (§6).
+The tail deficit remains unexplained by either constrained mechanism. What could carry it is future
+work (§6).
 
 ## 5. Reproducibility
 

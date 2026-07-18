@@ -433,19 +433,19 @@ class="math inline">a_p</span> is a platform-independent integer, it is
 verified same-platform by design, not as a two-platform claim.</p>
 <p><strong>Pre-registration.</strong> Every decision rule, tolerance,
 and threshold is committed to version control <em>before</em> the data
-it judges exists (commit-before-run), cited here as (pre-registered
-<span class="math inline">\to</span> read) commit pairs. PR-1, the
-ladder decision rule and finite-<span
-class="math inline">X</span>/persistent fork: pre-registered
-<code>dd6beb0</code>, with the <span class="math inline">2^{18}</span>
-Rung-3 clause <code>4a17ebe</code> committed <em>before the <span
-class="math inline">2^{17}</span> rung was read</em>, read
-<code>8f64ba1</code> (verdict H0, <span class="math inline">\le
-2^{18}</span>). PR-2, the analytic-rank contrast threshold:
-pre-registered <code>f7415a4</code> <em>before any split curve</em>,
-read <code>876999f</code> (null). PR-3, the leakage estimator:
-pre-registered <code>21060a0</code>, read <code>0d21b62</code>. Every
-exploratory statistic looked at is recorded in a looks ledger.</p>
+it judges exists, cited here as (pre-registered <span
+class="math inline">\to</span> read) commit pairs. PR-1, the ladder
+decision rule and finite-<span class="math inline">X</span>/persistent
+fork: pre-registered <code>dd6beb0</code>, with the <span
+class="math inline">2^{18}</span> Rung-3 clause <code>4a17ebe</code>
+committed <em>before the <span class="math inline">2^{17}</span> rung
+was read</em>, read <code>8f64ba1</code> (verdict H0, <span
+class="math inline">\le 2^{18}</span>). PR-2, the analytic-rank contrast
+threshold: pre-registered <code>f7415a4</code> <em>before any split
+curve</em>, read <code>876999f</code> (null). PR-3, the leakage
+estimator: pre-registered <code>21060a0</code>, read
+<code>0d21b62</code>. Every exploratory statistic looked at is recorded
+in a looks ledger.</p>
 <p><strong>The conjectured density.</strong> <span
 class="math inline">D(u)</span> is evaluated independently of the
 empirical statistic (a separate translation unit, authored without
@@ -556,12 +556,11 @@ class="math inline">2^{16}, 2^{17}</span>, and <span
 class="math inline">2^{18}</span>: flat, with no recovery at either
 step, hence H0 (persistent, <span class="math inline">\le
 2^{18}</span>), read at <code>8f64ba1</code>. This is the first rung at
-which the full-ladder verdict PR-1’s R0 clause reserved could be
-pronounced. It is a finite-range statement (<span
-class="math inline">\le 2^{18}</span>), explicitly not the <span
-class="math inline">X \to \infty</span> verdict [SS25] describe. <span
-class="math inline">2^{18}</span> is the bottom of their <span
-class="math inline">2^{16}</span>–<span
+which the pre-registered full-ladder verdict could be pronounced. It is
+a finite-range statement (<span class="math inline">\le 2^{18}</span>),
+explicitly not the <span class="math inline">X \to \infty</span> verdict
+[SS25] describe. <span class="math inline">2^{18}</span> is the bottom
+of their <span class="math inline">2^{16}</span>–<span
 class="math inline">2^{28}</span> decay window.</p>
 <p><strong>Supporting register (not the gate).</strong> (i) The
 first-zero series <span class="math inline">0.672894 \to 0.670328 \to
@@ -664,15 +663,16 @@ congruence classes, and its cancellation in the signed average are
 Sutherland’s (Sept-2023 talk); PR-3 tests only the leakage
 <em>relationship</em>, which is PR-3’s hypothesis, not Sutherland’s
 claim.</p>
-<p><strong>D1 (congruence stratification): died, unrun.</strong> Per
-PR-3’s pre-committed trigger, D2 bounding the mechanism out (small <span
-class="math inline">f</span>, wrong sign, no structured residual at the
-named classes) closes the prime-class mechanism without the expensive
-stratified pass. D1’s own pre-registration was never written (hypotheses
-die in public).</p>
-<p>The tail deficit remains unexplained by either constrained mechanism,
-stated as such and not smoothed. What could carry it is future work
-(§6).</p>
+<p><strong>A deeper pass, pre-committed to be skipped.</strong> PR-3
+fixed in advance the condition under which its more expensive follow-up
+— a congruence-stratified analysis of the same primes — would be
+unnecessary: the leakage fraction <span class="math inline">f</span>
+small, opposite-signed, and with no structured residual at the named
+congruence classes. The result above meets that condition, so the
+stratified pass was not run, and no separate pre-registration for it was
+written.</p>
+<p>The tail deficit remains unexplained by either constrained mechanism.
+What could carry it is future work (§6).</p>
 <h2 id="reproducibility">5. Reproducibility</h2>
 <p><strong>A byte-identical published curve.</strong> The emitted
 density JSON is byte-for-byte identical across compilers and platforms.
