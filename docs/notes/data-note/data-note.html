@@ -742,7 +742,7 @@ published curve, and byte-identity of the emitted density is established
 empirically by the freshness check above, not by rounding alone. The
 precision gap explains it: the emitter writes each value to twelve
 significant figures (<code>std::setprecision(12)</code>,
-<code>src/emit/emit_sawin_sutherland.cpp:28</code>), roughly three
+<code>src/emit/emit_sawin_sutherland.cpp:29</code>), roughly three
 orders of magnitude coarser than the drift at the density’s order-one
 scale, so a difference this small falls below the last written figure
 except at a rounding boundary, which the freshness check would

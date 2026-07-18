@@ -309,7 +309,7 @@ sums drift across toolchains while the emitted density does not. Measured on the
 $2^{17}$ set, the drift has maximum size $1.887 \times 10^{-15}$, the last bit of a value near one. It does not
 reach the published curve, and byte-identity of the emitted density is established empirically by
 the freshness check above, not by rounding alone. The precision gap explains it: the emitter writes
-each value to twelve significant figures (`std::setprecision(12)`, `src/emit/emit_sawin_sutherland.cpp:28`),
+each value to twelve significant figures (`std::setprecision(12)`, `src/emit/emit_sawin_sutherland.cpp:29`),
 roughly three orders of magnitude coarser than the drift at the density's order-one scale, so a
 difference this small falls below the last written figure except at a rounding boundary, which the
 freshness check would catch. <!-- claim:N5-3 -->
