@@ -10,7 +10,7 @@ correctness or freshness (which normalizes the stamps); these are provenance-hyg
 | M3 snapshot stamp | `viz/data/zubrilina_murmuration.json` carries `601ecfc-dirty` — emitted mid-work, never re-emitted at a clean tree | TODO — chore re-emit at a clean tree |
 | all snapshot stamps audit | grep every `viz/data/*.json` `generated_by`; any `-dirty` = emitted from an uncommitted tree → chore re-emit clean (freshness normalizes, so this is cosmetic provenance, not a test failure) | TODO |
 | deck M-stage rows | the explainer deck's "18 entries" is the Stage 0–6 count; M-ladder ERRATA rows (#19–#26) + the M-stages are added when the M-stages are presented (RESEARCH/deck deferred) | TODO |
-| README scope note | one-line note that the scope outgrew the `primeknots` name deliberately (project-status, rule 7) | TODO |
+| README scope note | one-line note that the scope outgrew the `primeknots` name deliberately (project-status, rule 7) | **done** (Layer-1 sweep; README.md after the intro) |
 
 The chore-re-emit pattern (M2/M3 precedent): after all code is committed and the working
 tree is clean, `at emit --stage <s> --out viz/data` so `git describe --dirty` yields a

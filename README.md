@@ -18,6 +18,10 @@ emitted as JSON and rendered by static D3 viewers.
 No new mathematics: every theorem here is known (Gauss 1801 through Stevenhagen
 2022). The output is the verification, the tables, and the method.
 
+The name `primeknots` is an origin homage — the knots-and-primes analogy of arithmetic
+topology — kept deliberately as the project grew past it (into elliptic-curve murmurations and
+more); it is a starting point, not a scope claim (CLAUDE.md rule 7).
+
 ## Gallery
 
 Each panel is rendered by a static viewer from emitted JSON only (`./build/bin/at
