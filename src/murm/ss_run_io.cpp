@@ -1,8 +1,10 @@
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <limits>
 #include <sstream>
 #include <stdexcept>
+#include <system_error>
 #include <vector>
 
 #include "murm/ss_density.h"     // extract_shape
@@ -125,6 +127,18 @@ void write_ss_partials(const std::string& path, const SSPartials& P,
                        const SSPartialsMeta& meta) {
     std::ofstream os(path);
     if (!os) throw std::runtime_error("write_ss_partials: cannot open " + path);
+    // Portable provenance: if ne_cache was passed as an absolute path (e.g. a laptop /Users/…
+    // path at run time), store it relative to the cwd so committed partials carry no local home
+    // path (Layer-1 QA sweep). Non-absolute or unrelativizable paths are written as-is.
+    std::string ne_cache = meta.ne_cache;
+    {
+        std::error_code ec;
+        std::filesystem::path p(ne_cache);
+        if (p.is_absolute()) {
+            std::filesystem::path rel = std::filesystem::relative(p, std::filesystem::current_path(ec), ec);
+            if (!ec && !rel.empty()) ne_cache = rel.generic_string();
+        }
+    }
     // max_digits10 (=17) round-trips every IEEE double exactly → the reader reconstructs
     // the partials bit-for-bit, so a re-aggregation matches the in-memory shape.
     os << std::setprecision(std::numeric_limits<double>::max_digits10);
@@ -146,7 +160,7 @@ void write_ss_partials(const std::string& path, const SSPartials& P,
        << "# n_curves " << meta.n_curves << "\n"
        << "# threads " << meta.threads << "\n"
        << "# complete " << (meta.complete ? 1 : 0) << "\n"
-       << "# ne_cache " << meta.ne_cache << "\n"
+       << "# ne_cache " << ne_cache << "\n"
        << "# part A B N  num[0..NB-1]  cnt[0..NB-1]\n";
     for (std::size_t c = 0; c < P.A.size(); ++c) {
         os << "part " << P.A[c] << ' ' << P.B[c] << ' ' << P.N[c];
