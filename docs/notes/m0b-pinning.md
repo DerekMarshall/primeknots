@@ -255,9 +255,14 @@ mismatches — incl. the 421,321-pair p≤229 fallback band; **276.5 s wall on 4
 ~10,560 s single-thread run it replaced and 190× the 52,711 s charsum reference-gen). **The full
 twins are now PARALLEL** (`run_m0b_cache_twin`, commit fbe51a5 — a_p is stateless + the cache is
 read-only ⇒ embarrassingly parallel; the earlier single-thread doctest loop was a needless
-bottleneck, ~3 h → ~4.6 min at 2¹⁷). **Pending:** x18 tail-weighted sample, `oracle_ellap` spot →
-PRODUCTION-CAPABLE. E3 three-algorithm clause licensed + shipped (x16 **and** x17); the former
-"two-platform" clause is **retired** in favour of the honest cross-algorithm framing above.
+bottleneck, ~3 h → ~4.6 min at 2¹⁷) · **x18 tail-weighted sample twin ✓**
+(`twin_m0b_bruteforce_x18_tailweighted`, commit 69c17d5: **27,920,597** (curve,prime) a_p —
+M0b == O(p) `ap_fast` referee EXACT, 0 mismatches, + 105,447 `ap_charsum` frozen-referee ties on
+p≤3000; 250 curves 30/50/70/100, maxN=6,898,240, selection fp=−3340584539278750007; 9,840 s / 48
+threads) · **`oracle_ellap` spot ✓** (`oracle_ellap_m0b_spot`, commit 69c17d5: 204 tail pairs ==
+PARI `ellap` gp 2.17.4, p up to 6,898,231). E3 three-algorithm clause licensed + shipped (x16
+**and** x17); the former "two-platform" clause is **retired** in favour of the honest
+cross-algorithm framing above.
 
 **Production wiring gate (2026-07-17) — GREEN.** `at ss-run --ap m0b` swaps the statistic's
 a_p source to Shanks–Mestre via a separate TU (`ss_empirical_partials_m0b`), leaving
@@ -268,9 +273,20 @@ curves' full-precision partials identical, the run-file shape+density data lines
 the same `generator_hash` (`b87ebd1e…`). The a_p swap changes **zero** numbers, as designed (a_p
 are equal integers; the prime-major iteration + accumulation order are unchanged) — M0b is a
 verified drop-in. M0b 2¹⁷ ss-run wall: **272 s on 48 threads** (vs the ~14.6 h charsum path).
-Default provider stays `fast`; `--ap m0b` opts in, and the default is not switched until
-PRODUCTION-CAPABLE. **Remaining before any 2¹⁸ production run: PRODUCTION-CAPABLE** = x18
-tail-weighted sample twin + `oracle_ellap` spot (the committed 2b acceptance).
+Default provider stays `fast`; `--ap m0b` opts in.
+
+## PRODUCTION-CAPABLE — REACHED 2026-07-17
+
+The committed 2b acceptance ladder (§7) is **fully green**:
+**anchors ✓ · x16 full twin ✓ · x17 full twin ✓ · x18 tail-weighted sample twin ✓ ·
+oracle_ellap spot ✓**, plus the production wiring gate ✓ (2¹⁶+2¹⁷ byte-identical) and riders
+R1/R2 ✓. Commit hashes: x18 sample spec pinned **00cdb94** (commit-before-run); x18 twin +
+oracle spot tests **69c17d5**; x18 twin result 27,920,597 a_p M0b == `ap_fast` EXACT (0
+mismatches) + `ap_charsum` frozen-referee ties, oracle spot 204 pairs == PARI `ellap` 2.17.4.
+
+**This HARD GATE now licenses M0b for a production rung.** The 2¹⁸ ss-run (`--ap m0b`, R1
+provenance stamped in the header) may launch — the first M0b production run and the first
+M0b-produced committed artifact.
 
 **Wiring riders R1/R2 (2026-07-17) — landed.** *R1 (provider provenance, commit 00bc821):*
 ss-run outputs now carry `# ap_provider fast|m0b` and, on `--ap m0b`, a `# provider_hash`
