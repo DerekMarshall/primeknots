@@ -288,6 +288,18 @@ mismatches) + `ap_charsum` frozen-referee ties, oracle spot 204 pairs == PARI `e
 provenance stamped in the header) may launch — the first M0b production run and the first
 M0b-produced committed artifact.
 
+**Production run — DONE 2026-07-17 (P3).** The 2¹⁸ ss-run (`--ap m0b`, threads=48, conductor-sorted
+chunked, real-FS checkpoints, no mid-run shape read) computed all 15,936 curves in **1014 s ≈ 16.9
+min** on the 48-core box — **~330×** the pre-M0b estimate (~3.9 d on 48 cores with the O(p) charsum;
+PR-1 Rung-2 postscript). R1 provenance verified in both emitted headers (`ap_provider m0b`,
+`provider_hash bc3f174a…`). Consistency twins passed (≤10⁴ byte-identical to M4; **H≤2¹⁷ subset
+byte-identical to the committed FreeBSD 2¹⁷ partials, full precision, all 9014 curves** — the
+full-scale a_p-provider-irrelevance proof on real data; ≤2¹⁶ density reproduces the macOS 2¹⁶ to the
+print floor). **PR-1 verdict: H0 (persistent, ≤2¹⁸)** — trough flat at u=0.8875 across the full
+ladder, finite-range not asymptotic (PR-1 Rung-3 postscript). Committed artifacts
+`data/m5/ss_x262144.txt` + `ss_partials_x262144.txt` carry `ap_provider m0b` (the first M0b-produced
+committed artifacts — R1 makes that legible).
+
 **Wiring riders R1/R2 (2026-07-17) — landed.** *R1 (provider provenance, commit 00bc821):*
 ss-run outputs now carry `# ap_provider fast|m0b` and, on `--ap m0b`, a `# provider_hash`
 = sha256 of the provider TU (`AT_M0B_PROVIDER_HASH`), so an M0b-produced file names its a_p

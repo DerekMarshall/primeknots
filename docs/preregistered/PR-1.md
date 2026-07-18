@@ -384,3 +384,65 @@ longer infrastructure-blocked (Rung-3 clause: cores substitute for M0b, a_p iden
 2¹⁷ is **deferred** to when `at` can be safely rebuilt (the emit's rung label is hardcoded "2¹⁶";
 the binary is currently held by the M0b a_p-cache generation) — freshness holds on the committed
 2¹⁶ emit meanwhile, and the 2¹⁷ re-emit + label fix land together in that follow-up.
+
+### Rung 3 — X = 2¹⁸ = 262144 (ran 2026-07-17; M0b first production run)
+
+**Outcome: H0 (persistent, ≤ 2¹⁸) — the full-feasible-ladder verdict, pronounced.** The
+Δu-quantized trough sits in the **same bin (u=0.8875)** at 2¹⁸ as at 2¹⁷, 2¹⁶, and the 10⁴
+anchor — four rungs, a 26× span over the anchor, **no recovery at either step**. This is the
+first rung at which R0's reserved H1/H0 verdict can be pronounced (the fullest ladder this
+infrastructure can build); it lands on **H0**.
+
+| X | \|fam\| | hump u (dev) | zero u (dev) | trough u (dev) | trough v |
+|---|--------|--------------|--------------|----------------|----------|
+| 10000 | 1048 | 0.4625 (0.0125) | 0.672894 (0.027894) | 0.8875 (0.0825) | −3.47052 |
+| 65536 | 5042 | 0.4625 (0.0125) | 0.670328 (0.025328) | 0.8875 (0.0825) | −3.71505 |
+| 131072 | 9014 | 0.4625 (0.0125) | 0.673202 (0.028202) | 0.8875 (0.0825) | −3.65241 |
+| 262144 | 15936 | 0.4625 (0.0125) | 0.671945 (0.026945) | 0.8875 (0.0825) | −3.57994 |
+
+**Rung-3 clause, applied VERBATIM (committed 2026-07-15, before any 2¹⁸ data; §"Three completed
+rungs").** d(X)=|trough_u−0.805|; d(2¹⁶)=0.0825, d(2¹⁷)=0.0825, **d(2¹⁸)=0.0825**; Δu=0.025.
+- *Step reading:* "strengthens finite-X" needs d(2¹⁸) ≤ d(2¹⁷)−Δu = **0.0575**; observed
+  **0.0825 > 0.0575 → NOT met**. d(2¹⁸) is **flat** vs d(2¹⁷) ⇒ **"strengthens persistent."**
+- *Finite-range verdict (full ladder):* **H1 (finite-X, ≤2¹⁸)** requires monotone ≥Δu recovery at
+  **both** steps — d(2¹⁷)≤d(2¹⁶)−Δu **and** d(2¹⁸)≤d(2¹⁷)−Δu; **neither** holds (0.0825 flat at
+  both). **H0 (persistent, ≤2¹⁸)** requires the trough flat across the ladder with no ≥Δu recovery
+  at either step — **satisfied**. ⇒ **VERDICT: H0 (persistent, ≤2¹⁸).** No renegotiation, either way.
+
+**Consistency twins (the run is valid before the verdict is read).** The 2¹⁸ run is the FreeBSD
+48-core conductor-sorted chunked build (single referee), a_p by **M0b (Shanks–Mestre), `--ap m0b`**.
+(i) ≤10⁴ ladder shapes reproduce the frozen M4 shapes **byte-for-byte**. (ii) Its **H≤2¹⁷ subset
+reproduces the committed FreeBSD 2¹⁷ partials EXACTLY — all 9014 curves, full precision, byte-for-
+byte** (the full-scale proof at the new rung: M0b's a_p == the O(p) referee's on real data, same
+platform). (iii) Its H≤2¹⁶ subset, re-aggregated at 65536, reproduces the committed **macOS** 2¹⁶
+density (max|ΔS|=5×10⁻⁶, the 6-figure print floor — cross-platform). Family count **15,936** matches
+the sieve-certified ne_cache and the 5/6-power law (2¹⁶→2¹⁷→2¹⁸ ratios 1.788, 1.768 vs 2^{5/6}=1.782).
+
+**Supporting empirics (NOT the gate).** (a) Sub-bin zero-crossing series over {10⁴,2¹⁶,2¹⁷,2¹⁸}:
+0.672894 → 0.670328 → 0.673202 → 0.671945 — flat near ~0.671, non-monotone, no convergence to the
+0.645 target either; direction only. (b) The trough **depth** eases monotonically across the three
+extension rungs (−3.71505 → −3.65241 → −3.57994) even as its **position** stays fixed at 0.8875 —
+a hint of amplitude decay consistent with [SS25]'s expected large-X behaviour, but the committed
+rule gates on **position**, so it does not move the verdict; logged as an observation, not a claim.
+
+**Scale caveat, riding EVERY branch (unchanged — still bites at 2¹⁸).** 2¹⁸ is still the **very
+bottom** of [SS25]'s 2¹⁶–2²⁸ observed-decay window (~2¹⁰× below their top, reached only via
+sub-linear point counting). **H0 (persistent, ≤2¹⁸) is a finite-range statement, explicitly NOT the
+X→∞ verdict [SS25] describe.** The depth-easing observation (b) is exactly why this matters — a
+settled-looking position on an accessible range need not be the asymptotic picture.
+
+**Run engineering + wall time (P3).** **1014 s ≈ 16.9 min** on 48 FreeBSD cores via **M0b
+(`ap_shanks_mestre`, O(p^{1/4}))**, conductor-sorted chunked (chunk 512), real-FS checkpoints, no
+mid-run shape read (R3). This is **M0b's first production run and the first M0b-produced committed
+artifact**; **R1 provenance** is stamped in both output headers (`ap_provider m0b`,
+`provider_hash bc3f174a…` = sha256 of the provider TU). **Speedup:** the pre-M0b Rung-3 estimate was
+~3.9 d on 48 cores with the O(p) charsum (§Rung-2 postscript); M0b did it in **16.9 min — ~330×**,
+the entire reason M0b exists. PRODUCTION-CAPABLE was reached (hard gate) before launch: x18
+tail-weighted sample twin (27.9 M a_p M0b==ap_fast exact) + oracle_ellap spot (204 tail pairs ==
+PARI ellap 2.17.4), m0b-pinning §7.
+
+**Analysis-code hash unchanged** (`b87ebd…` = `SS_GENERATOR_HASH`; M0b swaps only the a_p provider,
+not the statistic). Committed artifacts: `data/m5/ne_cache_x262144.txt`, `data/m5/ss_x262144.txt`,
+`data/m5/ss_partials_x262144.txt` (FreeBSD/M0b-generated, `ap_provider m0b`). Viewer JSON re-emit
+with the 2¹⁸ rung + the hardcoded-rung-label fix lands in this commit set (the deferral in the
+Rung-2 postscript is now resolved — the `at` binary is free).

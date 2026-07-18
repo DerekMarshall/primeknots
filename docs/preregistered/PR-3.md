@@ -229,25 +229,33 @@ committed `ss_x*.txt` density column: max|ΔS| = 4.9×10⁻⁶ = the 6-sig-fig p
 | 10000 | −0.05344 | +0.345 | −0.01842 | −3.471 | +0.515 | −3.986 | **+0.0046** | same |
 | 2¹⁶ | −0.01150 | −0.326 | +0.00375 | −3.715 | +0.515 | −4.230 | **−0.0009** | OPP |
 | 2¹⁷ | −0.00777 | −0.327 | +0.00254 | −3.652 | +0.515 | −4.168 | **−0.0006** | OPP |
+| 2¹⁸ | −0.01029 | −0.312 | +0.00321 | −3.580 | +0.515 | −4.095 | **−0.0008** | OPP |
+
+*(The 2¹⁸ row was appended 2026-07-17 with the PR-1 Rung-3 M0b production run — the D2 estimator
+was already pinned commit 21060a0, so δ was committed before the a_p; the re-aggregated 2¹⁶/2¹⁷
+rows reproduce this table's committed values exactly, a free consistency check.)*
 
 Annulus increments (quasi-independent shells) tell the same story: f ∈ {+0.013, 0.000,
-+0.001, −0.020, −0.0001, −0.0002}; the (4000,6000] shell has n₊=n₋ exactly ⇒ δ=0 ⇒ L=0
-(the mechanism's necessary condition, cleanly visible). The descending-branch profile (u>zero_u)
-has |L(u)| ≤ 0.0036 across the *entire* branch at 2¹⁷ while |dep(u)| ranges 0.07–4.2 — L is
-negligible everywhere, with no structure.
++0.001, −0.020, −0.0001, −0.0002, **−0.0010**}; the newest shell **(2¹⁷,2¹⁸]** (6922 curves,
+δ=−0.01358) gives L\*=+0.00396 vs dep\*=−4.001 ⇒ f=−0.0010, OPP — in line with all the others. The
+(4000,6000] shell has n₊=n₋ exactly ⇒ δ=0 ⇒ L=0 (the mechanism's necessary condition, cleanly
+visible). The descending-branch profile (u>zero_u) has |L(u)| ≤ 0.0054 across the *entire* branch
+at 2¹⁸ while |dep(u)| ranges 0.05–4.1 — L is negligible everywhere, with no structure.
 
 ### Verdict — leakage **bounded out** (the §0d EXPECTED outcome, sharper than expected)
 
-- **f ≪ 1 at every rung**: |f| ≤ 0.021 (cumulative) and ≤ 0.020 (annulus). At the two largest,
-  least-noisy rungs (2¹⁶, 2¹⁷) f = −0.0009, −0.0006 — i.e. the leakage accounts for < 0.1% of
-  the trough departure.
+- **f ≪ 1 at every rung**: |f| ≤ 0.021 (cumulative) and ≤ 0.020 (annulus), across the **full
+  four-rung ladder to 2¹⁸**. At the three largest, least-noisy rungs (2¹⁶, 2¹⁷, 2¹⁸) f = −0.0009,
+  −0.0006, −0.0008 — the leakage accounts for < 0.1% of the trough departure, and does not grow
+  with X.
 - **The absolute leakage is tiny and denominator-robust**: |L(u\*)| ≤ 0.07 density units (and
   ≤ 0.003 at 2¹⁶/2¹⁷), against a trough departure ≈ 4 and a signed trough depth ≈ 3.7. Even
   divided by §0d's smaller O(0.5–1) "deficit," f ≈ 0.005 at 2¹⁶ — still ≪ 1. The conclusion
   does not depend on the denominator choice, because the *numerator* is negligible.
-- **The sign is UNSTABLE** (cumulative: same, OPP, same, same, OPP, OPP), because U(u\*) — the
+- **The sign is UNSTABLE** (cumulative: same, OPP, same, same, OPP, OPP, OPP), because U(u\*) — the
   unsigned bias *at the trough bin* — itself flips sign across rungs (+0.80, −1.30, +0.65,
-  +0.34, −0.33, −0.33). At the two most reliable rungs the leakage points *against* the deficit.
+  +0.34, −0.33, −0.33, −0.31). At the three most reliable rungs the leakage points *against* the
+  deficit.
   A material leakage would be a stable, same-sign offset; this is noise-like scatter about zero.
 - **§0d's implausibility argument confirmed, decisively**: f ≈ 1 would need |U(u\*)| ≈
   |dep\*|/|δ| ≈ 368 at 2¹⁶; measured |U(u\*)| = 0.33 — short by ~3 orders of magnitude (§0d
