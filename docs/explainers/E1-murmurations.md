@@ -174,20 +174,24 @@ referees) and renders each stage as a JSON artifact with a static viewer:
   checks the empirical average against the closed-form `M₂(y)` (`zubrilina_murmuration.json`).
   <!-- claim:E1-31 -->
 - **Stage M4 + PR-1** test **Sawin–Sutherland Conjecture 1** on the height-ordered family we
-  build and count end to end (1048 curves at height ≤ 10⁴; 5042 at ≤ 2¹⁶). The hump and the
-  first zero-crossing land within our pre-registered tolerance; the **trough is an openly
-  flagged deviation** that stayed put (did not move toward the target) when we extended the
-  scale from 10⁴ to 2¹⁶ (`sawin_sutherland_murmuration.json`,
+  build and count end to end, over a four-rung ladder (1048, 5042, 9014, 15936 curves at
+  heights ≤ 10⁴, 2¹⁶, 2¹⁷, 2¹⁸). The hump and the first zero-crossing land within our
+  pre-registered tolerance at every rung; the **trough is an openly flagged deviation** that
+  stayed put (did not move toward the target) at all four scales, so the pre-registered rule
+  returns the verdict **H0 (persistent)** over the computed range ≤ 2¹⁸ — a finite-range
+  statement, not a claim about the infinite limit (`sawin_sutherland_murmuration.json`,
   `ss_x_extension_murmuration.json`; the pre-registration is `docs/preregistered/PR-1.md`).
   <!-- claim:E1-32 -->
 
 ## What remains open
 
 The conductor-ordered elliptic-curve density is open. Sawin–Sutherland's height density is a
-**conjecture**, not a theorem. Our own height-ordered **trough deviation is unresolved** — we
-have shown, on our range, that it does not decay like a finite-size effect should, and we have
-*not* claimed to know why; that is logged as an open deliverable, and a follow-up
-pre-registration (PR-2) tests one candidate explanation (an over-representation of
-higher-rank curves) whose own outcome is still pending. <!-- claim:E1-33 --> Nothing here
+**conjecture**, not a theorem. Our own height-ordered **trough deviation** has the verdict H0
+(persistent) on our range — we have shown that it does not decay like a finite-size effect
+should — but its **mechanism is unresolved**: two follow-up pre-registrations each tested a
+candidate and neither explains it. PR-2 (an over-representation of analytic-rank-2 curves):
+excising that subpopulation does not recover the trough. PR-3 (a root-number imbalance leaking
+into the average): the leakage is bounded well below the deviation. We have *not* claimed to
+know why the trough sits where it does; that is logged as an open deliverable. <!-- claim:E1-33 --> Nothing here
 proves a conjecture or resolves BSD; "verified" in this project always means *numerically,
 over a stated range, cross-checked* — never a formal proof. <!-- claim:E1-34 -->

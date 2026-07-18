@@ -28,7 +28,13 @@ spanning the range** of primes we use (`twin_ap_fast_vs_charsum_m4`). <!-- claim
 M0b stage a **third, genuinely independent** algorithm — Shanks–Mestre point counting, *not a
 character sum at all* — reproduces the referee's a_p **exactly over the full 2¹⁶ grid** (all 112
 million (curve, prime) values, `twin_m0b_vs_charsum_x16`) at ~145× less CPU, so one a_p is now
-corroborated across three independent algorithms. <!-- claim:E3-2b --> Only after the twins
+corroborated across three independent algorithms. Because a_p is a **platform-independent
+integer**, those full-grid twins run same-platform by design; the cross-platform axis is
+corroborated separately and openly — a pre-registered, tail-weighted sample of 79,268
+(curve, prime) values comes out **byte-identical** on the laptop (`g++-16`, macOS) and the
+compute box (`clang 21.1.8`, FreeBSD), and every emitted artifact matches byte-for-byte across the
+two toolchains (§7) — not a full two-platform grid twin, which for an integer would verify nothing
+extra. <!-- claim:E3-2b --> Only after the twins
 agree is one of them optimized; the naive twin stays as the referee and is never optimized
 too. <!-- claim:E3-3 -->
 
@@ -72,8 +78,10 @@ Two worked examples from this project:
 - **PR-1** committed, *before* extending the computation to a larger scale, a single decision
   rule for what would count as "the deviation is a finite-size effect" versus "the deviation
   persists" — and, before ever reading the larger-scale output, committed the interpretation
-  fork. When the data came in, the rule was applied verbatim, not renegotiated.
-  <!-- claim:E3-11 -->
+  fork. When the data came in across the full four-rung ladder (heights 10⁴ to 2¹⁸), the rule
+  was applied verbatim, not renegotiated, and returned the "persists" branch: the trough
+  deviation does not decay over the computed range (a finite-range verdict, not a claim about
+  the infinite limit). <!-- claim:E3-11 -->
 - **PR-2** committed the exact statistical threshold — computed as a formula in a
   pre-measured quantity — *before* the split data it judges was ever computed. <!-- claim:E3-12 -->
 

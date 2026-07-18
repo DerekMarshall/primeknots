@@ -51,8 +51,8 @@ arXiv:2504.12295.
 | E1-29 | M1: unweighted `a_p` mean, conductor-ordered, rank-split, Cremona; our emit = first 300 primes vs `p/N₂`; HLOP Fig 1 = 1000 primes over [7500,10⁴]/[5000,10⁴] | viz/data/murmuration_curve.json (n_primes 300, y_axis p/N2); HLOP Example 1; m1-pinning §P3 |
 | E1-30 | M2 replicates the LOP Dirichlet-character murmuration | viz/data/dirichlet_murmuration.json (source LOP) |
 | E1-31 | M3 replicates Z25's proved weight-2 density and checks the empirical avg vs `M₂(y)` | viz/data/zubrilina_murmuration.json (params: Z25 Theorem 1); M3 verification suite (verify/, ctest label m3) |
-| E1-32 | M4+PR-1 test SS Conjecture 1 (1048 at ≤10⁴, 5042 at ≤2¹⁶); hump+zero within τ, trough an open deviation flat 10⁴→2¹⁶ | sawin_..._murmuration.json, ss_x_extension_murmuration.json; PR-1.md; test `prereg_ss_x_extension` |
-| E1-33 | Our trough deviation is unresolved (does not decay on our range); PR-2 tests a candidate, outcome pending | PR-1.md postscript; docs/preregistered/PR-2.md |
+| E1-32 | M4+PR-1 test SS Conjecture 1 over a four-rung ladder (\|fam\| 1048/5042/9014/15936 at 10⁴/2¹⁶/2¹⁷/2¹⁸); hump+zero within τ at every rung, trough an open deviation flat 10⁴→2¹⁸ → PR-1 verdict H0 (persistent, ≤2¹⁸) | sawin_..._murmuration.json, ss_x_extension_murmuration.json; PR-1.md (Rung-3 postscript); tests `prereg_ss_x_extension`, `prereg_ss_x17_confirmation` |
+| E1-33 | Trough deviation verdict H0 (persistent, does not decay over ≤2¹⁸); MECHANISM unresolved — PR-2 (analytic-rank-2 split) does not recover the trough, PR-3 (root-number leakage) is bounded below the deviation, neither explains it | PR-1.md postscript; docs/preregistered/PR-2.md, PR-3.md |
 | E1-34 | "Verified" = numerically, over a range, cross-checked; no formal proof claimed | CLAUDE.md rule 7 / RESEARCH-M §0 rule 7 |
 | E1-37 | Discovery steps = averaging + PCA of coefficients; corroborated by Sutherland's Sept-2023 talk (scale-invariant p/N, root-number split) | HLOP §3.2 (Averaging), §3.4 (PCA); A. Sutherland, murmurations talk (Sept 2023): slides drive.google.com/file/d/17VR0FPH8kNTL3nPXKrY4zu4m6C2Ml_9G, video youtube.com/watch?v=AFupZY06FPY |
 
@@ -87,7 +87,7 @@ arXiv:2504.12295.
 |----|-------|--------|
 | E3-1 | Every load-bearing function has two independent implementations, or an oracle check | CLAUDE.md rule 2 |
 | E3-2 | `a_p` by **three independent algorithms** (frozen `ap_charsum` referee, fast QR-table `ap_fast`, Shanks–Mestre point counting) agreeing exactly — a certified M4 sample + the full 2¹⁶ and 2¹⁷ grids for M0b | tests `twin_ap_fast_vs_charsum_m4`, `twin_m0b_vs_charsum_x16`, `twin_m0b_vs_charsum_x17` |
-| E3-2b | Shanks–Mestre reproduces the full 2¹⁶ **and 2¹⁷** a_p grids EXACTLY (112 M and 385 M values, 0 mismatches) at ~145× less CPU (O(p^{1/4}) point counting vs O(p) charsum); a **cross-ALGORITHM** twin (SM vs the charsum reference cache) — a_p is a platform-independent integer, so it is same-platform by design, not a two-platform claim | `twin_m0b_vs_charsum_x16`, `twin_m0b_vs_charsum_x17`; m0b-pinning.md §7 |
+| E3-2b | Shanks–Mestre reproduces the full 2¹⁶ **and 2¹⁷** a_p grids EXACTLY (112 M and 385 M values, 0 mismatches) at ~145× less CPU (O(p^{1/4}) point counting vs O(p) charsum); a **cross-ALGORITHM** twin (SM vs the charsum reference cache) — a_p is a platform-independent integer, so it is same-platform by design, not a two-platform claim. The cross-platform axis is corroborated separately: a pre-registered 79,268-pair a_p sample is byte-identical laptop (`g++-16`, macOS) vs FreeBSD (`clang 21.1.8`), and every emitted artifact is byte-identical across the two (freshness) | `twin_m0b_vs_charsum_x16`, `twin_m0b_vs_charsum_x17`; m0b-pinning.md §7; docs/notes/libm-partial-diff-spec.md (Q1, sha e7ba27d7); verify/freshness_check.py |
 | E3-3 | Optimize one twin; keep the naive twin as referee, never optimize both | CLAUDE.md "Working style" (performance after correctness) |
 | E3-4 | Oracles (PARI/LMFDB/Odlyzko) referee, are never called from src/ | CLAUDE.md rule 3 |
 | E3-5 | An absent oracle SKIPs visibly (skip code), never a silent pass | CLAUDE.md rule 3; ctest SKIP_RETURN_CODE 77 (verify/CMakeLists.txt) |
@@ -96,7 +96,7 @@ arXiv:2504.12295.
 | E3-8 | Never fit a convention to the expected answer; fix the reading against the source | CLAUDE.md rule 1 (the prime directive) |
 | E3-9 | Invariance test is senior to the anchor test (passing anchor + failing invariance ⇒ convention still wrong) | memory `invariance-is-senior-to-anchor`; CLAUDE.md rule 1 (verification vocabulary) |
 | E3-10 | Research-mode: tolerance/decision-rule/threshold committed to VCS before the data exists | RESEARCH-M §7; docs/preregistered/ |
-| E3-11 | PR-1 committed the finite-X-vs-persistent decision rule + interpretation fork before reading the larger scale | docs/preregistered/PR-1.md (decision rule; commit before ladder) |
+| E3-11 | PR-1 committed the finite-X-vs-persistent decision rule + interpretation fork before reading the larger scale; applied verbatim over the four-rung ladder (10⁴–2¹⁸), it returned the "persists" branch (verdict H0, ≤2¹⁸) | docs/preregistered/PR-1.md (decision rule; commit before ladder; Rung-3 postscript) |
 | E3-12 | PR-2 committed the exact contrast threshold before the split data was computed | docs/preregistered/PR-2.md §"Step 2" |
 | E3-13 | Every exploratory statistic looked at is logged in a looks ledger | docs/preregistered/LOOKS.md; RESEARCH-M §7 |
 | E3-14 | The errata ledger currently holds 26 entries | docs/ERRATA.md (26 rows) |
