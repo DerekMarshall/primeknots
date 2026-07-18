@@ -11,11 +11,7 @@
      Numbers/quotes are from cited sources or emitted artifacts only (rules 6/8; R3). Every
      nontrivial sentence carries a <!-- claim:Nx-y --> marker with a row in CLAIMS-N.md. -->
 
-# [TITLE — PLACEHOLDER, Derek's decision]
-
-<!-- Working title (draft, replace): "Height-ordered elliptic-curve murmurations: a
-     from-scratch replication of Sawin–Sutherland Conjecture 1 and two pre-registered
-     mechanism constraints." -->
+# A pre-registered replication of the Sawin–Sutherland height-ordered murmuration
 
 **Author:** Derek Marshall (ORCID [0009-0001-8101-3908](https://orcid.org/0009-0001-8101-3908)). <!-- authorship block — Derek's decision; co-authorship/affiliation PLACEHOLDER; title still [PLACEHOLDER] -->
 
@@ -41,7 +37,7 @@ rule returns H0: the trough deviation is persistent across the ladder, a finite-
 over `X ≤ 2¹⁸` and not a claim about the large-`X` limit. Two pre-registered follow-ups constrain
 candidate mechanisms: excising the analytic-rank-2 subpopulation does not move the trough, so the
 deficit is not carried by rank-2 over-representation, and leakage of the parity-independent
-unsigned bias through the measured root-number imbalance is bounded to a few percent with unstable
+unsigned bias through the measured root-number imbalance is bounded to `|f| ≤ 2%` with unstable
 sign. Neither explains the deficit, which we leave open. Every result is numerical over a stated
 finite range, twinned or oracle-refereed, and cross-checked for cross-platform reproducibility; the
 note proves nothing.
