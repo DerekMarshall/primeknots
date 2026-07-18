@@ -32,8 +32,8 @@ Status: **§1–§4 rows complete; §5–§6 + Abstract [PENDING]** (drafted per
 | N1-3 | SS25 Theorem 2: proven variant — prime sum → sum over integers with no prime factor `≤P` against a smooth weight; same integrand; `P→∞` limit established | SS25 Theorem 2, p.2 (quoted, m4-pinning.md §P3 line 156–158) |
 | N1-4 | The prime-sum height murmuration density is CONJECTURAL; Theorem 2 is the rigorous backdrop, not the compared object | m4-pinning.md §P3 (lines 40, 160–161); SS25 (Conjecture 1 vs Theorem 2); CLAIMS-E E1-26 |
 | N1-5 | "Verified" = numerical over a stated range, twin/anchor/oracle-checked; never a formal proof | CLAUDE.md rule 7 / RESEARCH-M §0 rule 7 |
-| N1-6 | We compute statistic (1) over `X = 10⁴, 2¹⁶, 2¹⁷`, bin by `u=p/N`, compare to `D(u)` via pre-fixed shape invariants (hump/zero/trough) | docs/preregistered/PR-1.md (commit fa4e35a); src/murm/ss_empirical.h:17–19; data/m5/ss_x{65536,131072}.txt |
-| N1-7 | No asymptotic claim; our range is at the bottom of SS25's observed-decay window (naive height `2¹⁶–2²⁸`); "persistent" = over our finite range | SS25 (decay window, p.1); docs/preregistered/PR-1.md (scale caveat, commit fa4e35a) |
+| N1-6 | We compute statistic (1) over `X = 10⁴, 2¹⁶, 2¹⁷, 2¹⁸`, bin by `u=p/N`, compare to `D(u)` via pre-fixed shape invariants (hump/zero/trough) | docs/preregistered/PR-1.md (pre-registered dd6beb0 → read 8f64ba1); src/murm/ss_empirical.h:17–19; data/m4/ss_empirical.txt + data/m5/ss_x{65536,131072,262144}.txt |
+| N1-7 | No asymptotic claim; our range (≤2¹⁸) is at the bottom of SS25's observed-decay window (naive height `2¹⁶–2²⁸`); "persistent" = over our finite range | SS25 (decay window, p.1); docs/preregistered/PR-1.md (scale caveat, pre-registered dd6beb0 → read 8f64ba1) |
 
 ## §2 — Methods
 
@@ -53,6 +53,7 @@ Status: **§1–§4 rows complete; §5–§6 + Abstract [PENDING]** (drafted per
 | N2-12 | `D(u)` evaluated in a separate TU: Bessel-`J₁` double sum, Lemmas 3–4 local factors, in-house `J₁`, generated (not typed) constants, truncated `q,m ≤ 2000` | src/murm/ss_density.h; m4-pinning.md §P3; src/emit/emit_sawin_sutherland.cpp (`kDensB = 2000`); CLAUDE.md rule 8 |
 | N2-13 | Emitted density byte-portable across compilers/platforms (verified) | verify/freshness_check.py; memory `cross-compiler-emit-determinism` (`-ffp-contract=off`); CLAIMS-E E3-17, E3-18 |
 | N2-14 | `a_p` by three independent algorithms (`ap_charsum`, `ap_fast`, Shanks–Mestre) agreeing exactly over the full 2¹⁶ **and 2¹⁷** grids (112 M + 385 M, 0 mismatches) at ~145× less CPU; at 2¹⁸ a tail-weighted 27.9 M-value sample + PARI `ellap` spot (204 pairs, p≤6.9 M) — the production-capability gate; cross-algorithm, a_p platform-independent integer | CLAIMS-E E3-2b; docs/notes/m0b-pinning.md §7 (ladder + PRODUCTION-CAPABLE); tests `twin_m0b_vs_charsum_x16/x17` ✓ (fbe51a5), `twin_m0b_bruteforce_x18_tailweighted` + `oracle_ellap_m0b_spot` ✓ (69c17d5) |
+| N2-15 | eq (1) is a definition we evaluate, eq (2)'s equality to the X→∞ limit is the conjecture; D̂ is compared to D(u), reported as empirical agreement, never a proof | SS25 Conjecture 1 / eq (2), p.2; m4-pinning.md §P3; CLAUDE.md rule 7 (no proof claimed) |
 
 ## §3 — Results
 
@@ -62,7 +63,7 @@ Status: **§1–§4 rows complete; §5–§6 + Abstract [PENDING]** (drafted per
 | N3-2 | hump dev 0.0125 + first-zero dev ≤0.0282 within τ=0.06; trough dev 0.0825 > τ (open deviation) | same ss_x*.txt `shape` rows; τ=0.06 committed (PR-1 R0c; ss_x*.txt `# tol`) |
 | N3-3 | Verdict H0 (persistent, ≤2¹⁸): d flat 0.0825 at 2¹⁶/2¹⁷/2¹⁸, no ≥Δu recovery at either step; Rung-3 clause quoted verbatim | docs/preregistered/PR-1.md §"Three completed rungs" (clause 4a17ebe) + Rung-3 postscript (8f64ba1) |
 | N3-4 | Supporting: first-zero series 0.672894/0.670328/0.673202/0.671945 flat/non-monotone (direction only, not the gate) | ss_x*.txt `shape` rows (zero_u) |
-| N3-5 | Supporting: trough depth eases −3.715/−3.652/−3.580 (2¹⁶→2¹⁷→2¹⁸) while position holds 0.8875 | data/m5/ss_x{65536,131072,262144}.txt `shape` rows (trough_v) |
+| N3-5 | Supporting: trough depth eases −3.715/−3.652/−3.580 (2¹⁶→2¹⁷→2¹⁸) while position holds 0.8875; the 10⁴ depth −3.47 is shallower than 2¹⁶, so the easing is a three-rung observation, not a four-rung monotone trend | data/m4/ss_empirical.txt + data/m5/ss_x{65536,131072,262144}.txt `shape` rows (trough_v) |
 
 ## §4 — Mechanism constraints
 

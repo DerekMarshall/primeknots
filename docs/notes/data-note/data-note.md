@@ -134,7 +134,7 @@ computed-only. <!-- claim:N2-4 -->
 *Conjectured — [SS25] eq. (2) / Conjecture 1.* [SS25] conjecture that the `X→∞` limit of (1)
 equals `∫ D(u) du`, where `D(u)` is the Bessel-`J₁` density transcribed verbatim in §1. **eq (1)
 is a definition we evaluate; eq (2)'s equality to the limit is the CONJECTURE.** `D̂` is compared
-to `D`; the note reports empirical agreement, never a proof (§1). <!-- claim:N1-2 -->
+to `D`; the note reports empirical agreement, never a proof (§1). <!-- claim:N2-15 -->
 
 **Provenance — computed vs. oracle.** The Frobenius trace `a_p = p + 1 − #E(𝔽_p)` is **computed
 from scratch**; the conductor `N(E)` and root number `ε(E)` are **oracle-provenance input**
@@ -155,8 +155,9 @@ described in the companion method explainer (E3). <!-- claim:N2-9 -->
      below, drafted-and-gated per R2, is now live prose. Recorded non-silently (R5). -->
 In fact `a_p` is computed by **three** independent algorithms — the frozen `ap_charsum` referee,
 the fast QR-table `ap_fast`, and Shanks–Mestre point counting — agreeing **exactly** over the full
-2¹⁶ and 2¹⁷ `a_p` grids (112 M and 385 M values, 0 mismatches) at ~145× less CPU (O(p^{1/4}) point
-counting vs. O(p) character sum); at 2¹⁸ the equality is verified on a tail-weighted 27.9 M-value
+2¹⁶ and 2¹⁷ `a_p` grids (112 M and 385 M values, 0 mismatches) at ~145× less CPU aggregated over
+the 2¹⁶ grid (O(p^{1/4}) point counting vs. O(p) character sum); at 2¹⁸ the equality is verified
+on a tail-weighted 27.9 M-value
 sample against the O(p) referee **and** on a PARI `ellap` spot (204 pairs, p up to 6.9 M) — the
 pre-registered production-capability gate. This is a **cross-algorithm** check (Shanks–Mestre vs.
 the charsum referee); `a_p` is a platform-independent integer, so it is verified same-platform by
@@ -217,9 +218,11 @@ decay window.
 **Supporting register (NOT the gate).** (i) The first-zero series `0.672894 → 0.670328 → 0.673202
 → 0.671945` is flat near ~0.671, non-monotone, converging to neither the 0.645 target nor away —
 direction only. <!-- claim:N3-4 --> (ii) The trough **depth** eases monotonically across the three
-extension rungs `−3.715 → −3.652 → −3.580` even as its **position** holds at 0.8875 — a hint of
-amplitude decay consistent with the expected large-X behaviour, but the committed rule gates on
-**position**, so it does not move the verdict; logged as an observation, not a claim. <!-- claim:N3-5 -->
+extension rungs `−3.715 → −3.652 → −3.580` even as its **position** holds at 0.8875. The 10⁴ depth
+(−3.47) is shallower than 2¹⁶, so this easing is a three-rung observation, not a monotone four-rung
+trend. It is a hint of amplitude decay consistent with the expected large-X behaviour, but the
+committed rule gates on **position**, so it does not move the verdict; logged as an observation,
+not a claim. <!-- claim:N3-5 -->
 
 ## 4. Mechanism constraints
 
