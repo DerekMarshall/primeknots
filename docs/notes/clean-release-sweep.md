@@ -7,8 +7,8 @@ correctness or freshness (which normalizes the stamps); these are provenance-hyg
 | item | detail | status |
 |------|--------|--------|
 | M4 snapshot stamp | was `6d50db0-dirty`; re-emitted clean → `558efe8` (commit ce5f974) | **done** |
-| M3 snapshot stamp | `viz/data/zubrilina_murmuration.json` carries `601ecfc-dirty` — emitted mid-work, never re-emitted at a clean tree | TODO — chore re-emit at a clean tree |
-| all snapshot stamps audit | grep every `viz/data/*.json` `generated_by`; any `-dirty` = emitted from an uncommitted tree → chore re-emit clean (freshness normalizes, so this is cosmetic provenance, not a test failure) | TODO |
+| M3 snapshot stamp | `viz/data/zubrilina_murmuration.json` carried `601ecfc-dirty` | **done** (Layer-1: re-emitted clean → `9953a10`) |
+| all snapshot stamps audit | grep every `viz/data/*.json` `generated_by`; any `-dirty` = emitted from an uncommitted tree → chore re-emit clean (freshness normalizes, so this is cosmetic provenance, not a test failure) | **done** (Layer-1: 3 dirty — dirichlet, zubrilina, ss_x_extension — re-emitted clean via a temp-dir emit at a clean tree → `9953a10`; rest already clean) |
 | deck M-stage rows | the explainer deck's "18 entries" is the Stage 0–6 count; M-ladder ERRATA rows (#19–#26) + the M-stages are added when the M-stages are presented (RESEARCH/deck deferred) | TODO |
 | README scope note | one-line note that the scope outgrew the `primeknots` name deliberately (project-status, rule 7) | **done** (Layer-1 sweep; README.md after the intro) |
 
