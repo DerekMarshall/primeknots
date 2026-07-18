@@ -47,17 +47,20 @@ Provenance for all inputs is pinned by hash below.
 
 | Role | File (local, gitignored) | sha256 | bytes | curves |
 |------|--------------------------|--------|-------|--------|
-| Laptop partials (abandoned 2¹⁷ ckpt) | `data/m5/ss_partials_x131072.txt.ckpt` | `1255608e9592805b7671501cd6dda52115b330af5debd9f8731e9716e06b782c` | 8809496 | 8640 |
+| Laptop partials (abandoned 2¹⁷ ckpt) | `data/m5/ss_partials_x131072.txt.ckpt` | `ff34a444ada791c118681014bde127540a0e921e64901684adbd233f5151d03c` | 8809432 | 8640 |
 | Laptop a_p cache (2¹⁷ ckpt) | `data/m5/ap_cache_x131072.bin.ckpt` | `88f2481ff1ae3685d0e15f06ba8e82291b74564248ba4e3a1918b3fc6ff07699` | 771585467 | — |
 | FreeBSD partials (committed, 2¹⁷ canonical) | `data/m5/ss_partials_x131072.txt` | `5f7a4106e3420884f43eb4f4a06f25c9de06352b08953ddf3490a12cdca4eaf2` | 9205871 | 9014 |
 
 Both files carry `generator_hash b87ebd1e188e15dc2d3a1c2a54e5300dc3c7ff3d4adef3e77d5328b9ff526cde`
 (identical statistic source). The partials ckpt header records `complete 0` (an abandoned run),
-`threads 12`, `n_curves 8640`, and an `ne_cache` path under `/Users/derekmarshall/...`, a laptop
-absolute path written at run time — which corroborates laptop origin from the artifact itself.
-Derek attests (2026-07-17) that these are the abandoned laptop 2¹⁷ run; the embedded path and the
-`complete 0` flag corroborate that attestation. The host compiler and flags are **not** stamped
-anywhere in the artifact or the run log (checked), so they remain unknown (see Toolchains).
+`threads 12`, and `n_curves 8640`. Its `ne_cache` field originally held a laptop absolute path
+(`/Users/derekmarshall/…`) written at run time; the Layer-1 QA sweep (2026-07-18) relativized it to
+`data/m5/ne_cache_x131072.txt` so the released artifact carries no local home path — data
+byte-identical apart from that one comment, ckpt sha **re-pinned** `1255608e…` → `ff34a444…` (the
+table above). Derek attests (2026-07-17) that these are the abandoned laptop 2¹⁷ run; the
+`complete 0` flag, the 12-thread / 8640-curve header, and the pre-relativization absolute path
+preserved in git history corroborate that attestation. The host compiler and flags are **not**
+stamped anywhere in the artifact or the run log (checked), so they remain unknown (see Toolchains).
 
 ## Toolchains pinned
 

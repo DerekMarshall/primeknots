@@ -45,10 +45,15 @@ on the laptop); its green status is on the 48-core FreeBSD box per m0b-pinning �
   `data/m5/ss_partials_x65536.txt:16`, `data/m5/ss_partials_x131072.txt.ckpt:16` (written by
   `write_ss_partials` from the invocation path; `libm-partial-diff-spec.md:56` mentions it
   deliberately).
-  **Fix — recorded, NOT applied (non-trivial):** the ckpt's sha256 is *pinned* (item 6), so editing
-  its header breaks the pin; the field is generator-written. A proper fix relativizes the
-  `ne_cache` path in the partials writer, regenerates the non-pinned partials, and re-pins the
-  ckpt — a deliberate follow-up, not a mechanical sweep edit. **FLAGGED for Derek.**
+  **Fix — APPLIED (Derek chose option B, 2026-07-18).** Relativized the `ne_cache` header in both
+  leaking files (`ss_partials_x65536.txt`, `ss_partials_x131072.txt.ckpt`) to
+  `data/m5/ne_cache_x{…}.txt`; the numeric partials data is byte-identical, only that one comment
+  line changed. The pinned ckpt was **re-pinned** in `libm-partial-diff-spec.md` (sha
+  `1255608e…` → `ff34a444…`, bytes 8809496 → 8809432) and its provenance paragraph updated —
+  laptop-origin corroboration now rests on the `complete 0` flag, the 12-thread / 8640-curve
+  header, git history (which preserves the original absolute path), and Derek's attestation.
+  `write_ss_partials` now relativizes an absolute `ne_cache` going forward — commit `3a10496`.
+  The two header relativizations + the re-pin + this note are the accompanying data commit.
 
 ### 3. Hash audit — **PASS**
 All 9 cited 7-hex commit hashes resolve (`git cat-file -e`): `dd6beb0`, `4a17ebe`, `8f64ba1`,
@@ -85,9 +90,11 @@ snapshots carry a `-dirty` `generated_by`: `dirichlet_murmuration.json` +
 snapshots at a clean tree — commit `e09f2e7`.
 
 ### 6. `.gitignore` exception — ckpt present + sha — **PASS**
-`data/m5/ss_partials_x131072.txt.ckpt` is present in the clean clone; its sha256 =
-`1255608e9592805b7671501cd6dda52115b330af5debd9f8731e9716e06b782c`, **exactly** the value pinned in
-`docs/notes/libm-partial-diff-spec.md`.
+`data/m5/ss_partials_x131072.txt.ckpt` is present in the clean clone and its sha256 matches the
+value pinned in `docs/notes/libm-partial-diff-spec.md`. At the sweep this was `1255608e…` (matched);
+the item-2 fix then relativized the header and **re-pinned** it to
+`ff34a444ada791c118681014bde127540a0e921e64901684adbd233f5151d03c` — the ckpt and the pin still
+match exactly.
 
 ### 7. Copyright — docs/papers PDFs absent from all history — **PASS**
 `git log --all --diff-filter=A -- docs/papers/*.pdf` is empty: the third-party PDFs were never
