@@ -46,20 +46,19 @@
 
 ## 1. Introduction
 
-Murmurations are an unexpected oscillating correlation between the Frobenius traces `a_p(E)` of
-a family of elliptic curves and the prime `p`, discovered by He–Lee–Oliver–Pozdnyakov (2022) and
-since observed across several arithmetic settings — and proved in the first of them (Zubrilina's
-weight-2 density). <!-- claim:N1-1 --> A gentle account of the phenomenon and its history is in
-the companion explainer (E1).
+Murmurations are an oscillating correlation between the Frobenius traces `a_p(E)` of a family of
+elliptic curves and the prime `p`. He–Lee–Oliver–Pozdnyakov discovered them in 2022; the
+phenomenon has since been observed in several arithmetic settings, and proved in the first of them,
+Zubrilina's weight-2 density. <!-- claim:N1-1 --> The companion explainer (E1) gives a fuller
+account.
 
-Sawin–Sutherland [SS25] study the version in which the family is ordered by **naive height**
-rather than by conductor, and propose an explicit candidate for its limiting density. Two of
-their statements must be held apart, because the distinction is load-bearing for what this note
-does and does not claim:
+Sawin–Sutherland [SS25] order the family by naive height rather than by conductor and propose an
+explicit candidate for its limiting density. Two of their statements must be kept apart; the
+distinction fixes what this note claims. The first is a conjecture, the second a theorem.
 
-- **Conjecture 1 (the density — CONJECTURAL).** For `0 < C₁ < C₂`, [SS25] conjecture that the
+- **Conjecture 1 (the density).** For `0 < C₁ < C₂`, [SS25] conjecture that the
   `X → ∞` limit of their statistic (1) equals `∫_{C₁}^{C₂} D(u) du`, where the murmuration
-  density is the Bessel-`J₁` double sum of their equation (2),
+  density is the Bessel-`J₁` double sum of their equation (2):
 
   ```
   D(u) = 2π√u · Σ_{q square-free} Σ_{m≥1}
@@ -67,32 +66,32 @@ does and does not claim:
              · ∏_{p|m, p∤q} ℓ̂_{p, 2v_p(m)} · ∏_{p|q} ℓ_{p, v_p(m)},      u = p/N,
   ```
 
-  with `J₁` the Bessel function of the first kind, `v_p` the `p`-adic valuation, `μ` Möbius,
-  `φ` Euler, and the local factors `ℓ_{p,ν}`, `ℓ̂_{p,ν}` given verbatim in their Lemmas 3–4. <!-- claim:N1-2 -->
-- **Theorem 2 (the proven variant).** [SS25] *prove* a variant in which the prime sum is
-  replaced by a sum over integers with no prime factor `≤ P` against a smooth weight; the same
-  integrand appears and the `P → ∞` limit is established. This smoothed / no-small-factor
-  variant *motivates* Conjecture 1 but is not the prime-sum murmuration itself. <!-- claim:N1-3 -->
+  Here `J₁` is the Bessel function of the first kind, `v_p` the `p`-adic valuation, `μ` the Möbius
+  function, and `φ` Euler's totient; the local factors `ℓ_{p,ν}` and `ℓ̂_{p,ν}` are those of their
+  Lemmas 3 and 4. <!-- claim:N1-2 -->
+- **Theorem 2 (the proven variant).** [SS25] prove a variant in which the prime sum is replaced by
+  a sum over integers with no prime factor `≤ P`, against a smooth weight; the same integrand
+  appears, and the `P → ∞` limit is established. This smoothed variant motivates Conjecture 1
+  without being the prime-sum murmuration. <!-- claim:N1-3 -->
 
-The explicit density of the height-ordered **prime-sum** murmuration is therefore
-**conjectural**; the proven Theorem 2 is a rigorous backdrop, not the object our empirical curve
-is compared against. <!-- claim:N1-4 --> This note **replicates and probes Conjecture 1** — it
-proves nothing. Throughout, "verified" means *numerically, over a stated finite range,
-cross-checked by two independent implementations, by a published anchor value, or by an external
-oracle* — never a formal proof. <!-- claim:N1-5 -->
+The explicit density of the height-ordered prime-sum murmuration is therefore conjectural. The
+proven Theorem 2 is a rigorous backdrop, not the object our empirical curve is compared against. <!-- claim:N1-4 -->
+This note replicates and probes Conjecture 1; it proves nothing. Throughout, "verified" means
+numerically, over a stated finite range, cross-checked by two independent implementations, by a
+published anchor value, or by an external oracle. It never means a formal proof. <!-- claim:N1-5 -->
 
-**What we test.** We compute statistic (1) from scratch over the height family up to
+**What this note tests.** We compute statistic (1) from scratch over the height family up to
 `X = 10⁴, 2¹⁶, 2¹⁷, 2¹⁸`, bin it by `u = p/N(E)`, and compare the empirical density to the
-conjectured `D(u)` through shape invariants fixed in advance — the positive hump, the first zero
-crossing after it, and the trough (§3). <!-- claim:N1-6 --> Where the empirical curve departs from
-`D(u)`, two pre-registered follow-ups constrain candidate mechanisms (§4).
+conjectured `D(u)` through three shape invariants fixed in advance: the positive hump, the first
+zero crossing after it, and the trough (§3). <!-- claim:N1-6 --> Where the empirical curve departs
+from `D(u)`, two pre-registered follow-ups constrain candidate mechanisms (§4).
 
-**What we do not test.** We make **no asymptotic (`X → ∞`) claim.** Our computable range (`≤ 2¹⁸`)
-sits at the *very bottom* of the window over which [SS25] observe the bias and expect it to decay
-(naive height `2¹⁶–2²⁸`, reached only via sub-linear point counting); every "persistent" statement
-below is a statement about our finite range, not about a limit. <!-- claim:N1-7 --> Why that distinction is not pedantic — a documented precedent
-in which a small-conductor picture does not survive to the asymptotic one — is set out with the
-results and the discussion (§3, §6).
+**What this note does not test.** It makes no asymptotic (`X → ∞`) claim. Our computable range,
+`X ≤ 2¹⁸`, sits at the bottom of the window over which [SS25] observe the bias and expect it to
+decay, naive height `2¹⁶` to `2²⁸`, reached only through sub-linear point counting. Every
+"persistent" statement below concerns that finite range, not a limit. <!-- claim:N1-7 --> The
+discussion (§6) gives a documented precedent in which a small-conductor picture does not survive
+to the asymptotic one; that is why the distinction is not pedantic.
 
 ---
 
