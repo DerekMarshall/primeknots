@@ -42,7 +42,11 @@ jobs:
         run: cmake --build build -j
 
       - name: Test (non-oracle green; oracle tests SKIP-visible)
-        run: ctest --test-dir build --output-on-failure --no-tests=error
+        # -LE heavy EXCLUDES the deliberate multi-hour m0b brute-force gate
+        # (m5gate;heavy, twin_m0b_bruteforce_x18_tailweighted: ~27.9 M a_p). That gate is a
+        # 48-core-box run invoked explicitly (m0b-pinning §7), NEVER in CI — a 2-core runner
+        # takes hours and hammers Actions. CI stays cheap + fast on the routine suite.
+        run: ctest --test-dir build -LE heavy --output-on-failure --no-tests=error
 
       - name: Freshness — committed viz/data snapshot == `at emit` at HEAD
         # CI verifies exactly what GitHub Pages serves; drift (an emitter changed
