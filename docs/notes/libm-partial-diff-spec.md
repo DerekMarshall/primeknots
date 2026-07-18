@@ -68,35 +68,59 @@ anywhere in the artifact or the run log (checked), so they remain unknown (see T
   `-ffp-contract=off` list, `src/CMakeLists.txt:54-55` vs `163-173`) — the likely but unconfirmed
   producer. Because the compiler pair is not established, §5 attributes the measured divergence
   **generically** (fp contraction, libm, platform), not to a named compiler pair.
-- **FreeBSD (the comparison side).** clang; version captured at run time (`clang --version` into
-  the results). Same statistic source (generator_hash above); fp contraction default likewise.
+- **FreeBSD (the comparison side).** `FreeBSD clang 21.1.8`, FreeBSD 15.1-STABLE amd64 (recorded
+  from the box). Same statistic source (generator_hash above). For quantity 1 (integer a_p) the fp
+  path is irrelevant: a_p is an integer point-count, so cross-platform identity is the expectation.
 
 ## Measurement and report (no verdict, no tolerance)
 
 Both quantities are computed over the shared 8640-curve set only.
 
-1. **Integer a_p exact-match count.** Compare the laptop a_p cache against a FreeBSD a_p cache over
-   the shared curves. **Providers, stamped.** The laptop a_p cache is the frozen-referee reference
-   cache (`ap_charsum`; `APC1` format, task M0b-2b) and covers the full 9014 curves; its partials
-   ckpt used `ap_fast` (header). The FreeBSD side uses the canonical run's a_p (located if that
-   cache was persisted) or a regeneration, with its provider stamped either way. If the two sides
-   differ in provider (charsum reference vs `ap_fast`/`m0b`), quantity 1 is a **cross-provider and
-   cross-platform** integer match, stronger than a same-provider check. a_p is provider-independent
-   (`ap_fast`, `ap_shanks_mestre`, `ap_charsum` agree exactly), so the count is expected complete.
-   The comparison restricts to the shared 8640 curves for consistency with quantity 2. Report:
-   total (curve, prime) a_p values compared, count matching exactly, count of mismatches.
+1. **Integer a_p exact-match count.** Compare a clean laptop a_p cache against the FreeBSD a_p
+   cache, byte-for-byte over the payload. **Provider, corrected (rule 5).** The APC1 `algo` field on
+   both caches reads `charsum_referee(ap_fast; spot=ap_charsum)`: values computed by `ap_fast`,
+   spot-checked against the frozen `ap_charsum` referee, the *same* algo on both sides. This is a
+   same-provider, cross-platform integer comparison, not the cross-provider check an earlier draft
+   of this line claimed. **Input, corrected (deviation, 2026-07-18).** The historical laptop a_p
+   cache (`ap_cache_x131072.bin.ckpt`, sha256 `88f2481f…`) is a `complete=0` checkpoint that
+   `read_ap_cache` refuses as partial, and its payload sha (`4d0c65bc…`) differs from FreeBSD's
+   clean cache — an abandoned checkpoint is not a trustworthy full cache. So the laptop side is
+   **regenerated clean** (`--X 131072 --threads 13`, `complete=1`, distinct output/checkpoint paths
+   so the historical ckpt is untouched) and its int16 payload is compared to FreeBSD's
+   (`aec1899b…`). a_p is provider-independent and a platform-independent integer, so an exact
+   full-payload match is the expectation; any mismatch is a reportable finding (m0b-pinning §237).
+   Report: payload int16 count compared, exact-match count, mismatch count.
 2. **Float partial-sum |Δ|.** Compare the laptop partials ckpt against the committed FreeBSD
    partials, per (curve, bin), over the shared curves and 40 bins. Report: max |Δ|, and the
    distribution of |Δ| (counts bucketed by magnitude, decade bins from 0 down through the smallest
    nonzero). The float part needs no fresh FreeBSD partials run; it uses the already-committed
    FreeBSD partials restricted to the shared curves.
 
-The only compute the run requires is the FreeBSD a_p cache for the 8640 curves (for quantity 1);
-quantity 2 is a read-only diff of two existing files. Results land in §5 as a short factual
-paragraph and are echoed here under a "Results" heading appended after the run.
+The compute the run requires is the clean laptop a_p cache regeneration (quantity 1); quantity 2 is
+a read-only diff of two existing files and is already complete (see Results). Results land in §5 as
+a short factual paragraph and are echoed under Results below.
 
 ## Registration
 
-Spec pinned before the FreeBSD run. Derek approves this spec, then the run is kicked. Deviations at
-run time (toolchain surprise, curve-key misalignment, nonzero integer mismatch) are recorded here
-and reported, not smoothed.
+Spec pinned before the run; Derek approved. Deviations recorded, not smoothed: (i) the provider is
+`charsum_referee(ap_fast)` on both sides, not cross-provider — an earlier line was wrong, now fixed;
+(ii) the historical laptop a_p cache is a `complete=0` checkpoint unsuitable as a full-cache input,
+so the laptop side is regenerated clean (Derek's call, 2026-07-18); (iii) FreeBSD toolchain recorded
+as clang 21.1.8 / FreeBSD 15.1-STABLE. Quantity 2 is complete; quantity 1 lands when the regen
+finishes.
+
+## Results
+
+**Quantity 2 — float partial-sum |Δ| (complete, 2026-07-18).** Over the shared 8640 curves (laptop
+ckpt is a subset of the FreeBSD 9014, 0 unmatched keys) times 40 bins = 345600 float values: 63803
+bit-identical; **max |Δ| = 1.887 × 10⁻¹⁵** (at a value near −0.9785, relative 1.9 × 10⁻¹⁵); the |Δ|
+distribution peaks at 10⁻¹⁷ to 10⁻¹⁶ and has no value above about 10⁻¹⁴. This is ULP-scale,
+consistent with default fma contraction and libm rounding in the raw partials, while the emitted
+density (contraction-off) is byte-identical (N2-13). Computed by `docs/notes/libm_float_diff.py`
+(run from repo root) over `data/m5/ss_partials_x131072.txt.ckpt` and
+`data/m5/ss_partials_x131072.txt`; the a_p cache payloads are parsed by `docs/notes/apc1_parse.py`.
+
+**Quantity 1 — integer a_p match (pending regen).** The clean laptop a_p cache is regenerating (13
+threads, ~8-12h). On completion its int16 payload sha is compared to FreeBSD's `aec1899b…`; equal
+means integer a_p byte-identical cross-platform (match = 100%). Result appended here and in §5 when
+the regen lands.
