@@ -774,6 +774,104 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    if (std::strcmp(argv[1], "ap-sample") == 0) {
+        // libm-diff quantity 1 (data-note §5, sampled fallback): a DETERMINISTIC, tail-weighted
+        // cross-platform integer a_p sample. Computes a_p via the frozen referee ap_charsum for a
+        // fixed sample and prints "A B p a_p" (deterministic order). Run on laptop AND FreeBSD, then
+        // diff stdout. No RNG, no seed. Spec: docs/notes/libm-partial-diff-spec.md.
+        i64 X = static_cast<i64>(std::strtoull(opt(argc, argv, "--X", "131072"), nullptr, 10));
+        const char* cache = opt(argc, argv, "--cache", "data/m5/ne_cache_x131072.txt");
+        at::murm::NeCacheHeader nehdr;
+        std::vector<at::murm::NeRow> allrows = at::murm::read_ne_cache(cache, nehdr);
+        if (nehdr.X < X) {
+            std::fprintf(stderr, "at ap-sample: cache X=%lld < --X %lld\n",
+                         static_cast<long long>(nehdr.X), static_cast<long long>(X));
+            return 4;
+        }
+        std::vector<at::murm::NeRow> rows;
+        for (const auto& r : allrows)
+            if (at::murm::naive_height(r.A, r.B) <= X) rows.push_back(r);
+        const std::size_t C = rows.size();
+        if (C == 0) { std::fprintf(stderr, "at ap-sample: empty family\n"); return 4; }
+        std::vector<i64> disc(C);
+        i64 maxN = 0;
+        for (std::size_t c = 0; c < C; ++c) {
+            disc[c] = 4 * rows[c].A * rows[c].A * rows[c].A + 27 * rows[c].B * rows[c].B;
+            if (rows[c].N > maxN) maxN = rows[c].N;
+        }
+        std::vector<std::size_t> order(C);   // conductor-asc (N, then ne-row idx) — highest N last
+        std::iota(order.begin(), order.end(), std::size_t{0});
+        std::sort(order.begin(), order.end(), [&](std::size_t a, std::size_t b) {
+            if (rows[a].N != rows[b].N) return rows[a].N < rows[b].N;
+            return a < b;
+        });
+        std::vector<i64> gp;                 // good primes in (3, maxN]
+        {
+            std::vector<char> sieve(static_cast<std::size_t>(maxN) + 1, 1);
+            for (i64 i = 2; i <= maxN; ++i)
+                if (sieve[i]) {
+                    if (i > 3) gp.push_back(i);
+                    for (i64 j = i * i; j <= maxN; j += i) sieve[j] = 0;
+                }
+        }
+        // tail-weighted prime sample: 4 index-quartiles, counts 300/500/700/1000 (ratio 3:5:7:10),
+        // fixed stride within each quartile (deterministic).
+        const std::size_t Pn = gp.size();
+        const std::size_t qsz = Pn / 4;
+        const int want[4] = {300, 500, 700, 1000};
+        std::vector<i64> sample_primes;
+        for (int q = 0; q < 4; ++q) {
+            const std::size_t lo = static_cast<std::size_t>(q) * qsz;
+            const std::size_t hi = (q == 3) ? Pn : lo + qsz;   // last quartile absorbs remainder
+            const std::size_t span = hi - lo;
+            for (int k = 0; k < want[q]; ++k) {
+                std::size_t idx = lo + (static_cast<std::size_t>(k) * span) / static_cast<std::size_t>(want[q]);
+                if (idx >= hi) idx = hi - 1;
+                sample_primes.push_back(gp[idx]);
+            }
+        }
+        // per sampled prime: the 40 highest-conductor curves with N >= p and p ∤ disc.
+        // Build the deterministic work-list serially, compute a_p in parallel into fixed slots,
+        // then print in work-list order — output bytes are identical regardless of thread count
+        // (so laptop and FreeBSD are diffable).
+        struct Item { i64 A, B, p; };
+        std::vector<Item> work;
+        i64 maxp = 0;
+        for (i64 p : sample_primes) {
+            int taken = 0;
+            for (std::size_t ii = C; ii-- > 0 && taken < 40;) {
+                const std::size_t c = order[ii];             // highest N first
+                if (rows[c].N < p) continue;
+                if (disc[c] % p == 0) continue;
+                work.push_back({rows[c].A, rows[c].B, p});
+                ++taken;
+                if (p > maxp) maxp = p;
+            }
+        }
+        int threads = static_cast<int>(std::strtoull(opt(argc, argv, "--threads", "0"), nullptr, 10));
+        if (threads <= 0) { unsigned hc = std::thread::hardware_concurrency(); threads = hc ? static_cast<int>(hc) : 4; }
+        std::vector<int> aps(work.size(), 0);
+        auto worker = [&](int t) {
+            for (std::size_t i = static_cast<std::size_t>(t); i < work.size();
+                 i += static_cast<std::size_t>(threads)) {
+                const at::ell::Curve E{0, 0, 0, work[i].A, work[i].B};
+                aps[i] = at::ell::ap_charsum(E, static_cast<at::core::u64>(work[i].p));
+            }
+        };
+        std::vector<std::thread> pool;
+        for (int t = 1; t < threads; ++t) pool.emplace_back(worker, t);
+        worker(0);
+        for (std::thread& th : pool) th.join();
+        for (std::size_t i = 0; i < work.size(); ++i)
+            std::printf("%lld %lld %lld %d\n", static_cast<long long>(work[i].A),
+                        static_cast<long long>(work[i].B), static_cast<long long>(work[i].p), aps[i]);
+        std::fprintf(stderr, "at ap-sample: X=%lld, %zu curves, %zu sampled primes, %zu pairs, "
+                     "max p=%lld, %d threads (ap_charsum, deterministic tail-weighted)\n",
+                     static_cast<long long>(X), C, sample_primes.size(), work.size(),
+                     static_cast<long long>(maxp), threads);
+        return 0;
+    }
+
     if (std::strcmp(argv[1], "rank-cache") == 0) {
         // PR-2 step 1: the ANALYTIC-RANK column for the height family, keyed by (A,B)
         // (PR-2 Amendment 1). r = ord_{s=1} L(E,s) from PARI ellanalyticrank; oracle-
