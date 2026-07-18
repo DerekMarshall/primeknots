@@ -110,8 +110,9 @@ Spec pinned before the run; Derek approved. Deviations recorded, not smoothed: (
 so the laptop side is regenerated clean (Derek's call, 2026-07-18); (iii) FreeBSD toolchain recorded
 as clang 21.1.8 / FreeBSD 15.1-STABLE; (iv) the clean regen was abandoned as a multi-day job (~67h
 floor, measured), so quantity 1 is now a tail-weighted sampled check (Derek's call, 2026-07-18),
-its 7.3% checkpoint preserved and hashed. Quantity 2 is complete; quantity 1 lands when the sampled
-run finishes.
+its 7.3% checkpoint preserved and hashed. **Both quantities complete (2026-07-18):** quantity 2 max
+|Δ| = 1.887 × 10⁻¹⁵ (ULP-scale float drift); quantity 1 = 79,268 / 79,268 sampled a_p byte-identical
+cross-platform (0 mismatches).
 
 ## Quantity 1 — full regen abandoned for a sampled check (deviation, 2026-07-18)
 
@@ -160,8 +161,15 @@ density (contraction-off) is byte-identical (N2-13). Computed by `docs/notes/lib
 (run from repo root) over `data/m5/ss_partials_x131072.txt.ckpt` and
 `data/m5/ss_partials_x131072.txt`; the a_p cache payloads are parsed by `docs/notes/apc1_parse.py`.
 
-**Quantity 1 — integer a_p match (sampled, pending run).** The full regen was abandoned (deviation
-section above); a deterministic tail-weighted sample (~10⁵ pairs: 2500 large-prime-weighted primes
-× 40 highest-conductor curves) is computed by `ap_charsum` on both laptop and FreeBSD and compared.
-Result appended here and in §5 when the sampled run lands. Primary integer-identity evidence remains
-the full 2¹⁶/2¹⁷ grid twins + byte-identical emit (framing above).
+**Quantity 1 — integer a_p match (sampled, complete 2026-07-18).** The deterministic tail-weighted
+sample — 2500 primes (3:5:7:10 across index-quartiles, max p = 4,152,803) × up to 40
+highest-conductor curves = **79,268 (curve,prime) pairs** — was computed by the frozen referee
+`ap_charsum` on the laptop (`g++-16`, macOS, 10 threads) and on FreeBSD (`clang 21.1.8`, FreeBSD
+15.1, 48 threads), via `at ap-sample`. The two outputs are **byte-identical**: sha256
+`e7ba27d7bc982f378151653b537cde3af22c0d32a3e8b53f3d06b70a4b2600c2` on both sides, so **79,268 /
+79,268 a_p match, 0 mismatches** — integer a_p identical cross-platform on this 2¹⁷ curve set. This
+is cross-platform, same-referee (`ap_charsum` both sides); cross-algorithm identity
+(`ap_fast`↔`ap_charsum`) is covered separately by the full-grid twins. The sample is regenerable
+from the committed `at ap-sample` and `ne_cache_x131072.txt`, so the sha pins it (the 2 MB output is
+not committed). Primary integer-identity evidence remains the full 2¹⁶/2¹⁷ grid twins +
+byte-identical emit (framing above); this sample is corroboration on this curve set.
