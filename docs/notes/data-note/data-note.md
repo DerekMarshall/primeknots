@@ -227,7 +227,7 @@ at which the pre-registered full-ladder verdict could be pronounced. It is a fin
 ($\le 2^{18}$), explicitly not the $X \to \infty$ verdict [SS25] describe.
 $2^{18}$ is the bottom of their $2^{16}$–$2^{28}$ decay window.
 
-**Supporting register (not the gate).** (i) The first-zero series
+**Supporting observations (not the gate).** (i) The first-zero series
 $0.672894 \to 0.670328 \to 0.673202 \to 0.671945$ is flat near about 0.671, non-monotone,
 converging to neither the 0.645 target nor away, direction only. <!-- claim:N3-4 --> (ii) The
 trough *depth* eases monotonically across the three extension rungs $-3.715 \to -3.652 \to -3.580$
@@ -272,7 +272,7 @@ explanation. <!-- claim:N4-2 -->
 congruence classes, and its cancellation in the signed average are Sutherland's (Sept-2023 talk);
 PR-3 tests only the leakage *relationship*, which is PR-3's hypothesis, not Sutherland's claim. <!-- claim:N4-5 -->
 
-**A deeper pass, pre-committed to be skipped.** PR-3 fixed in advance the condition under which its
+**Congruence stratification: not run.** PR-3 fixed in advance the condition under which its
 more expensive follow-up — a congruence-stratified analysis of the same primes — would be
 unnecessary: the leakage fraction $f$ small, opposite-signed, and with no structured residual at
 the named congruence classes. The result above meets that condition, so the stratified pass was not
