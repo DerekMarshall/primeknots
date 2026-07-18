@@ -30,8 +30,22 @@ cat > "$STYLE" <<'CSS'
 CSS
 
 # strip <!-- ... --> (incl. multi-line) so the rendered source carries no claim/editorial markers
-python3 -c "import re,sys; sys.stdout.write(re.sub(r'<!--.*?-->','',open('data-note.md',encoding='utf-8').read(),flags=re.DOTALL))" \
-  | pandoc -f markdown -s --metadata title="$TITLE" -H "$STYLE" -o data-note.html
+STRIPPED="$(mktemp)"
+python3 -c "import re,sys; sys.stdout.write(re.sub(r'<!--.*?-->','',open('data-note.md',encoding='utf-8').read(),flags=re.DOTALL))" > "$STRIPPED"
 
-rm -f "$STYLE"
+# Leak-guard: no comment delimiter may survive the strip. A comment whose body embeds a literal
+# <!-- ... --> (malformed HTML — a comment can't contain '--') breaks the non-greedy strip and
+# leaks its tail as visible text; fail loudly so a reader never sees a dangling marker.
+if grep -Eq -- '<!--|-->' "$STRIPPED"; then
+  echo "ERROR: a comment fragment survived the strip in data-note.md (a reader would see it)." >&2
+  echo "Fix the SOURCE: an editorial comment must not embed a literal <!-- ... --> or a bare -->:" >&2
+  grep -nE -- '<!--|-->' "$STRIPPED" | head >&2
+  rm -f "$STYLE" "$STRIPPED"; exit 1
+fi
+
+# pagetitle (not title): sets the browser-tab <title> WITHOUT rendering pandoc's own title block,
+# so the document's own `# ` H1 is the single visible title (no duplicate).
+pandoc -f markdown -s --metadata pagetitle="$TITLE" -H "$STYLE" -o data-note.html "$STRIPPED"
+
+rm -f "$STYLE" "$STRIPPED"
 echo "wrote $(pwd)/data-note.html"

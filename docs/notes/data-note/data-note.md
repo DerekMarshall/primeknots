@@ -9,7 +9,7 @@
      R1–R5. Dropped: arXiv-only packaging (subject class, abstract-form limits). See README.md.
 
      Numbers/quotes are from cited sources or emitted artifacts only (rules 6/8; R3). Every
-     nontrivial sentence carries a <!-- claim:Nx-y --> marker with a row in CLAIMS-N.md. -->
+     nontrivial sentence carries a `claim:Nx-y` marker (an HTML comment) with a row in CLAIMS-N.md. -->
 
 # A pre-registered replication of the Sawin–Sutherland height-ordered murmuration
 
