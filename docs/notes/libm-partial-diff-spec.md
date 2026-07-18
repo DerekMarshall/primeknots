@@ -89,7 +89,9 @@ Both quantities are computed over the shared 8640-curve set only.
    so the historical ckpt is untouched) and its int16 payload is compared to FreeBSD's
    (`aec1899b…`). a_p is provider-independent and a platform-independent integer, so an exact
    full-payload match is the expectation; any mismatch is a reportable finding (m0b-pinning §237).
-   Report: payload int16 count compared, exact-match count, mismatch count.
+   Report: payload int16 count compared, exact-match count, mismatch count. **Superseded
+   2026-07-18** — the full regen was abandoned as a multi-day job; replaced by a tail-weighted
+   sampled check (see "Quantity 1 — sampled fallback" below).
 2. **Float partial-sum |Δ|.** Compare the laptop partials ckpt against the committed FreeBSD
    partials, per (curve, bin), over the shared curves and 40 bins. Report: max |Δ|, and the
    distribution of |Δ| (counts bucketed by magnitude, decade bins from 0 down through the smallest
@@ -106,8 +108,46 @@ Spec pinned before the run; Derek approved. Deviations recorded, not smoothed: (
 `charsum_referee(ap_fast)` on both sides, not cross-provider — an earlier line was wrong, now fixed;
 (ii) the historical laptop a_p cache is a `complete=0` checkpoint unsuitable as a full-cache input,
 so the laptop side is regenerated clean (Derek's call, 2026-07-18); (iii) FreeBSD toolchain recorded
-as clang 21.1.8 / FreeBSD 15.1-STABLE. Quantity 2 is complete; quantity 1 lands when the regen
-finishes.
+as clang 21.1.8 / FreeBSD 15.1-STABLE; (iv) the clean regen was abandoned as a multi-day job (~67h
+floor, measured), so quantity 1 is now a tail-weighted sampled check (Derek's call, 2026-07-18),
+its 7.3% checkpoint preserved and hashed. Quantity 2 is complete; quantity 1 lands when the sampled
+run finishes.
+
+## Quantity 1 — full regen abandoned for a sampled check (deviation, 2026-07-18)
+
+The clean full-cache regeneration (Derek's call, 13 threads) was **abandoned**. Live monitoring
+(`docs/notes/apcache_progress.py`, Σp-work-weighted) showed it decelerating as prime size grows
+(per-8192-prime-block times 2195s, 6000s, 9450s): at 7.3% of the work in 4.9h it projected to a
+**~67h floor, realistically 3-5 days** on the laptop — the QR table is size-`p` and thrashes cache
+at large `p`, which the first estimate missed. The tracked job was stopped at **24576/293263 primes
+(7.3%)**. Its checkpoint is **preserved, not deleted**:
+`data/m5/ap_cache_x131072_laptop_clean.bin.ckpt` (complete=0, n_done=24576, sha256
+`bb6e6bc99c3001050cef391dd7bb0b0fb8d061df8fc405e5bb50d4505d6d0490`), gitignored (hash-only), so the
+full regen is resumable if ever wanted.
+
+**Replaced by a sampled cross-platform integer check.** Mirrors the 2¹⁸ tail-weighted precedent
+(`twin_m0b_bruteforce_x18_tailweighted`): deterministic, tail-weighted, no RNG and no seed.
+
+- **Curve set.** The full 2¹⁷ family (9014 curves) the FreeBSD clean cache covers.
+- **Prime tail-weighting.** Partition the 293263 good primes (`3<p≤N`, `p∤disc`) into four
+  index-quartiles Q1..Q4 (smallest..largest). Select primes tail-weighted **3:5:7:10** (mirroring
+  the x18 30/50/70/100 stratum ratio): Q1 300, Q2 500, Q3 700, Q4 1000 = **2500 primes**, taken at
+  a fixed stride within each quartile.
+- **Curves per prime.** For each selected prime `p`, the **40 highest-conductor** curves with
+  `N≥p` and `p∤disc` (conductor tail-weighting, mirroring x18). About **10⁵ (curve,prime) pairs**
+  (fewer only where <40 curves qualify at the largest primes).
+- **Computation and comparison.** a_p for each sampled pair is computed by the frozen referee
+  `ap_charsum` via a small deterministic sampler, run on **both** laptop (`g++-16`) and FreeBSD
+  (`clang 21.1.8`); the two outputs are compared. Cross-check: laptop values are also compared to
+  the FreeBSD clean cache (`ap_fast`), a cross-algorithm corroboration.
+- **Report.** pairs compared, max prime in the sample, laptop-vs-FreeBSD exact-match count,
+  mismatch count. No verdict, no tolerance.
+
+**Standing (§5 framing).** This sampled match is **corroboration on this specific 2¹⁷ curve set**,
+not the load-bearing integer-identity claim. The full-strength evidence that a_p is
+platform-independent is the exact agreement of `ap_fast`/`ap_charsum`/Shanks–Mestre over the
+**full** 2¹⁶ and 2¹⁷ grids (`twin_m0b_vs_charsum_x16`/`x17`, CLAIMS-E E3-2/E3-2b) plus the
+byte-identical emitted density (N2-13). §5 cites those as primary and the sample as confirmation.
 
 ## Results
 
@@ -120,7 +160,8 @@ density (contraction-off) is byte-identical (N2-13). Computed by `docs/notes/lib
 (run from repo root) over `data/m5/ss_partials_x131072.txt.ckpt` and
 `data/m5/ss_partials_x131072.txt`; the a_p cache payloads are parsed by `docs/notes/apc1_parse.py`.
 
-**Quantity 1 — integer a_p match (pending regen).** The clean laptop a_p cache is regenerating (13
-threads, ~8-12h). On completion its int16 payload sha is compared to FreeBSD's `aec1899b…`; equal
-means integer a_p byte-identical cross-platform (match = 100%). Result appended here and in §5 when
-the regen lands.
+**Quantity 1 — integer a_p match (sampled, pending run).** The full regen was abandoned (deviation
+section above); a deterministic tail-weighted sample (~10⁵ pairs: 2500 large-prime-weighted primes
+× 40 highest-conductor curves) is computed by `ap_charsum` on both laptop and FreeBSD and compared.
+Result appended here and in §5 when the sampled run lands. Primary integer-identity evidence remains
+the full 2¹⁶/2¹⁷ grid twins + byte-identical emit (framing above).
