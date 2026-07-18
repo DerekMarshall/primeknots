@@ -27,13 +27,23 @@ The curve set is not drafted here. It is defined by the artifact: the curves pre
 **abandoned laptop 2¹⁷ partials checkpoint**. That file enumerates to **8640 curves** (derived, not
 asserted; `grep -cvE '^#|^$'`). The committed FreeBSD 2¹⁷ run holds 9014 curves, so the 8640 are a
 subset; the diff restricts to the intersection of curve keys present in both files, matched by
-curve identity, not by line position.
+curve identity, not by line position. The 8640 are expected to be a subset of the 9014, so the
+unmatched-key count is expected to be zero; any nonzero unmatched count is a reportable anomaly,
+recorded and not smoothed.
 
 ## Step 0 — input manifest (provenance)
 
-The two large inputs are gitignored (`/docs/... ` n/a; `data/m5/*.ckpt` and the 771 MB a_p cache
-under the repo's `.gitignore`) and are not force-committed. Their provenance is pinned by hash
-here. This manifest is the committed record of the diff inputs.
+Both large inputs are gitignored (`*.ckpt`, and `data/m5/ap_cache_*.bin` for the a_p cache). Two
+different treatments, by Derek's addendum (2026-07-17):
+
+- The 8.8 MB laptop partials ckpt is **force-committed** via a scoped `.gitignore` exception
+  (`!data/m5/ss_partials_x131072.txt.ckpt`, with a comment there). It is quantity 2's input and
+  the only diff input not reproducible from source, so committing it keeps the float measurement
+  reproducible.
+- The 771 MB a_p cache stays **hash-only** (too large to commit; quantity 1 is a run-time
+  comparison, not a repo-reproducible read).
+
+Provenance for all inputs is pinned by hash below.
 
 | Role | File (local, gitignored) | sha256 | bytes | curves |
 |------|--------------------------|--------|-------|--------|
@@ -42,29 +52,39 @@ here. This manifest is the committed record of the diff inputs.
 | FreeBSD partials (committed, 2¹⁷ canonical) | `data/m5/ss_partials_x131072.txt` | `5f7a4106e3420884f43eb4f4a06f25c9de06352b08953ddf3490a12cdca4eaf2` | 9205871 | 9014 |
 
 Both files carry `generator_hash b87ebd1e188e15dc2d3a1c2a54e5300dc3c7ff3d4adef3e77d5328b9ff526cde`
-(identical statistic source). **Attestation (Derek, 2026-07-17):** the two `.ckpt` files are the
-abandoned laptop 2¹⁷ run. The file headers do not stamp the host, so the laptop provenance is
-Derek's attestation, not a property read from the artifact; recorded as such (rule 5).
+(identical statistic source). The partials ckpt header records `complete 0` (an abandoned run),
+`threads 12`, `n_curves 8640`, and an `ne_cache` path under `/Users/derekmarshall/...`, a laptop
+absolute path written at run time — which corroborates laptop origin from the artifact itself.
+Derek attests (2026-07-17) that these are the abandoned laptop 2¹⁷ run; the embedded path and the
+`complete 0` flag corroborate that attestation. The host compiler and flags are **not** stamped
+anywhere in the artifact or the run log (checked), so they remain unknown (see Toolchains).
 
 ## Toolchains pinned
 
-- **Laptop (the ckpt producer).** `g++-16 (Homebrew GCC 16.1.0)`, macOS (darwin 25.5.0).
-  `murm/ss_empirical.cpp` compiled with **default fp contraction** (not in the `-ffp-contract=off`
-  list). Recorded from the current build config; if the Jul-15 build that produced the ckpt used a
-  different flag set it will be re-derived and the discrepancy recorded (rule 5).
-- **FreeBSD (the comparison side).** clang, version recorded from the run environment at run time
-  (`clang --version` captured into the results). Same statistic source (generator_hash above),
-  fp contraction default likewise.
+- **Laptop (the ckpt producer).** macOS (darwin 25.5.0), 12 threads (from the header). The
+  compiler and flags that built the ckpt are **not stamped** in the artifact or the run log, so
+  they are recorded as **unknown / attested**. The current laptop build uses `g++-16 (Homebrew GCC
+  16.1.0)` and builds `murm/ss_empirical.cpp` with default fp contraction (not in the
+  `-ffp-contract=off` list, `src/CMakeLists.txt:54-55` vs `163-173`) — the likely but unconfirmed
+  producer. Because the compiler pair is not established, §5 attributes the measured divergence
+  **generically** (fp contraction, libm, platform), not to a named compiler pair.
+- **FreeBSD (the comparison side).** clang; version captured at run time (`clang --version` into
+  the results). Same statistic source (generator_hash above); fp contraction default likewise.
 
 ## Measurement and report (no verdict, no tolerance)
 
 Both quantities are computed over the shared 8640-curve set only.
 
-1. **Integer a_p exact-match count.** Compare the laptop a_p cache against a FreeBSD a_p cache for
-   the same curves (the FreeBSD side is produced or located by the approved run). a_p is provider
-   independent (`ap_fast`, `ap_shanks_mestre`, `ap_charsum` all agree exactly), so the provider
-   used on each side is immaterial to the integer values. Report: total (curve, prime) a_p values
-   compared, count matching exactly, count of mismatches.
+1. **Integer a_p exact-match count.** Compare the laptop a_p cache against a FreeBSD a_p cache over
+   the shared curves. **Providers, stamped.** The laptop a_p cache is the frozen-referee reference
+   cache (`ap_charsum`; `APC1` format, task M0b-2b) and covers the full 9014 curves; its partials
+   ckpt used `ap_fast` (header). The FreeBSD side uses the canonical run's a_p (located if that
+   cache was persisted) or a regeneration, with its provider stamped either way. If the two sides
+   differ in provider (charsum reference vs `ap_fast`/`m0b`), quantity 1 is a **cross-provider and
+   cross-platform** integer match, stronger than a same-provider check. a_p is provider-independent
+   (`ap_fast`, `ap_shanks_mestre`, `ap_charsum` agree exactly), so the count is expected complete.
+   The comparison restricts to the shared 8640 curves for consistency with quantity 2. Report:
+   total (curve, prime) a_p values compared, count matching exactly, count of mismatches.
 2. **Float partial-sum |Δ|.** Compare the laptop partials ckpt against the committed FreeBSD
    partials, per (curve, bin), over the shared curves and 40 bins. Report: max |Δ|, and the
    distribution of |Δ| (counts bucketed by magnitude, decade bins from 0 down through the smallest
