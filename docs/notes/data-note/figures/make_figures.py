@@ -54,8 +54,12 @@ def fig_ss_overlay(plt):
     X = j["params"].get("X_confirm", "?")
     fig, ax = plt.subplots(figsize=(6.5, 3.6))
     ax.axhline(0, lw=0.6, color="0.6")
-    ax.plot(du, dv, lw=1.4, label="conjectured D(u) [SS25 Conj. 1]")
-    ax.plot(eu, ev, marker="o", ms=2.5, lw=1.0, label=f"empirical statistic (1), X={X}")
+    # Distinguish series by line-DASH and marker SHAPE, never by colour alone (grayscale-
+    # and colour-blind-safe): conjectured D(u) is a dashed line with no marker; the empirical
+    # statistic is a solid line carrying open-circle markers.
+    ax.plot(du, dv, ls="--", lw=1.4, color="C0", label="conjectured D(u) [SS25 Conj. 1]")
+    ax.plot(eu, ev, ls="-", lw=1.0, color="C1", marker="o", ms=3.5, mfc="none",
+            label=f"empirical statistic (1), X={X}")
     ax.set_xlabel("u = p / N(E)")
     ax.set_ylabel("density")
     ax.legend(fontsize=8, frameon=False)
@@ -72,13 +76,16 @@ def fig_rank_split(plt):
     du, dv = _series(j["density"], "d")
     labels = {"full": "full family", "leaveout": "F \\ S2 (leave-out)",
               "s2": "S2 (analytic rank 2)", "s0": "S0 (analytic rank 0)"}
+    # Distinct marker SHAPE per series, never colour alone (grayscale/colour-blind-safe).
+    markers = {"full": "o", "leaveout": "s", "s2": "^", "s0": "D"}
     fig, ax = plt.subplots(figsize=(6.5, 3.6))
     ax.axhline(0, lw=0.6, color="0.6")
-    ax.plot(du, dv, lw=1.4, color="0.3", label="conjectured D(u)")
+    ax.plot(du, dv, ls="--", lw=1.4, color="0.15", label="conjectured D(u)")
     for k, lab in labels.items():
         if k in j["curves"]:
             u, v = _series(j["curves"][k], "d")
-            ax.plot(u, v, lw=1.0, marker=".", ms=2, label=lab)
+            ax.plot(u, v, ls="-", lw=0.8, marker=markers[k], ms=3.5, mfc="none",
+                    markevery=2, label=lab)
     ax.set_xlabel("u = p / N(E)")
     ax.set_ylabel("density")
     ax.legend(fontsize=8, frameon=False)

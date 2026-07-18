@@ -25,7 +25,7 @@ cat > "$STYLE" <<'CSS'
   table{border-collapse:collapse;margin:1.1rem 0;font-size:.95em;display:block;overflow-x:auto}
   th,td{border:1px solid #d0d0d0;padding:.35em .7em;text-align:left}
   th{background:#f5f5f5}
-  blockquote{border-left:3px solid #c9c9c9;margin:1.1rem 0;padding:.2rem 1rem;color:#3a3a3a;background:#fafafa}
+  blockquote{border-left:3px solid #c9c9c9;margin:1.1rem 0;padding:.2rem .7rem;color:#3a3a3a;background:#fafafa}
   a{color:#0b62c4}
   hr{border:none;border-top:1px solid #e3e3e3;margin:2rem 0}
   /* wide display formulas scroll inside their own box, never the page body */
@@ -93,6 +93,9 @@ if [ -n "$PDF_ENGINE" ]; then
 \renewcommand{\texttt}[1]{{\oldtexttt{\seqsplit{#1}}}}
 % No section numbering — the note carries its own "1./2." heading prefixes.
 \setcounter{secnumdepth}{0}
+% Tighter block quotations (the verbatim Rung-3 clause) — still clearly indented as quoted, but
+% shallower than LaTeX's default quote (which indents ~2.5em on both sides).
+\renewenvironment{quote}{\list{}{\leftmargin=1.2em \rightmargin=0em}\item\relax}{\endlist}
 % Title block: centered, and NO hyphenation — neither automatic nor at the explicit hyphen in
 % "height-ordered" (exhyphenpenalty) — so a multi-line title breaks only at spaces.
 \usepackage{titling}

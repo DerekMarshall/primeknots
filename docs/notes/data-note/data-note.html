@@ -186,7 +186,7 @@ height-ordered murmuration</title>
     table{border-collapse:collapse;margin:1.1rem 0;font-size:.95em;display:block;overflow-x:auto}
     th,td{border:1px solid #d0d0d0;padding:.35em .7em;text-align:left}
     th{background:#f5f5f5}
-    blockquote{border-left:3px solid #c9c9c9;margin:1.1rem 0;padding:.2rem 1rem;color:#3a3a3a;background:#fafafa}
+    blockquote{border-left:3px solid #c9c9c9;margin:1.1rem 0;padding:.2rem .7rem;color:#3a3a3a;background:#fafafa}
     a{color:#0b62c4}
     hr{border:none;border-top:1px solid #e3e3e3;margin:2rem 0}
     /* wide display formulas scroll inside their own box, never the page body */
@@ -220,7 +220,6 @@ murmuration</h1>
 href="https://orcid.org/0009-0001-8101-3908">0009-0001-8101-3908</a>).</p>
 <p><strong>Venue:</strong> repo publication (GitHub Pages), PDF build
 product.</p>
-<blockquote>
 <p><strong>Methods disclosure.</strong> The research design, the
 mathematical decisions, the pre-registrations, and all review are the
 author’s. The C++ implementation, the documentation drafts, and the
@@ -230,19 +229,18 @@ rules: dual independent implementations, oracles as referees only,
 decision rules committed before the data they judge, no constant taken
 from memory. The author verified the artifacts and is responsible for
 this record.</p>
-</blockquote>
 <hr />
 <h2 id="abstract">Abstract</h2>
 <p>We re-derive the Sawin–Sutherland height-ordered elliptic-curve
 murmuration from scratch and probe it against their conjectured
 Bessel-<span class="math inline">J_1</span> density. Over a four-rung
-height ladder, <span class="math inline">X = 10^4, 2^{16}, 2^{17},
-2^{18}</span>, two calibrated shape invariants (the positive hump and
-the first post-hump zero) agree with the conjectured density within an
-a-priori tolerance, while the trough sits at a fixed displacement that
-exceeds the tolerance at every rung. A pre-registered decision rule
-returns H0: the trough deviation is persistent across the ladder, a
-finite-range statement over <span class="math inline">X \le
+height ladder, <span class="math inline">X = 10^4~(\approx 2^{13.3}),\,
+2^{16}, 2^{17}, 2^{18}</span>, two calibrated shape invariants (the
+positive hump and the first post-hump zero) agree with the conjectured
+density within an a-priori tolerance, while the trough sits at a fixed
+displacement that exceeds the tolerance at every rung. A pre-registered
+decision rule returns H0: the trough deviation is persistent across the
+ladder, a finite-range statement over <span class="math inline">X \le
 2^{18}</span> and not a claim about the large-<span
 class="math inline">X</span> limit. Two pre-registered follow-ups
 constrain candidate mechanisms: excising the analytic-rank-2
@@ -276,23 +274,24 @@ D(u)\,du</span>, where the murmuration density is the Bessel-<span
 class="math inline">J_1</span> double sum of their equation (2):</p>
 <p><span class="math display">
 \begin{aligned}
-D(u) &amp;= 2\pi\sqrt{u} \sum_{\substack{q\,\in\,\mathbb{N}\\
-\text{squarefree}}} \sum_{m\,\in\,\mathbb{N}}
+D(u) &amp;= 2\pi\sqrt{u} \sum_{\substack{q\in\mathbb{N}\\
+\text{squarefree}}} \sum_{m\in\mathbb{N}}
   \frac{\mu(\gcd(m,q))}{q\,m\,\varphi\!\left(q/\gcd(m,q)\right)} \\
 &amp;\hphantom{{}={}} \times\, J_1\!\left(4\pi\sqrt{u}\,m/q\right)
-  \prod_{\substack{p\,\mid\,m\\ p\,\nmid\,q}} \hat{\ell}_{p,\,2v_p(m)}
-  \prod_{p\,\mid\,q} \ell_{p,\,v_p(m)},
-  \qquad u = p/N.
+  \prod_{\substack{p\mid m\\ p\nmid q}} \hat{\ell}_{p,2v_p(m)}
+  \prod_{p\mid q} \ell_{p,v_p(m)},
 \end{aligned}
+\tag{2}
 </span></p>
-<p>Here <span class="math inline">J_1</span> is the Bessel function of
-the first kind, <span class="math inline">v_p</span> the <span
+<p>where <span class="math inline">u = p/N</span>. Here <span
+class="math inline">J_1</span> is the Bessel function of the first kind,
+<span class="math inline">v_p</span> the <span
 class="math inline">p</span>-adic valuation, <span
 class="math inline">\mu</span> the Möbius function, and <span
 class="math inline">\varphi</span> Euler’s totient; the local factors
 <span class="math inline">\ell_{p,\nu}</span> and <span
-class="math inline">\hat\ell_{p,\nu}</span> are those of their Lemmas 3
-and 4.</p></li>
+class="math inline">\hat{\ell}_{p,\nu}</span> are those of their Lemmas
+3 and 4.</p></li>
 <li><p><strong>Theorem 2 (the proven variant).</strong> [SS25] prove a
 variant in which the prime sum is replaced by a sum over integers with
 no prime factor <span class="math inline">\le P</span>, against a smooth
@@ -353,10 +352,13 @@ statistic (1) is</p>
 <p><span class="math display">
 \mathbb{E}_{\{E\,:\,H(E)\le X\}}\!\left[
   \frac{\log\!\left(N(E)^{(C_1+C_2)/2}\right)}{N(E)}
-  \sum_{\substack{p\,\in\,(C_1 N(E),\,C_2 N(E))\\ p\ \text{prime}}}
+  \sum_{\substack{p/N(E)\in(C_1,C_2)\\ p\ \text{prime}}}
   \epsilon(E)\,a_p(E)
-\right].
+\right]. \tag{1}
 </span></p>
+<p>The two displayed equations keep [SS25]’s numbers, (1) and (2); the
+binned estimator <span class="math inline">\hat{D}</span> below is ours
+and is left unnumbered.</p>
 <p>We evaluate it as a density on <span
 class="math inline">(0,1]</span>: partition into 40 bins of width <span
 class="math inline">\Delta u = 0.025</span>, take each bin <span
@@ -365,7 +367,7 @@ window (so its midpoint <span class="math inline">(C_1+C_2)/2 =
 u_{\mathrm{mid}} := (b+\tfrac12)\,\Delta u</span>), and divide by <span
 class="math inline">\Delta u</span>:</p>
 <p><span class="math display">
-\hat D(u_b) = \frac{1}{\Delta u\,\lvert\mathrm{fam}\rvert}
+\hat{D}(u_b) = \frac{1}{\Delta u\,\lvert\mathrm{fam}\rvert}
   \sum_{(E,p)\,:\,p/N(E)\,\in\,\mathrm{bin}_b}
   \left(u_{\mathrm{mid}}\,\frac{\ln
 N(E)}{N(E)}\right)\epsilon(E)\,a_p(E),
@@ -376,7 +378,7 @@ class="math inline">p \le N(E)</span> (so <span class="math inline">u
 \le 1</span>). The <span class="math inline">u_{\mathrm{mid}}</span>
 factor is eq (1)’s <span class="math inline">(C_1+C_2)/2</span>
 normalization exponent evaluated at the bin midpoint, not a per-pair
-weight, so <span class="math inline">\hat D</span> is a binned density
+weight, so <span class="math inline">\hat{D}</span> is a binned density
 estimator of statistic (1), one bin per window. For this family the
 reduced short model is <span class="math inline">p</span>-minimal at
 every <span class="math inline">p &gt; 3</span>, so <span
@@ -389,9 +391,9 @@ of (1) equals <span class="math inline">\int D(u)\,du</span>, where
 <span class="math inline">D(u)</span> is the Bessel-<span
 class="math inline">J_1</span> density transcribed verbatim in §1. eq
 (1) is a definition we evaluate; eq (2)’s equality to the limit is the
-<em>conjecture</em>. <span class="math inline">\hat D</span> is compared
-to <span class="math inline">D</span>; the note reports empirical
-agreement, never a proof (§1).</p>
+<em>conjecture</em>. <span class="math inline">\hat{D}</span> is
+compared to <span class="math inline">D</span>; the note reports
+empirical agreement, never a proof (§1).</p>
 <p><strong>Provenance: computed vs. oracle.</strong> The Frobenius trace
 <span class="math inline">a_p = p + 1 - \#E(\mathbb{F}_p)</span> is
 computed from scratch. The conductor <span
@@ -480,46 +482,55 @@ the M4 run <code>data/m4/ss_empirical.txt</code>:</p>
 </colgroup>
 <thead>
 <tr>
-<th><span class="math inline">X</span></th>
-<th><span class="math inline">\lvert\mathrm{fam}\rvert</span></th>
-<th>hump u (dev)</th>
-<th>first zero u (dev)</th>
-<th>trough u (dev)</th>
-<th>trough v</th>
+<th style="text-align: right;"><span class="math inline">X</span></th>
+<th style="text-align: right;"><span
+class="math inline">\lvert\mathrm{fam}\rvert</span></th>
+<th style="text-align: right;">hump u (dev)</th>
+<th style="text-align: right;">first zero u (dev)</th>
+<th style="text-align: right;">trough u (dev)</th>
+<th style="text-align: right;">trough v</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><span class="math inline">10^4</span></td>
-<td>1048</td>
-<td>0.4625 (0.0125)</td>
-<td>0.672894 (0.0279)</td>
-<td>0.8875 (0.0825)</td>
-<td><span class="math inline">-3.47</span></td>
+<td style="text-align: right;"><span
+class="math inline">10^4</span></td>
+<td style="text-align: right;">1048</td>
+<td style="text-align: right;">0.4625 (0.0125)</td>
+<td style="text-align: right;">0.672894 (0.0279)</td>
+<td style="text-align: right;">0.8875 (0.0825)</td>
+<td style="text-align: right;"><span
+class="math inline">-3.47</span></td>
 </tr>
 <tr>
-<td><span class="math inline">2^{16}</span></td>
-<td>5042</td>
-<td>0.4625 (0.0125)</td>
-<td>0.670328 (0.0253)</td>
-<td>0.8875 (0.0825)</td>
-<td><span class="math inline">-3.72</span></td>
+<td style="text-align: right;"><span
+class="math inline">2^{16}</span></td>
+<td style="text-align: right;">5042</td>
+<td style="text-align: right;">0.4625 (0.0125)</td>
+<td style="text-align: right;">0.670328 (0.0253)</td>
+<td style="text-align: right;">0.8875 (0.0825)</td>
+<td style="text-align: right;"><span
+class="math inline">-3.72</span></td>
 </tr>
 <tr>
-<td><span class="math inline">2^{17}</span></td>
-<td>9014</td>
-<td>0.4625 (0.0125)</td>
-<td>0.673202 (0.0282)</td>
-<td>0.8875 (0.0825)</td>
-<td><span class="math inline">-3.65</span></td>
+<td style="text-align: right;"><span
+class="math inline">2^{17}</span></td>
+<td style="text-align: right;">9014</td>
+<td style="text-align: right;">0.4625 (0.0125)</td>
+<td style="text-align: right;">0.673202 (0.0282)</td>
+<td style="text-align: right;">0.8875 (0.0825)</td>
+<td style="text-align: right;"><span
+class="math inline">-3.65</span></td>
 </tr>
 <tr>
-<td><span class="math inline">2^{18}</span></td>
-<td>15936</td>
-<td>0.4625 (0.0125)</td>
-<td>0.671945 (0.0269)</td>
-<td>0.8875 (0.0825)</td>
-<td><span class="math inline">-3.58</span></td>
+<td style="text-align: right;"><span
+class="math inline">2^{18}</span></td>
+<td style="text-align: right;">15936</td>
+<td style="text-align: right;">0.4625 (0.0125)</td>
+<td style="text-align: right;">0.671945 (0.0269)</td>
+<td style="text-align: right;">0.8875 (0.0825)</td>
+<td style="text-align: right;"><span
+class="math inline">-3.58</span></td>
 </tr>
 </tbody>
 </table>
@@ -612,41 +623,60 @@ the trough:</p>
 </colgroup>
 <thead>
 <tr>
-<th><span class="math inline">X</span></th>
-<th><span class="math inline">\delta</span></th>
-<th>leakage <span class="math inline">L(u^*)</span></th>
-<th><span class="math inline">f = L/\text{departure}</span></th>
-<th>sign vs. deficit</th>
+<th style="text-align: right;"><span class="math inline">X</span></th>
+<th style="text-align: right;"><span
+class="math inline">\delta</span></th>
+<th style="text-align: right;">leakage <span
+class="math inline">L(u^*)</span></th>
+<th style="text-align: right;"><span class="math inline">f =
+L/\text{departure}</span></th>
+<th style="text-align: left;">sign vs. deficit</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><span class="math inline">10^4</span></td>
-<td><span class="math inline">-0.0534</span></td>
-<td><span class="math inline">-0.0184</span></td>
-<td><span class="math inline">+0.0046</span></td>
-<td>same</td>
+<td style="text-align: right;"><span
+class="math inline">10^4</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.0534</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.0184</span></td>
+<td style="text-align: right;"><span
+class="math inline">+0.0046</span></td>
+<td style="text-align: left;">same</td>
 </tr>
 <tr>
-<td><span class="math inline">2^{16}</span></td>
-<td><span class="math inline">-0.0115</span></td>
-<td><span class="math inline">+0.0037</span></td>
-<td><span class="math inline">-0.0009</span></td>
-<td>opposite</td>
+<td style="text-align: right;"><span
+class="math inline">2^{16}</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.0115</span></td>
+<td style="text-align: right;"><span
+class="math inline">+0.0037</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.0009</span></td>
+<td style="text-align: left;">opposite</td>
 </tr>
 <tr>
-<td><span class="math inline">2^{17}</span></td>
-<td><span class="math inline">-0.0078</span></td>
-<td><span class="math inline">+0.0025</span></td>
-<td><span class="math inline">-0.0006</span></td>
-<td>opposite</td>
+<td style="text-align: right;"><span
+class="math inline">2^{17}</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.0078</span></td>
+<td style="text-align: right;"><span
+class="math inline">+0.0025</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.0006</span></td>
+<td style="text-align: left;">opposite</td>
 </tr>
 <tr>
-<td><span class="math inline">2^{18}</span></td>
-<td><span class="math inline">-0.0103</span></td>
-<td><span class="math inline">+0.0032</span></td>
-<td><span class="math inline">-0.0008</span></td>
-<td>opposite</td>
+<td style="text-align: right;"><span
+class="math inline">2^{18}</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.0103</span></td>
+<td style="text-align: right;"><span
+class="math inline">+0.0032</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.0008</span></td>
+<td style="text-align: left;">opposite</td>
 </tr>
 </tbody>
 </table>

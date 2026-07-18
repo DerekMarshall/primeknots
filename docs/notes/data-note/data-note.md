@@ -17,12 +17,12 @@
 
 **Venue:** repo publication (GitHub Pages), PDF build product. <!-- venue block — Derek's decision -->
 
-> **Methods disclosure.** The research design, the mathematical decisions, the pre-registrations,
-> and all review are the author's. The C++ implementation, the documentation drafts, and the
-> execution of the analyses were done by an AI assistant (Anthropic's Claude) under the author's
-> direction, following the repository's working rules: dual independent implementations, oracles
-> as referees only, decision rules committed before the data they judge, no constant taken from
-> memory. The author verified the artifacts and is responsible for this record.
+**Methods disclosure.** The research design, the mathematical decisions, the pre-registrations,
+and all review are the author's. The C++ implementation, the documentation drafts, and the
+execution of the analyses were done by an AI assistant (Anthropic's Claude) under the author's
+direction, following the repository's working rules: dual independent implementations, oracles
+as referees only, decision rules committed before the data they judge, no constant taken from
+memory. The author verified the artifacts and is responsible for this record.
 
 ---
 
@@ -30,7 +30,7 @@
 
 We re-derive the Sawin–Sutherland height-ordered elliptic-curve murmuration from scratch and probe
 it against their conjectured Bessel-$J_1$ density. Over a four-rung height ladder,
-$X = 10^4, 2^{16}, 2^{17}, 2^{18}$, two calibrated shape invariants (the positive hump and the first
+$X = 10^4~(\approx 2^{13.3}),\, 2^{16}, 2^{17}, 2^{18}$, two calibrated shape invariants (the positive hump and the first
 post-hump zero) agree with the conjectured density within an a-priori tolerance, while the trough
 sits at a fixed displacement that exceeds the tolerance at every rung. A pre-registered decision
 rule returns H0: the trough deviation is persistent across the ladder, a finite-range statement
@@ -62,18 +62,18 @@ distinction fixes what this note claims. The first is a conjecture, the second a
 
   $$
   \begin{aligned}
-  D(u) &= 2\pi\sqrt{u} \sum_{\substack{q\,\in\,\mathbb{N}\\ \text{squarefree}}} \sum_{m\,\in\,\mathbb{N}}
+  D(u) &= 2\pi\sqrt{u} \sum_{\substack{q\in\mathbb{N}\\ \text{squarefree}}} \sum_{m\in\mathbb{N}}
     \frac{\mu(\gcd(m,q))}{q\,m\,\varphi\!\left(q/\gcd(m,q)\right)} \\
   &\hphantom{{}={}} \times\, J_1\!\left(4\pi\sqrt{u}\,m/q\right)
-    \prod_{\substack{p\,\mid\,m\\ p\,\nmid\,q}} \hat{\ell}_{p,\,2v_p(m)}
-    \prod_{p\,\mid\,q} \ell_{p,\,v_p(m)},
-    \qquad u = p/N.
+    \prod_{\substack{p\mid m\\ p\nmid q}} \hat{\ell}_{p,2v_p(m)}
+    \prod_{p\mid q} \ell_{p,v_p(m)},
   \end{aligned}
+  \tag{2}
   $$
 
-  Here $J_1$ is the Bessel function of the first kind, $v_p$ the $p$-adic valuation, $\mu$ the
-  Möbius function, and $\varphi$ Euler's totient; the local factors $\ell_{p,\nu}$ and
-  $\hat\ell_{p,\nu}$ are those of their Lemmas 3 and 4. <!-- claim:N1-2 -->
+  where $u = p/N$. Here $J_1$ is the Bessel function of the first kind, $v_p$ the $p$-adic
+  valuation, $\mu$ the Möbius function, and $\varphi$ Euler's totient; the local factors
+  $\ell_{p,\nu}$ and $\hat{\ell}_{p,\nu}$ are those of their Lemmas 3 and 4. <!-- claim:N1-2 -->
 - **Theorem 2 (the proven variant).** [SS25] prove a variant in which the prime sum is replaced by
   a sum over integers with no prime factor $\le P$, against a smooth weight; the same integrand
   appears, and the $P \to \infty$ limit is established. This smoothed variant motivates Conjecture 1
@@ -119,31 +119,34 @@ a second, independent sieve algorithm required to agree with the direct count at
 $$
 \mathbb{E}_{\{E\,:\,H(E)\le X\}}\!\left[
   \frac{\log\!\left(N(E)^{(C_1+C_2)/2}\right)}{N(E)}
-  \sum_{\substack{p\,\in\,(C_1 N(E),\,C_2 N(E))\\ p\ \text{prime}}}
+  \sum_{\substack{p/N(E)\in(C_1,C_2)\\ p\ \text{prime}}}
   \epsilon(E)\,a_p(E)
-\right].
+\right]. \tag{1}
 $$
+
+The two displayed equations keep [SS25]'s numbers, (1) and (2); the binned estimator $\hat{D}$
+below is ours and is left unnumbered.
 
 We evaluate it as a density on $(0,1]$: partition into 40 bins of width $\Delta u = 0.025$, take each
 bin $b = (b\,\Delta u,\, (b+1)\Delta u]$ as the window (so its midpoint
 $(C_1+C_2)/2 = u_{\mathrm{mid}} := (b+\tfrac12)\,\Delta u$), and divide by $\Delta u$:
 
 $$
-\hat D(u_b) = \frac{1}{\Delta u\,\lvert\mathrm{fam}\rvert}
+\hat{D}(u_b) = \frac{1}{\Delta u\,\lvert\mathrm{fam}\rvert}
   \sum_{(E,p)\,:\,p/N(E)\,\in\,\mathrm{bin}_b}
   \left(u_{\mathrm{mid}}\,\frac{\ln N(E)}{N(E)}\right)\epsilon(E)\,a_p(E),
 $$
 
 over good primes $p > 3$ with $p \nmid (4A^3 + 27B^2)$ and $p \le N(E)$ (so $u \le 1$). The
 $u_{\mathrm{mid}}$ factor is eq (1)'s $(C_1+C_2)/2$ normalization exponent evaluated at the bin
-midpoint, not a per-pair weight, so $\hat D$ is a binned density estimator of statistic (1), one bin
+midpoint, not a per-pair weight, so $\hat{D}$ is a binned density estimator of statistic (1), one bin
 per window. <!-- claim:N2-3 --> For this family the reduced short model is $p$-minimal at every
 $p > 3$, so $p \nmid \Delta(\text{model}) \iff p \nmid N(E)$ (good reduction), and this exact
 good-prime test keeps $a_p$'s domain computed-only. <!-- claim:N2-4 -->
 
 *Conjectured: [SS25] eq. (2) / Conjecture 1.* [SS25] conjecture that the $X \to \infty$ limit of
 (1) equals $\int D(u)\,du$, where $D(u)$ is the Bessel-$J_1$ density transcribed verbatim in §1.
-eq (1) is a definition we evaluate; eq (2)'s equality to the limit is the *conjecture*. $\hat D$ is
+eq (1) is a definition we evaluate; eq (2)'s equality to the limit is the *conjecture*. $\hat{D}$ is
 compared to $D$; the note reports empirical agreement, never a proof (§1). <!-- claim:N2-15 -->
 
 **Provenance: computed vs. oracle.** The Frobenius trace $a_p = p + 1 - \#E(\mathbb{F}_p)$ is
@@ -200,7 +203,7 @@ $d = \lvert 0.8875 - 0.805\rvert = 0.0825$ that is frozen across the ladder. All
 committed `data/m5/ss_x{65536,131072,262144}.txt` runs and the M4 run `data/m4/ss_empirical.txt`:
 
 | $X$ | $\lvert\mathrm{fam}\rvert$ | hump u (dev) | first zero u (dev) | trough u (dev) | trough v |
-|---|---|---|---|---|---|
+|--:|--:|--:|--:|--:|--:|
 | $10^4$ | 1048 | 0.4625 (0.0125) | 0.672894 (0.0279) | 0.8875 (0.0825) | $-3.47$ |
 | $2^{16}$ | 5042 | 0.4625 (0.0125) | 0.670328 (0.0253) | 0.8875 (0.0825) | $-3.72$ |
 | $2^{17}$ | 9014 | 0.4625 (0.0125) | 0.673202 (0.0282) | 0.8875 (0.0825) | $-3.65$ |
@@ -257,7 +260,7 @@ $\delta = (n_+ - n_-)/\lvert\mathrm{fam}\rvert$ the root-number imbalance, $U$ t
 leakage $L = \delta\cdot U$, and $f = L/\text{departure}$ at the trough:
 
 | $X$ | $\delta$ | leakage $L(u^*)$ | $f = L/\text{departure}$ | sign vs. deficit |
-|---|---|---|---|---|
+|--:|--:|--:|--:|:--|
 | $10^4$ | $-0.0534$ | $-0.0184$ | $+0.0046$ | same |
 | $2^{16}$ | $-0.0115$ | $+0.0037$ | $-0.0009$ | opposite |
 | $2^{17}$ | $-0.0078$ | $+0.0025$ | $-0.0006$ | opposite |
