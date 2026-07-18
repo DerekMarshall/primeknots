@@ -56,6 +56,10 @@
 # Never committed (the ERRATA #18 "checksummed-not-committed" distinction).
 data/m5/ap_cache_*.bin
 
+# libm-diff quantity-1 sample outputs (data-note §5): reboot-proof local copies of the
+# cross-platform a_p sample; regenerable via `at ap-sample`, sha-pinned in the spec.
+data/m5/ap_sample_*.txt
+
 # Python bytecode cache (from oracle/*.py runs)
 __pycache__/
 *.pyc

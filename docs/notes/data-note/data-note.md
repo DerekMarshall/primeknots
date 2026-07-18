@@ -21,16 +21,12 @@
 
 **Venue:** repo publication (GitHub Pages), PDF build product. <!-- venue block — Derek's decision -->
 
-> **Methods disclosure (human–AI collaboration) — [DRAFT FOR DEREK'S EDIT, in your register].**
-> The research design, the mathematical and methodological decisions, the pre-registration
-> commitments, and every review were the author's. Implementation of the from-scratch C++,
-> drafting of documentation, and execution of the analyses were carried out by an AI assistant
-> (Anthropic's Claude) working under the author's direction and under the project's standing
-> discipline — dual independent implementations before trust, oracles as referees only,
-> commit-before-run pre-registration, no convention fitted to an expected answer, and no
-> numerical constant taken from memory. The author verified the artifacts and controls this
-> record; responsibility for it is the author's. *(Rewrite freely; this is a faithful factual
-> draft, not a fixed form.)*
+> **Methods disclosure.** The research design, the mathematical decisions, the pre-registrations,
+> and all review are the author's. The C++ implementation, the documentation drafts, and the
+> execution of the analyses were done by an AI assistant (Anthropic's Claude) under the author's
+> direction, following the repository's working rules: dual independent implementations, oracles
+> as referees only, decision rules committed before the data they judge, no constant taken from
+> memory. The author verified the artifacts and is responsible for this record.
 
 ---
 
@@ -266,15 +262,53 @@ written (hypotheses die in public). <!-- claim:N4-3 -->
 The tail deficit remains unexplained by either constrained mechanism, stated as such and not
 smoothed. What could carry it is future work (§6).
 
-## 5. Reproducibility *(stub — [PENDING])*
+## 5. Reproducibility
 
-<!-- Cross-platform byte-identity (macOS referee vs FreeBSD/clang independent re-run); the libm
-     partial-diff paragraph [PENDING item-4 diff]; the errata ledger; byte-portable emit +
-     freshness check.
-     HOW TO CITE / HOW TO VERIFY block (venue amendment): repository URL, release tag
-     [PLACEHOLDER], HEAD commit, and a one-command reproduction pointer (cmake build + ctest +
-     `at emit` + this note's figure script). Zenodo DOI [PLACEHOLDER — minted after Derek's full
-     review, per Derek 2026-07-17]. -->
+**A byte-identical published curve.** The emitted density JSON is byte-for-byte identical across
+compilers and platforms. The density evaluator and its emitter (`src/murm/ss_density.cpp`,
+`src/emit/emit_sawin_sutherland.cpp`) are compiled with fused-multiply-add contraction disabled
+(`-ffp-contract=off`), so their IEEE operations round the same way under GCC and clang. A freshness
+check re-emits the snapshot at the current commit and requires byte-equality with the committed
+file, on CI's GCC as well as a local build. <!-- claim:N5-1 -->
+
+**Integer `a_p` is platform-independent.** A pre-registered, tail-weighted sample of 79,268
+(curve, prime) pairs, with primes up to about 4.15 million, was computed by the frozen referee
+`ap_charsum` on the laptop (`g++-16`, macOS) and on the compute box (`clang 21.1.8`, FreeBSD 15.1).
+The two outputs are byte-identical, with zero mismatches. This sample corroborates on the 2¹⁷
+family; the primary evidence that `a_p` is platform-independent is the exact agreement of the three
+`a_p` algorithms over the full 2¹⁶ and 2¹⁷ grids together with the byte-identical emit above. <!-- claim:N5-2 -->
+
+**The raw partials are the deliberate exception (the contrast).** Contraction is off for the
+density path but left at the compiler default for the empirical partial-sum generator
+(`src/murm/ss_empirical.cpp` is outside the `-ffp-contract=off` list). So the raw per-curve partial
+sums drift across toolchains while the emitted density does not. Measured on the shared 8640-curve
+2¹⁷ set, the drift has maximum size `1.887 × 10⁻¹⁵`, the last bit of a value near one. It never
+reaches the published curve: the density is built on the contraction-off path, and the raw partials
+are an intermediate the emitted artifact does not carry. <!-- claim:N5-3 -->
+
+**Errata and inputs.** Corrections are logged as numbered errata entries in the research spec and
+the pinning notes, not edited away. Everything the note's numbers depend on is committed: the
+from-scratch code, the oracle `N`/`ε` caches, the per-curve partials, and the `at ap-sample`
+subcommand that regenerates the cross-platform sample. The large `a_p` caches and the sample
+outputs are gitignored, regenerable, and pinned by SHA-256 in the reproducibility spec
+(`docs/notes/libm-partial-diff-spec.md`). <!-- claim:N5-4 -->
+
+**How to cite and verify.** *(Release tag and DOI are placeholders, minted after the author's full
+review.)* Repository: <https://github.com/DerekMarshall/primeknots>, release tag
+`[PLACEHOLDER: v1.0.0]`, at its tagged commit. Zenodo DOI `[PLACEHOLDER]`. To reproduce the results
+this note reports, from the tagged commit:
+
+```
+cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j
+ctest --test-dir build -L m5                          # the M5 verification suites
+./build/bin/at emit --stage m5      --out viz/data/   # empirical-vs-D(u) overlay JSON
+./build/bin/at emit --stage m5split --out viz/data/   # rank-split overlay JSON
+python3 docs/notes/data-note/figures/make_figures.py  # Fig. 1 and the rank-split figure
+```
+
+The cross-platform `a_p` sample is reproduced by
+`./build/bin/at ap-sample --X 131072 --cache data/m5/ne_cache_x131072.txt` on two toolchains; its
+output SHA-256 is pinned in the reproducibility spec. <!-- claim:N5-5 -->
 
 ## 6. Discussion *(stub — [PENDING])*
 

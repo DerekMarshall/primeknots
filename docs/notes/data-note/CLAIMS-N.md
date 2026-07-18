@@ -92,5 +92,15 @@ character-checked so a skeptical [SS25] reader confirms fidelity (register rule 
   ∏_{p|q} ℓ_{p,v_p(m)}` double sum. Note (§1) renders the integrand `D(u)` character-identically;
   local factors ℓ,ℓ̂ per Lemmas 3–4 (`src/murm/ss_density.h`). No discrepancy.
 
-## §5–§6 + Abstract — [PENDING]
-*(ENDGAME Phase 2: §5 Reproducibility, §6 Discussion, Abstract last.)*
+## §5 — Reproducibility
+
+| ID | Claim | Source |
+|----|-------|--------|
+| N5-1 | Emitted density JSON byte-identical across compilers/platforms; the density evaluator + emitter are built `-ffp-contract=off`; a freshness check re-emits at the commit and requires byte-equality on CI GCC + local | src/CMakeLists.txt:163–173 (`ss_density.cpp`, `emit_sawin_sutherland.cpp`); verify/freshness_check.py; CLAIMS-E E3-17/E3-18; N2-13 |
+| N5-2 | Integer a_p platform-independent: pre-registered tail-weighted sample of 79,268 (curve,prime) pairs (p≤4.15M) via `ap_charsum` on laptop `g++-16`/macOS + FreeBSD `clang 21.1.8`/15.1 is byte-identical, 0 mismatches; primary evidence = 3-algorithm exact agreement over full 2¹⁶/2¹⁷ grids + byte-identical emit | docs/notes/libm-partial-diff-spec.md (Q1, sha e7ba27d7, `at ap-sample`); tests `twin_m0b_vs_charsum_x16/x17`; N2-14 |
+| N5-3 | Raw partials NOT `-ffp-contract=off` (`ss_empirical.cpp` outside the list) ⇒ cross-toolchain float drift, max 1.887e-15 on the shared 8640-curve 2¹⁷ set; never reaches the contraction-off emitted curve | docs/notes/libm-partial-diff-spec.md (Q2); src/CMakeLists.txt:54–55 vs 163–173; docs/notes/libm_float_diff.py |
+| N5-4 | Corrections logged as numbered errata (RESEARCH-M + pinning notes); all note inputs committed (code, N/ε caches, partials, `at ap-sample`); a_p caches + sample outputs gitignored, regenerable, SHA-256-pinned in the spec | docs/RESEARCH-M.md (ERRATA #NN); docs/notes/libm-partial-diff-spec.md (Step-0 manifest) |
+| N5-5 | How to cite/verify: repo URL + release tag [PLACEHOLDER] + Zenodo DOI [PLACEHOLDER]; one-command reproduction (cmake + `ctest -L m5` + `at emit` + figures); `at ap-sample` reproduces the sample (sha pinned) | data-note/README.md; docs/notes/libm-partial-diff-spec.md; venue amendment (Derek 2026-07-17) |
+
+## §6 + Abstract — [PENDING]
+*(ENDGAME Phase 2: §6 Discussion, Abstract last.)*

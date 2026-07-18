@@ -173,3 +173,5 @@ is cross-platform, same-referee (`ap_charsum` both sides); cross-algorithm ident
 from the committed `at ap-sample` and `ne_cache_x131072.txt`, so the sha pins it (the 2 MB output is
 not committed). Primary integer-identity evidence remains the full 2¹⁶/2¹⁷ grid twins +
 byte-identical emit (framing above); this sample is corroboration on this curve set.
+Reboot-proof copies of both outputs are kept off `/tmp`, at
+`data/m5/ap_sample_x131072_{laptop,freebsd}.txt` (gitignored, sha `e7ba27d7…`).
