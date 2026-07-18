@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Rough render of the data note for review / GitHub Pages (venue amendment 2026-07-17).
-# Strips the claim:/editorial HTML comments, then pandoc -> standalone styled HTML — the
-# marker-free artifact a reader sees, not the marker-riddled Markdown source. The HTML is a
+# Render the data note for review / GitHub Pages (venue amendment 2026-07-17).
+# Strips the claim:/editorial HTML comments, then pandoc -> standalone styled HTML (KaTeX math)
+# — the marker-free artifact a reader sees, not the marker-riddled Markdown source. Also builds
+# a PDF build product via Pandoc -> LaTeX when a unicode-capable engine is present. The HTML is a
 # build product (regenerable from data-note.md); committed so a reviewer can open it directly.
-# Requires: pandoc, python3. Run from anywhere: docs/notes/data-note/render.sh
+# Requires: pandoc, python3 (HTML); a LaTeX engine (tectonic/xelatex/lualatex) for the PDF.
+# Run from anywhere: docs/notes/data-note/render.sh
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -26,6 +28,8 @@ cat > "$STYLE" <<'CSS'
   blockquote{border-left:3px solid #c9c9c9;margin:1.1rem 0;padding:.2rem 1rem;color:#3a3a3a;background:#fafafa}
   a{color:#0b62c4}
   hr{border:none;border-top:1px solid #e3e3e3;margin:2rem 0}
+  /* wide display formulas scroll inside their own box, never the page body */
+  .katex-display{overflow-x:auto;overflow-y:hidden;padding:.3rem 0}
 </style>
 CSS
 
@@ -43,9 +47,46 @@ if grep -Eq -- '<!--|-->' "$STRIPPED"; then
   rm -f "$STYLE" "$STRIPPED"; exit 1
 fi
 
-# pagetitle (not title): sets the browser-tab <title> WITHOUT rendering pandoc's own title block,
-# so the document's own `# ` H1 is the single visible title (no duplicate).
-pandoc -f markdown -s --metadata pagetitle="$TITLE" -H "$STYLE" -o data-note.html "$STRIPPED"
+# HTML: --katex renders $…$/$$…$$ as KaTeX (math notation, not ASCII code fences). pagetitle (not
+# title) sets the browser-tab <title> WITHOUT rendering pandoc's own title block, so the
+# document's own `# ` H1 is the single visible title (no duplicate).
+pandoc -f markdown -s --katex --metadata pagetitle="$TITLE" -H "$STYLE" -o data-note.html "$STRIPPED"
+echo "wrote $(pwd)/data-note.html"
+
+# PDF build product via Pandoc -> LaTeX. pdflatex can't handle this note's unicode (√, ε, 𝔽, Ш,
+# superscripts), so require a unicode-capable engine; skip cleanly (not a failure) if none is
+# installed — the PDF is a Phase-3 build product, the HTML is the primary artifact.
+PDF_ENGINE=""
+for e in tectonic xelatex lualatex; do
+  if command -v "$e" >/dev/null 2>&1; then PDF_ENGINE="$e"; break; fi
+done
+if [ -n "$PDF_ENGINE" ]; then
+  # The main TeX font (Latin Modern) lacks Cyrillic Ш (Tate–Shafarevich); map just that glyph to a
+  # Cyrillic-capable font IF one is installed, so the PDF always builds — it degrades to a "missing
+  # character" warning (never a halt) where the font is absent. STIX Two Text ships with macOS and
+  # is freely available; \IfFontExistsTF keeps the fallback optional.
+  LATEXHDR="$(mktemp)"
+  cat > "$LATEXHDR" <<'TEX'
+\usepackage{fontspec}
+\usepackage{newunicodechar}
+\IfFontExistsTF{STIX Two Text}{%
+  \newfontfamily\cyrfont{STIX Two Text}%
+  \newunicodechar{Ш}{{\cyrfont Ш}}%
+}{}
+% --listings renders code blocks via the listings package; wrap long lines (the shell
+% recipe) so a verbatim line never runs into the margin (LaTeX verbatim does not wrap).
+\lstset{breaklines=true,breakatwhitespace=false,basicstyle=\small\ttfamily,columns=fullflexible}
+% No metadata `title` (would add \maketitle ON TOP of the document's own `# ` H1 — a
+% duplicate). The body H1 is the single title, as in the HTML. secnumdepth 0 suppresses
+% LaTeX section numbering so the note's literal "1./2." heading prefixes are not doubled.
+\setcounter{secnumdepth}{0}
+TEX
+  pandoc -f markdown --pdf-engine="$PDF_ENGINE" --listings -V geometry:margin=1in \
+    -H "$LATEXHDR" -V title-meta="$TITLE" -o data-note.pdf "$STRIPPED"
+  echo "wrote $(pwd)/data-note.pdf (engine: $PDF_ENGINE)"
+  rm -f "$LATEXHDR"
+else
+  echo "[SKIP] PDF: no unicode-capable LaTeX engine (tectonic/xelatex/lualatex) on PATH — HTML only."
+fi
 
 rm -f "$STYLE" "$STRIPPED"
-echo "wrote $(pwd)/data-note.html"

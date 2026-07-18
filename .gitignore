@@ -29,6 +29,11 @@
 # Third-party paper PDFs (copyright): kept local, see docs/papers/README.md
 /docs/papers/*.pdf
 
+# Data-note PDF build product (Pandoc->LaTeX via render.sh): regenerable, binary, and
+# not byte-reproducible (embedded timestamp), so gitignored like other PDFs. The HTML
+# render IS committed (text-diffable, the primary reviewable artifact).
+/docs/notes/data-note/data-note.pdf
+
 # Cremona ecdata (M0): fetched by oracle/fetch_ecdata.py at a pinned commit,
 # verified against data/cremona/MANIFEST.json. Data files not committed; the
 # manifest + README are. (Mirrors the Odlyzko precedent above.)
