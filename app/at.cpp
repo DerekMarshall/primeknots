@@ -182,10 +182,11 @@ int main(int argc, char** argv) {
             return 0;
         }
         if (stage == "m5") {
-            // PR-1 X-extension: the 2¹⁶ rung + full ladder, same schema, Reading-B verdict
-            // in claim_class. Consumes the committed extension run data/m5/ss_x65536.txt
-            // (the ~10 h a_p is never re-run here; the run file reaggregates from partials).
-            const char* run_path = opt(argc, argv, "--ss-run", "data/m5/ss_x65536.txt");
+            // PR-1 X-extension: the four-rung ladder {10⁴,2¹⁶,2¹⁷,2¹⁸} + the finite-range
+            // H0 verdict in claim_class. run_path is the 2¹⁸ VERDICT rung; the emitter reads
+            // its 2¹⁶/2¹⁷ siblings from the same directory to assemble the ladder (no a_p is
+            // re-run here — each run file reaggregates from its committed partials).
+            const char* run_path = opt(argc, argv, "--ss-run", "data/m5/ss_x262144.txt");
             at::emit::emit_m5_extension(out, run_path, resolve_generated_by());
             std::fprintf(stderr, "at emit: stage m5 -> %s/ss_x_extension_murmuration.json\n", out.c_str());
             return 0;

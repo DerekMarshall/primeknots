@@ -76,11 +76,12 @@ def emit_args():
         # statistic source (it does — both from the committed murm/ss_empirical.cpp).
         "m4": (["--ss-run", str(ROOT / "data" / "m4" / "ss_empirical.txt")],
                ["sawin_sutherland_murmuration.json"]),
-        # M5 / PR-1 (X-extension): like M4, the ~10 h a_p statistic is NOT re-run — emit
-        # reads the committed extension run (data/m5/ss_x65536.txt, which itself
-        # reaggregates from the committed partials) and recomputes only the cheap D(u)
-        # overlay (byte-portable). So byte-checked everywhere including CI.
-        "m5": (["--ss-run", str(ROOT / "data" / "m5" / "ss_x65536.txt")],
+        # M5 / PR-1 (X-extension): like M4, the a_p statistic is NOT re-run — emit reads the
+        # committed run files (each reaggregates from its committed partials) and recomputes
+        # only the cheap D(u) overlay (byte-portable). --ss-run is the 2¹⁸ VERDICT rung; the
+        # emitter also reads its 2¹⁶/2¹⁷ siblings from the same dir to build the four-rung
+        # ladder. So byte-checked everywhere including CI.
+        "m5": (["--ss-run", str(ROOT / "data" / "m5" / "ss_x262144.txt")],
                ["ss_x_extension_murmuration.json"]),
         # M5 / PR-2 step 3 (analytic-rank split): re-aggregates the committed partials
         # filtered by the committed rank column through the frozen ss_aggregate (no a_p

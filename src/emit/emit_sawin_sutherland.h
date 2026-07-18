@@ -18,13 +18,17 @@ namespace at::emit {
 void emit_m4(const std::string& out_dir, const std::string& run_path,
              const std::string& generated_by);
 
-// Stage M5 / PR-1 X-extension emitter. Same schema (sawin_sutherland_murmuration/1),
-// consuming the committed extension run data/m5/ss_x65536.txt (full ladder incl. the
-// 2¹⁶ rung + the 2¹⁶ confirm curve). claim_class carries the PR-1 single-rung verdict IN
-// WORDS: partial agreement — trough PERSISTENT at 2¹⁶ (dev identical to 10⁴, flat over
-// 6.5× X) → "consistent with persistent, proceed to PR-2" (evidence-grade, NOT the
-// finite-X verdict); the interpolated zero-crossing retreated (sub-bin, reported, not the
-// gate). D(u) recomputed cheaply and byte-portably, as in emit_m4.
+// Stage M5 / PR-1 X-extension emitter (schema ss_x_extension_murmuration/1). run_path is
+// the VERDICT rung data/m5/ss_x262144.txt (the 2¹⁸, M0b-produced run); the emitter also
+// reads its 2¹⁶/2¹⁷ siblings (ss_x65536.txt, ss_x131072.txt) from the same directory to
+// assemble PR-1's four-rung ladder {10⁴,2¹⁶,2¹⁷,2¹⁸}. A stale/missing sibling fails the
+// emit loudly (each read_ss_run refuses a stale run) — no silent partial ladder (rule 5).
+// The emitter APPLIES PR-1's committed Rung-3 decision rule to the four rungs' trough
+// deviations and DERIVES the finite-range H1/H0 verdict from the data (rule 1); claim_class
+// + ladder_verdict carry it IN WORDS: partial agreement — hump + first zero within τ=0.06
+// at every rung, the trough a PERSISTENT open deviation (u=0.8875, dev 0.0825 flat over a
+// 26× X span), so the verdict is H0 (persistent, ≤2¹⁸) — a finite-range statement, NOT the
+// X→∞ verdict [SS25] describe. D(u) recomputed cheaply and byte-portably, as in emit_m4.
 void emit_m5_extension(const std::string& out_dir, const std::string& run_path,
                        const std::string& generated_by);
 

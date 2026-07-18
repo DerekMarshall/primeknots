@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "ss_x_extension_murmuration/1",
   "title": "ss_x_extension_murmuration",
-  "description": "Stage M5 / PR-1: the X-extension of the Sawin–Sutherland height murmuration (arXiv:2504.12295, Conjecture 1) to the 2^16 rung. Same statistic (1), extractor, τ and Δu as M4 — only X changes (docs/preregistered/PR-1.md). claim_class carries the committed single-rung verdict IN WORDS: partial agreement — the trough is PERSISTENT at 2^16 (dev identical to the 10^4 anchor, flat over 6.5x X) → Reading B 'consistent with persistent, proceed to PR-2' (EVIDENCE-GRADE, not the finite-X verdict, which requires the full ladder); the interpolated zero-crossing retreated (sub-bin, reported, not the gate). The <=10^4 ladder rows reproduce the frozen M4 run (consistency twin). No proof is claimed (rule 7).",
+  "description": "Stage M5 / PR-1: the X-extension of the Sawin–Sutherland height murmuration (arXiv:2504.12295, Conjecture 1) over the four-rung ladder X in {10^4, 2^16, 2^17, 2^18}. Same statistic (1), extractor, τ and Δu as M4 — only X changes (docs/preregistered/PR-1.md). claim_class + ladder_verdict carry the committed Rung-3 finite-range verdict IN WORDS: partial agreement — hump + first zero-crossing within the a-priori τ=0.06 at every rung, while the trough is a PERSISTENT open deviation (u=0.8875, dev 0.0825 flat across all four rungs, no ≥Δu recovery at either extension step) → VERDICT H0 (persistent, ≤2^18), a finite-range statement, explicitly NOT the X→∞ verdict [SS25] describe (2^18 is the bottom of their 2^16–2^28 window). Supporting empirics (not the gate): the sub-bin zero-crossing is flat/non-monotone; the trough depth eases while its position holds. The 2^18 rung is M0b-produced, validated by full-precision twins before the verdict is read. No proof is claimed (rule 7).",
   "type": "object",
   "required": ["schema", "generated_by", "params", "empirical", "density", "shape", "convergence"],
   "additionalProperties": false,
@@ -12,9 +12,9 @@
     "params": {
       "type": "object",
       "required": ["family", "statistic", "source", "external_data", "provenance",
-                   "claim_class", "single_rung_reading", "consistency_twin",
+                   "claim_class", "ladder_verdict", "consistency_twin",
                    "run_provenance", "X_confirm", "n_curves", "du", "tol",
-                   "reading_A_fired", "density_trunc_B", "u_axis"],
+                   "verdict", "density_trunc_B", "u_axis"],
       "additionalProperties": false,
       "properties": {
         "family": {"type": "string"},
@@ -23,14 +23,14 @@
         "external_data": {"type": "string"},
         "provenance": {"type": "string"},
         "claim_class": {"type": "string"},
-        "single_rung_reading": {"type": "string"},
+        "ladder_verdict": {"type": "string"},
         "consistency_twin": {"type": "string"},
         "run_provenance": {"type": "string"},
         "X_confirm": {"type": "number"},
         "n_curves": {"type": "integer", "minimum": 1},
         "du": {"type": "number"},
         "tol": {"type": "number"},
-        "reading_A_fired": {"type": "boolean"},
+        "verdict": {"type": "string", "enum": ["H0", "H1", "ambiguous"]},
         "density_trunc_B": {"type": "integer", "minimum": 1},
         "u_axis": {"type": "string"}
       }
