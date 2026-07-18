@@ -47,8 +47,8 @@ ctest --test-dir build -L m5                         # the verification suites t
 python3 docs/notes/data-note/figures/make_figures.py # the figures
 ```
 
-**Status.** §1–§4 drafted (Introduction, Methods, Results, Mechanism constraints); §5
-Reproducibility, §6 Discussion, and the Abstract are stubs marked `[PENDING]`. Per rule R4
-(section-by-section refereeing) each section is refereed before the next is drafted. Title,
-co-authorship, venue, and the Zenodo DOI are open Derek decisions left as placeholders; the DOI is
-minted only after Derek's full review (Derek, 2026-07-17).
+**Status.** All sections (§1–§6 + Abstract) drafted and refereed section-by-section (rule R4).
+Title final ("A pre-registered replication of the Sawin–Sutherland height-ordered murmuration"),
+sole author (Derek Marshall, ORCID 0009-0001-8101-3908), venue set (repo publication on Pages).
+The release tag and Zenodo DOI remain the two sanctioned placeholders, minted only after Derek's
+full review and Phase 3/4 (Derek, 2026-07-17).

@@ -20,8 +20,8 @@ Verbatim SS25 quotes (eq (1)/(2)) are transcription-checked against the note's r
 "SS25 transcription check" section below (character level; register rule 1, faithful, an
 understatement or special case, never an inversion).
 
-Status: §1–§4 rows complete; §5–§6 and the Abstract are [PENDING] (drafted per the ENDGAME
-sequence).
+Status: all rows complete — §1–§6 (41 `claim:Nx-y` markers, marker↔row parity green) plus the
+Abstract-summary note; finalized pending Derek's Checkpoint-B read.
 
 ## §1 — Introduction
 

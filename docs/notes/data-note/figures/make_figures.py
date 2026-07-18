@@ -133,7 +133,6 @@ def main():
     made = [fig_ss_overlay(plt), fig_rank_split(plt)]
     for p in made:
         sys.stderr.write(f"wrote {os.path.relpath(p, REPO)}\n")
-    # [PENDING] final print styling + figure numbering, fixed when §3/§4 are drafted.
 
 
 if __name__ == "__main__":

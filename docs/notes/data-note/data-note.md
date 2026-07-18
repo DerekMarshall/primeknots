@@ -1,6 +1,6 @@
-<!-- DATA NOTE — DRAFT. Gate OPEN (Derek's word, 2026-07-17). Deliverable of this block:
-     §1 Introduction + §2 Methods drafted in full; §3–§6 are stubs marked [PENDING]; STOP for
-     section-by-section review (rule R4) before drafting §3 onward.
+<!-- DATA NOTE. Gate OPEN (Derek's word, 2026-07-17). §1–§6 and the Abstract are drafted and
+     refereed section-by-section (rule R4); the note is finalized pending Derek's full
+     Checkpoint-B read (nothing merges before it).
 
      VENUE (reconciled, not silent): the base prompt said "~8pp arXiv math.NT"; the venue
      amendment (2026-07-17) SUPERSEDES the venue → REPO PUBLICATION rendered on the GitHub
@@ -13,7 +13,7 @@
 
 # A pre-registered replication of the Sawin–Sutherland height-ordered murmuration
 
-**Author:** Derek Marshall (ORCID [0009-0001-8101-3908](https://orcid.org/0009-0001-8101-3908)). <!-- authorship block — Derek's decision; co-authorship/affiliation PLACEHOLDER; title still [PLACEHOLDER] -->
+**Author:** Derek Marshall (ORCID [0009-0001-8101-3908](https://orcid.org/0009-0001-8101-3908)). <!-- authorship block — Derek's decision: sole author, title final -->
 
 **Venue:** repo publication (GitHub Pages), PDF build product. <!-- venue block — Derek's decision -->
 
