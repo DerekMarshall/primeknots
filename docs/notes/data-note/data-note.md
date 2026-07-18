@@ -225,7 +225,7 @@ Observed $d = 0.0825$ at $2^{16}, 2^{17}$, and $2^{18}$: flat, with no recovery 
 hence H0 (persistent, $\le 2^{18}$), read at `8f64ba1`. <!-- claim:N3-3 --> This is the first rung
 at which the pre-registered full-ladder verdict could be pronounced. It is a finite-range statement
 ($\le 2^{18}$), explicitly not the $X \to \infty$ verdict [SS25] describe.
-$2^{18}$ is the bottom of their $2^{16}$–$2^{28}$ decay window.
+$2^{18}$ is the bottom of their $2^{16}\text{–}2^{28}$ decay window.
 
 **Supporting observations (not the gate).** (i) The first-zero series
 $0.672894 \to 0.670328 \to 0.673202 \to 0.671945$ is flat near about 0.671, non-monotone,

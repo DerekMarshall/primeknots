@@ -61,30 +61,52 @@ for e in tectonic xelatex lualatex; do
   if command -v "$e" >/dev/null 2>&1; then PDF_ENGINE="$e"; break; fi
 done
 if [ -n "$PDF_ENGINE" ]; then
-  # The main TeX font (Latin Modern) lacks Cyrillic Ш (Tate–Shafarevich); map just that glyph to a
-  # Cyrillic-capable font IF one is installed, so the PDF always builds — it degrades to a "missing
-  # character" warning (never a halt) where the font is absent. STIX Two Text ships with macOS and
-  # is freely available; \IfFontExistsTF keeps the fallback optional.
+  # PDF source: drop the leading `# ` title line so the title comes from \maketitle (metadata)
+  # exactly once. `--shift-heading-level-by=-1` then promotes the note's `##` sections to \section.
+  PDFSRC="$(mktemp)"
+  python3 -c "import re,sys; sys.stdout.write(re.sub(r'^# .*\n','',open('$STRIPPED',encoding='utf-8').read(),count=1,flags=re.M))" > "$PDFSRC"
+
   LATEXHDR="$(mktemp)"
   cat > "$LATEXHDR" <<'TEX'
+% Cyrillic Ш (Tate–Shafarevich): the main TeX font (Latin Modern) lacks it, so map just that
+% glyph to a Cyrillic-capable font IF installed — the build degrades to a warning (never halts)
+% where absent. STIX Two Text ships with macOS and is freely available.
 \usepackage{fontspec}
 \usepackage{newunicodechar}
 \IfFontExistsTF{STIX Two Text}{%
   \newfontfamily\cyrfont{STIX Two Text}%
   \newunicodechar{Ш}{{\cyrfont Ш}}%
 }{}
-% --listings renders code blocks via the listings package; wrap long lines (the shell
-% recipe) so a verbatim line never runs into the margin (LaTeX verbatim does not wrap).
-\lstset{breaklines=true,breakatwhitespace=false,basicstyle=\small\ttfamily,columns=fullflexible}
-% No metadata `title` (would add \maketitle ON TOP of the document's own `# ` H1 — a
-% duplicate). The body H1 is the single title, as in the HTML. secnumdepth 0 suppresses
-% LaTeX section numbering so the note's literal "1./2." heading prefixes are not doubled.
+\usepackage{microtype}
+% Give the line-breaker room to stretch a hard line instead of overflowing, and tolerate a
+% mildly loose line (an unbreakable inline-math atom pushed to the next line) without warning.
+\emergencystretch=3em
+\hbadness=2000
+% Code blocks (the shell recipe) wrap instead of running into the margin: make the plain
+% verbatim env breakable via fvextra (no --listings, which pandoc 3.x deprecated).
+\usepackage{fvextra}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{breaklines=true,breakanywhere=true,fontsize=\small}
+% Long inline code (\texttt file paths / CLI lines) must break instead of running off the
+% margin. seqsplit lets \texttt break at any character with no inserted hyphen.
+\usepackage{seqsplit}
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{{\oldtexttt{\seqsplit{#1}}}}
+% No section numbering — the note carries its own "1./2." heading prefixes.
 \setcounter{secnumdepth}{0}
+% Title block: centered, and NO hyphenation — neither automatic nor at the explicit hyphen in
+% "height-ordered" (exhyphenpenalty) — so a multi-line title breaks only at spaces.
+\usepackage{titling}
+\pretitle{\begin{center}\LARGE\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 }
+\posttitle{\par\end{center}\vskip 0.5em}
 TEX
-  pandoc -f markdown --pdf-engine="$PDF_ENGINE" --listings -V geometry:margin=1in \
-    -H "$LATEXHDR" -V title-meta="$TITLE" -o data-note.pdf "$STRIPPED"
+  # --lua-filter drops pandoc's forced-equal proportional table columns for natural booktabs
+  # columns (see pdf-tables.lua). Tables are the one place --listings/verbatim can't help.
+  pandoc -f markdown --pdf-engine="$PDF_ENGINE" \
+    --shift-heading-level-by=-1 --metadata title="$TITLE" \
+    --lua-filter=pdf-tables.lua \
+    -V geometry:margin=1in -H "$LATEXHDR" -o data-note.pdf "$PDFSRC"
   echo "wrote $(pwd)/data-note.pdf (engine: $PDF_ENGINE)"
-  rm -f "$LATEXHDR"
+  rm -f "$LATEXHDR" "$PDFSRC"
 else
   echo "[SKIP] PDF: no unicode-capable LaTeX engine (tectonic/xelatex/lualatex) on PATH — HTML only."
 fi
