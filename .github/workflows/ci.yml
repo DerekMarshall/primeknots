@@ -41,12 +41,15 @@ jobs:
       - name: Build
         run: cmake --build build -j
 
-      - name: Test (non-oracle green; oracle tests SKIP-visible)
-        # -LE heavy EXCLUDES the deliberate multi-hour m0b brute-force gate
-        # (m5gate;heavy, twin_m0b_bruteforce_x18_tailweighted: ~27.9 M a_p). That gate is a
-        # 48-core-box run invoked explicitly (m0b-pinning §7), NEVER in CI — a 2-core runner
-        # takes hours and hammers Actions. CI stays cheap + fast on the routine suite.
-        run: ctest --test-dir build -LE heavy --output-on-failure --no-tests=error
+      - name: Smoke tests (fast subset — prove the core is not broken, not a full algorithm run)
+        # CI is a SMOKE check, not the full verification suite (which runs on the box). Run a fast
+        # foundational subset only: core arithmetic (stage0), reciprocity/symbols (stage1), Rédei
+        # (stage2), a_p (m0), and the SS density/empirical units (m4). The heavy M-stage statistic
+        # builds (m2 Dirichlet, m3 Zubrilina, m5 partials), classgroup/zeta/DW (stage3/5/6),
+        # murmuration curve (m1), and the ~1–2 h m0b gate (heavy) are NOT run in CI — a 2-core
+        # runner takes far too long and hammers Actions. The build (above) proves they all COMPILE,
+        # and the freshness step (below) re-emits every stage's JSON to catch emitter drift.
+        run: ctest --test-dir build -L '^(stage0|stage1|stage2|m0|m4)$' --output-on-failure --no-tests=error
 
       - name: Freshness — committed viz/data snapshot == `at emit` at HEAD
         # CI verifies exactly what GitHub Pages serves; drift (an emitter changed
