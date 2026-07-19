@@ -12,6 +12,16 @@ convention-fitting), separate-TU density, committed tolerances before the run. T
 one genuinely new hazard is **P4** (root numbers/conductors for a family outside
 Cremona) — flagged as the crux for the gate.
 
+> **SUPERSEDED TARGET NOTICE (2026-07-19, ERRATA #28).** Every density **trough target 0.805**
+> in this log (the R2 targets `{0.475, 0.645, 0.805}` and the R0/R2 deviation diagnoses that read
+> a "trough displacement" against it) is the **#28-corrupted** target — the eq (2) products were
+> transposed and the p|q exponent mis-set (corrected inline at §P3). The corrected density troughs
+> at **0.870** (hump 0.465, zero 0.671), and the three empirical shape invariants then agree within
+> τ. These sections are preserved as the dated historical pinning record; the corrected reading and
+> the reframe are `docs/ERRATA.md` #28 and `docs/notes/reframe-registry.md`. (Note that ERRATA #26,
+> the X=3000-peek reclassification recorded in §R0, is itself re-inverted by #28 — the peek's
+> apparent trough *agreement* was, in the end, right; the protocol breach it records still stands.)
+
 ---
 
 ## C2 — CLAIM CLASS: what SS25 PROVES vs what it CONJECTURES  [blocks Phase 2]
@@ -111,13 +121,23 @@ essentially the ε-weighted average of a_p over primes with p/N ∈ (C₁,C₂).
 
     ∫_{C₁}^{C₂} 2π√u  Σ_{q∈ℕ, q square-free}  Σ_{m∈ℕ}
         [ μ(gcd(m,q)) / ( q·m·φ(q/gcd(m,q)) ) ]  ·  J₁(4π√u·m/q)
-        ·  ∏_{p|m, p∤q} ℓ̂_{p, 2v_p(m)}  ·  ∏_{p|q} ℓ_{p, v_p(m)}   du,
+        ·  ∏_{p|q} ℓ̂_{p, 2v_p(m)}  ·  ∏_{p|m, p∤q} ℓ_{p, 2v_p(m)}   du,
 
 where J₁ is the **Bessel function of the first kind**, v_p(m) the p-adic valuation,
 μ Möbius, φ Euler. "The integrand in the right-hand side of (2) is the murmuration
 density in the sense of [26]." So the **density is D(u) = the integrand** (a function
 of u = p/N); Lemma 15 asserts the double sum converges absolutely uniformly on
 compact intervals ⇒ D continuous.
+
+> **CORRECTED 2026-07-18 — ERRATA #28.** This quote as first entered (commit `aa2b0ae`) had the
+> two products **transposed** (`∏_{p|m,p∤q} ℓ̂_{p,2v_p(m)} · ∏_{p|q} ℓ_{p,v_p(m)}`) and the p|q
+> exponent as `v_p(m)`. The corrected form above (ℓ̂ over p|q, ℓ over p|m,p∤q, **both** exponent
+> `2v_p(m)` — only even ν appear, [SS25] p.9; the ν-domains of Lemmas 3/4 force it) is
+> re-transcribed from the [SS25] PDF. The misread had been carried from this note into `ss_density`
+> and an independent PARI oracle (three impls, one reading), placing the density trough at a spurious
+> 0.805 instead of 0.870; caught by the authors' published figure. Durable rule: a transcription
+> check terminates at the source artifact, never an internal quote. See `docs/ERRATA.md` #28 and
+> `docs/notes/reframe-registry.md`.
 
 **Local factors (quoted, Lemmas 3 & 4, pp.4–5).** ℓ_{p,ν} (Def 5) and ℓ̂_{p,ν} (Def 6)
 are:

@@ -446,3 +446,21 @@ not the statistic). Committed artifacts: `data/m5/ne_cache_x262144.txt`, `data/m
 `data/m5/ss_partials_x262144.txt` (FreeBSD/M0b-generated, `ap_provider m0b`). Viewer JSON re-emit
 with the 2¹⁸ rung + the hardcoded-rung-label fix lands in this commit set (the deferral in the
 Rung-2 postscript is now resolved — the `at` binary is free).
+
+---
+
+## POSTSCRIPT — VERDICT SUPERSEDED (2026-07-19, ERRATA #28)
+
+This PR's decision rule gated `d(X) = |trough_u(X) − 0.805|` against the density target **0.805**.
+The referee-C audit round found that target corrupt: 0.805 was our *mislocated* density trough — the
+eq (2) transcription error of **ERRATA #28** (the two local-factor products transposed, the p|q
+exponent mis-set). The corrected density troughs at **0.870**.
+
+The pre-registration stands as the record of the rule, and the rule was followed honestly: committed
+`dd6beb0` (Rung-3 clause `4a17ebe`, before the 2¹⁷ read), applied verbatim (d = 0.0825, flat at
+2¹⁶/2¹⁷/2¹⁸), H0 (persistent, ≤2¹⁸) pronounced at `8f64ba1`. But the target failed beneath it, so the
+verdict is **void as pronounced** — recorded, not salvaged. It is **NOT re-run against 0.870**, a
+number it was never registered against; a decision rule keeps its force only against the value it was
+sealed with. Against the corrected target the three shape invariants agree within τ = 0.06 (data note
+§3, descriptive, no persistence verdict). The scale caveat (this range is the bottom of [SS25]'s
+2¹⁶–2²⁸ window) is unaffected and stands. See `docs/notes/reframe-registry.md` (S3).

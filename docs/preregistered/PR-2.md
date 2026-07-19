@@ -377,3 +377,20 @@ is itself a small vindication of keeping the axes separate.
 Two citable clauses, in claim language (Wachs-clause-bound, below): **(1)** *rank-2 curves show
 an enhanced downward bias (2.6× threshold);* **(2)** *that bias does not carry the trough
 displacement (leave-out trough unchanged on the family and on the virgin annulus).*
+
+---
+
+## POSTSCRIPT — MEASUREMENT STANDS, RECOVERY-GATE VERDICT SUPERSEDED (2026-07-19, ERRATA #28)
+
+This PR's recovery gate asked whether the trough *recovered toward 0.805* when the analytic-rank-2
+curves were excised. That target is the eq (2) transcription error of **ERRATA #28** (corrected
+trough 0.870), so the **recovery-gate verdict is superseded** with the rest of the 0.805 chain.
+
+What the gate was computed *from* is untouched and stands as a measurement: the leave-out trough sits
+at **u = 0.8875, identical to the full family**, on the full set and on the geometric-holdout
+conductor annulus (10⁴, 2¹⁶] — the trough position is not sensitive to the rank-2 subpopulation. The
+secondary value-space contrast (rank-2 curves markedly more negative on the descending branch, mean
+gap −1.73, past the committed −0.668) and the coherence argument above (a 14.6%-mass subpopulation
+cannot shift a multi-bin location) are position/amplitude statements independent of the density
+target, and are retained verbatim. Data note §4 (PR-2) carries the reframed reading. See
+`docs/notes/reframe-registry.md`.

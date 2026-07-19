@@ -67,3 +67,10 @@ Corrected in the reframe pass; keep this list current if the wording moves again
 | 10 | `docs/explainers/E1-murmurations.md` (E1-32/33/36), `E3-method.md` (E3-11/16), `CLAIMS-E.md` rows | "persists"/"open deviation"/"peek overturned to deviation" | S2 + own erratum row |
 | 11 | `docs/preregistered/PR-1.md`, `PR-2.md`, `PR-3.md`; `docs/notes/m4-pinning.md` §P3/R0/R2 | the deviation diagnosis + 0.805 targets | historical + SUPERSEDED postscripts, cited to #28 |
 | 12 | `docs/notes/data-note/data-note.md` §3/§4/§6/abstract + `CLAIMS-N.md` | trough displacement / H0 | note prose per the C spec (S1–S5) |
+
+**All 12 rows landed 2026-07-19.** Rows 1–10 in the earlier reframe pass (code/data/emitter/
+explainers/prereg-tests); **row 11** (m4-pinning §P3 eq (2) quote corrected + SUPERSEDED-target
+banner; PR-1/PR-2/PR-3 supersession postscripts, PR-3 leakage regenerated against the corrected
+density) and **row 12** (data-note §1 eq (2) display + §2/§5 touch-ups + §3/§4/§6 + Abstract;
+CLAIMS-N re-sourced incl. the eq (2) transcription-check, 47 markers, parity green) in the note-prose
+pass. The eq (1) half-open fix is ERRATA #30 (separate; grids regen deferred).

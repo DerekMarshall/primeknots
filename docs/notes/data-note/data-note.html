@@ -233,25 +233,26 @@ this record.</p>
 <h2 id="abstract">Abstract</h2>
 <p>We re-derive the Sawin–Sutherland height-ordered elliptic-curve
 murmuration from scratch and probe it against their conjectured
-Bessel-<span class="math inline">J_1</span> density. Over a four-rung
+Bessel-<span class="math inline">J_1</span> density over a four-rung
 height ladder, <span class="math inline">X = 10^4~(\approx 2^{13.3}),\,
-2^{16}, 2^{17}, 2^{18}</span>, two calibrated shape invariants (the
-positive hump and the first post-hump zero) agree with the conjectured
-density within an a-priori tolerance, while the trough sits at a fixed
-displacement that exceeds the tolerance at every rung. A pre-registered
-decision rule returns H0: the trough deviation is persistent across the
-ladder, a finite-range statement over <span class="math inline">X \le
-2^{18}</span> and not a claim about the large-<span
-class="math inline">X</span> limit. Two pre-registered follow-ups
-constrain candidate mechanisms: excising the analytic-rank-2
-subpopulation does not move the trough, so the deficit is not carried by
-rank-2 over-representation, and leakage of the parity-independent
-unsigned bias through the measured root-number imbalance is bounded to
-<span class="math inline">\lvert f\rvert \le 2\%</span> with unstable
-sign. Neither explains the deficit. Every result is numerical over a
-stated finite range, twinned or oracle-refereed, and cross-checked for
-cross-platform reproducibility. We claim replication and constraint, not
-proof; the deviation is left open.</p>
+2^{16},\, 2^{17},\, 2^{18}</span>. An initial comparison showed an
+apparent persistent trough displacement of <span
+class="math inline">\approx 0.0825</span> against a density target of
+<span class="math inline">0.805</span>. A pre-registered audit round
+traced that displacement to a transcription error in our reading of the
+density’s defining equation — the two local-factor products transposed
+and one exponent mis-set, which had mislocated the conjectured trough —
+logged as erratum #28. Corrected, the three pre-fixed shape invariants
+(the positive hump, the first post-hump zero, and the trough) agree with
+the density within the a-priori tolerance <span class="math inline">\tau
+= 0.06</span>, the largest residual <span class="math inline">\approx
+0.012</span> at the trough, and two pre-registered follow-ups bound
+candidate mechanisms: excising the analytic-rank-2 subpopulation does
+not move the trough, and root-number-imbalance leakage is <span
+class="math inline">\le 0.5\%</span> at the reliable rungs. Every result
+is numerical over a stated finite range, twinned or oracle-refereed, and
+cross-checked for cross-platform reproducibility; we claim replication
+and constraint, not proof.</p>
 <hr />
 <h2 id="introduction">1. Introduction</h2>
 <p>Murmurations are an oscillating correlation between the Frobenius
@@ -278,8 +279,8 @@ D(u) &amp;= 2\pi\sqrt{u} \sum_{\substack{q\in\mathbb{N}\\
 \text{squarefree}}} \sum_{m\in\mathbb{N}}
   \frac{\mu(\gcd(m,q))}{q\,m\,\varphi\!\left(q/\gcd(m,q)\right)} \\
 &amp;\hphantom{{}={}} \times\, J_1\!\left(4\pi\sqrt{u}\,m/q\right)
-  \prod_{\substack{p\mid m\\ p\nmid q}} \hat{\ell}_{p,2v_p(m)}
-  \prod_{p\mid q} \ell_{p,v_p(m)},
+  \prod_{p\mid q} \hat{\ell}_{p,2v_p(m)}
+  \prod_{\substack{p\mid m\\ p\nmid q}} \ell_{p,2v_p(m)},
 \end{aligned}
 \tag{2}
 </span></p>
@@ -289,9 +290,17 @@ class="math inline">J_1</span> is the Bessel function of the first kind,
 class="math inline">p</span>-adic valuation, <span
 class="math inline">\mu</span> the Möbius function, and <span
 class="math inline">\varphi</span> Euler’s totient; the local factors
-<span class="math inline">\ell_{p,\nu}</span> and <span
-class="math inline">\hat{\ell}_{p,\nu}</span> are those of their Lemmas
-3 and 4.</p></li>
+<span class="math inline">\ell_{p,\nu}</span> (their Lemma 3, positive
+<span class="math inline">\nu</span>) and <span
+class="math inline">\hat{\ell}_{p,\nu}</span> (their Lemma 4, even <span
+class="math inline">\nu \ge 0</span>) carry the paired products — <span
+class="math inline">\hat{\ell}</span> over <span class="math inline">p
+\mid q</span> and <span class="math inline">\ell</span> over <span
+class="math inline">p \mid m,\, p \nmid q</span>, both at exponent <span
+class="math inline">2v_p(m)</span>. An earlier reading of this line
+transposed the two products and mis-set the <span
+class="math inline">p\mid q</span> exponent; the correction (erratum
+#28) is the subject of §6.</p></li>
 <li><p><strong>Theorem 2 (the proven variant).</strong> [SS25] prove a
 variant in which the prime sum is replaced by a sum over integers with
 no prime factor <span class="math inline">\le P</span>, against a smooth
@@ -312,19 +321,20 @@ scratch over the height family up to <span class="math inline">X = 10^4,
 p/N(E)</span>, and compare the empirical density to the conjectured
 <span class="math inline">D(u)</span> through three shape invariants
 fixed in advance: the positive hump, the first zero crossing after it,
-and the trough (§3). Where the empirical curve departs from <span
-class="math inline">D(u)</span>, two pre-registered follow-ups constrain
-candidate mechanisms (§4).</p>
+and the trough (§3). Two pre-registered follow-ups then bound candidate
+mechanisms for the residual departure of the empirical curve from <span
+class="math inline">D(u)</span> (§4).</p>
 <p><strong>What this note does not test.</strong> It makes no asymptotic
 (<span class="math inline">X \to \infty</span>) claim. Our computable
 range, <span class="math inline">X \le 2^{18}</span>, sits at the bottom
 of the window over which [SS25] observe the bias and expect it to decay,
 naive height <span class="math inline">2^{16}</span> to <span
 class="math inline">2^{28}</span>, reached only through sub-linear point
-counting. Every “persistent” statement below concerns that finite range,
-not a limit. The discussion (§6) gives a documented precedent in which a
-small-conductor picture does not survive to the asymptotic one; that is
-why the distinction is not pedantic.</p>
+counting. Every finite-range statement below concerns that range, not a
+limit; the note makes no persistence claim (§3). The discussion (§6)
+gives a documented precedent in which a small-conductor picture does not
+survive to the asymptotic one; that is why the distinction is not
+pedantic.</p>
 <hr />
 <h2 id="methods">2. Methods</h2>
 <p><strong>Family and ordering.</strong> We use the short Weierstrass
@@ -347,12 +357,13 @@ every cutoff.</p>
 <em>computed</em> quantity with one <em>conjectured</em> one. The
 distinction (§1) governs what the note claims.</p>
 <p><em>Empirical: a binned estimator of [SS25] statistic (1).</em> For a
-prime-ratio window <span class="math inline">(C_1, C_2)</span>, [SS25]’s
-statistic (1) is</p>
+prime-ratio window <span class="math inline">(C_1, C_2]</span>
+(half-open, left-open and right-closed, as in [SS25] p.2 — see §5 and
+erratum #30), [SS25]’s statistic (1) is</p>
 <p><span class="math display">
 \mathbb{E}_{\{E\,:\,H(E)\le X\}}\!\left[
   \frac{\log\!\left(N(E)^{(C_1+C_2)/2}\right)}{N(E)}
-  \sum_{\substack{p/N(E)\in(C_1,C_2)\\ p\ \text{prime}}}
+  \sum_{\substack{p/N(E)\in(C_1,C_2]\\ p\ \text{prime}}}
   \epsilon(E)\,a_p(E)
 \right]. \tag{1}
 </span></p>
@@ -455,20 +466,44 @@ reference to the empirical side) as the Bessel-<span
 class="math inline">J_1</span> double sum of Conjecture 1 with the local
 factors of [SS25] Lemmas 3–4, an in-house <span
 class="math inline">J_1</span>, and <em>generated</em> constants (never
-typed), truncated at <span class="math inline">q, m \le 2000</span>.
-Because every value is built from IEEE operations, generated constants,
-and the in-house Bessel, the emitted curve is byte-portable across
-compilers and platforms, a property we verify (§5).</p>
+typed), truncated at <span class="math inline">q, m \le 2000</span>. Its
+reading of eq (2) is transcribed from the [SS25] PDF, not from an
+internal quote — the standing rule that a transcription check terminates
+at the source artifact, adopted after erratum #28 (§6). The local
+factors carry level-1 Hecke eigenvalue sums <span
+class="math inline">\sum_f a_p(f) = \operatorname{Tr}(T_p \mid
+S_{\nu+2})</span>, which we compute by a from-scratch Eichler–Selberg
+trace reusing the M3 Hurwitz class numbers, so no oracle-provenance
+constant enters the density’s core (rule 3); the trace is anchored on
+the published <span class="math inline">\operatorname{Tr}(T_p\mid
+S_{12}) = \tau(p)</span>. The density is checked at two levels:
+term-level agreement on hand-picked structural survivors (the <span
+class="math inline">m = 32</span> term through <span
+class="math inline">\operatorname{Tr}T_2</span>, the <span
+class="math inline">p = 3</span> branch through <span
+class="math inline">m = 3^5</span>, and <span
+class="math inline">\gcd(m,q) &gt; 1</span> cases exercising the Möbius
+factor), and curve-level agreement of the whole density. The C++
+evaluator and an independent PARI/GP oracle built from the same Lemmas
+are two codings of one reading, so their agreement alone does not
+certify that reading; the external referee is the authors’ published
+figure, whose trough the corrected density matches at <span
+class="math inline">u \approx 0.87</span> — the reconciliation recorded
+as erratum #28 (§6). Because every value is built from IEEE operations,
+generated constants, and the in-house Bessel, the emitted curve is
+byte-portable across compilers and platforms, a property we verify
+(§5).</p>
 <hr />
 <h2 id="results">3. Results</h2>
-<p><strong>The ladder.</strong> Over four height cutoffs the two
-calibrated shape invariants (the positive hump and the first post-hump
-zero) agree with the conjectured density <span
+<p><strong>The ladder.</strong> Over four height cutoffs the three
+pre-fixed shape invariants — the positive hump, the first post-hump
+zero, and the trough — agree with the conjectured density <span
 class="math inline">D(u)</span> within the a-priori tolerance <span
-class="math inline">\tau = 0.06</span>, while the trough sits at <span
-class="math inline">u = 0.8875</span> at every rung, a displacement
-<span class="math inline">d = \lvert 0.8875 - 0.805\rvert =
-0.0825</span> that is frozen across the ladder. All values are from the
+class="math inline">\tau = 0.06</span>. The invariants are stable across
+the ladder: the binned hump holds at <span class="math inline">u =
+0.4625</span> and the binned trough at <span class="math inline">u =
+0.8875</span> at every rung, and the first zero stays near <span
+class="math inline">u \approx 0.671</span>. All values are from the
 committed <code>data/m5/ss_x{65536,131072,262144}.txt</code> runs and
 the M4 run <code>data/m4/ss_empirical.txt</code>:</p>
 <table style="width:100%;">
@@ -485,10 +520,10 @@ the M4 run <code>data/m4/ss_empirical.txt</code>:</p>
 <th style="text-align: right;"><span class="math inline">X</span></th>
 <th style="text-align: right;"><span
 class="math inline">\lvert\mathrm{fam}\rvert</span></th>
-<th style="text-align: right;">hump u (dev)</th>
-<th style="text-align: right;">first zero u (dev)</th>
-<th style="text-align: right;">trough u (dev)</th>
-<th style="text-align: right;">trough v</th>
+<th style="text-align: right;">hump u</th>
+<th style="text-align: right;">first zero u</th>
+<th style="text-align: right;">trough u</th>
+<th style="text-align: right;">trough depth</th>
 </tr>
 </thead>
 <tbody>
@@ -496,9 +531,9 @@ class="math inline">\lvert\mathrm{fam}\rvert</span></th>
 <td style="text-align: right;"><span
 class="math inline">10^4</span></td>
 <td style="text-align: right;">1048</td>
-<td style="text-align: right;">0.4625 (0.0125)</td>
-<td style="text-align: right;">0.672894 (0.0279)</td>
-<td style="text-align: right;">0.8875 (0.0825)</td>
+<td style="text-align: right;">0.4625</td>
+<td style="text-align: right;">0.672894</td>
+<td style="text-align: right;">0.8875</td>
 <td style="text-align: right;"><span
 class="math inline">-3.47</span></td>
 </tr>
@@ -506,9 +541,9 @@ class="math inline">-3.47</span></td>
 <td style="text-align: right;"><span
 class="math inline">2^{16}</span></td>
 <td style="text-align: right;">5042</td>
-<td style="text-align: right;">0.4625 (0.0125)</td>
-<td style="text-align: right;">0.670328 (0.0253)</td>
-<td style="text-align: right;">0.8875 (0.0825)</td>
+<td style="text-align: right;">0.4625</td>
+<td style="text-align: right;">0.670328</td>
+<td style="text-align: right;">0.8875</td>
 <td style="text-align: right;"><span
 class="math inline">-3.72</span></td>
 </tr>
@@ -516,9 +551,9 @@ class="math inline">-3.72</span></td>
 <td style="text-align: right;"><span
 class="math inline">2^{17}</span></td>
 <td style="text-align: right;">9014</td>
-<td style="text-align: right;">0.4625 (0.0125)</td>
-<td style="text-align: right;">0.673202 (0.0282)</td>
-<td style="text-align: right;">0.8875 (0.0825)</td>
+<td style="text-align: right;">0.4625</td>
+<td style="text-align: right;">0.673202</td>
+<td style="text-align: right;">0.8875</td>
 <td style="text-align: right;"><span
 class="math inline">-3.65</span></td>
 </tr>
@@ -526,102 +561,193 @@ class="math inline">-3.65</span></td>
 <td style="text-align: right;"><span
 class="math inline">2^{18}</span></td>
 <td style="text-align: right;">15936</td>
-<td style="text-align: right;">0.4625 (0.0125)</td>
-<td style="text-align: right;">0.671945 (0.0269)</td>
-<td style="text-align: right;">0.8875 (0.0825)</td>
+<td style="text-align: right;">0.4625</td>
+<td style="text-align: right;">0.671945</td>
+<td style="text-align: right;">0.8875</td>
 <td style="text-align: right;"><span
 class="math inline">-3.58</span></td>
 </tr>
 </tbody>
 </table>
-<p>Hump dev 0.0125 and first-zero dev <span class="math inline">\le
-0.0282</span> are both within <span class="math inline">\tau =
-0.06</span> (agreement with <span class="math inline">D(u)</span>). The
-trough dev 0.0825 exceeds <span class="math inline">\tau</span> at every
-rung, a persistent open deviation. (Fig. 1 overlays all four empirical
-rungs on the conjectured <span class="math inline">D(u)</span> — each
-rung a distinct marker, the frozen trough at <span class="math inline">u
-= 0.8875</span> marked — and is regenerated from these committed runs by
+<p>(Fig. 1 overlays all four empirical rungs on the conjectured <span
+class="math inline">D(u)</span> — each rung a distinct marker — and is
+regenerated from these committed runs by
 <code>figures/make_figures.py</code>.)</p>
-<p><strong>Verdict: H0 (persistent, <span class="math inline">\le
-2^{18}</span>).</strong> The decision rule was pre-registered before the
-data (PR-1, <code>dd6beb0</code>; the <span
+<p><strong>Both estimators, at the verdict rung.</strong> The bin width
+<span class="math inline">\Delta u = 0.025</span> sets the resolution of
+the binned argmin/argmax. A parabolic interpolation through the extremal
+bin and its two neighbours (linear for the zero crossing) gives a
+sub-bin estimate, and a bootstrap over the curves — the exchangeable
+unit, <span class="math inline">N_{\text{boot}} = 2000</span>, seed
+<span class="math inline">20260718</span> committed with the study —
+gives a 95% confidence interval. At the top rung <span
+class="math inline">X = 2^{18}</span>, per invariant, against the
+corrected targets:</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">invariant</th>
+<th style="text-align: right;">target</th>
+<th style="text-align: right;">binned u</th>
+<th style="text-align: right;">interpolated u</th>
+<th style="text-align: right;">95% CI</th>
+<th style="text-align: right;">deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">hump</td>
+<td style="text-align: right;">0.465</td>
+<td style="text-align: right;">0.4625</td>
+<td style="text-align: right;">0.47064</td>
+<td style="text-align: right;"><span class="math inline">[0.46699,\
+0.47696]</span></td>
+<td style="text-align: right;"><span
+class="math inline">+0.0056</span></td>
+</tr>
+<tr>
+<td style="text-align: left;">first zero</td>
+<td style="text-align: right;">0.671</td>
+<td style="text-align: right;">0.671945</td>
+<td style="text-align: right;">0.67194</td>
+<td style="text-align: right;"><span class="math inline">[0.66567,\
+0.67715]</span></td>
+<td style="text-align: right;"><span
+class="math inline">+0.0009</span></td>
+</tr>
+<tr>
+<td style="text-align: left;">trough</td>
+<td style="text-align: right;">0.870</td>
+<td style="text-align: right;">0.8875</td>
+<td style="text-align: right;">0.88216</td>
+<td style="text-align: right;"><span class="math inline">[0.87611,\
+0.88567]</span></td>
+<td style="text-align: right;"><span
+class="math inline">+0.0122</span></td>
+</tr>
+</tbody>
+</table>
+<p>The deviation is the interpolated position minus the target; the
+residual statements below ride the interpolated column.</p>
+<p><strong>Uniform reading.</strong> All three invariants agree with
+<span class="math inline">D(u)</span> within <span
+class="math inline">\tau = 0.06</span>. The first zero sits on target:
+its CI <span class="math inline">[0.666,\ 0.677]</span> contains <span
+class="math inline">0.671</span>. The hump and trough carry small
+resolved residuals — <span class="math inline">\approx 0.006</span> and
+<span class="math inline">\approx 0.012</span> — whose confidence
+intervals exclude their targets marginally (hump: lower bound <span
+class="math inline">0.467</span>, just above <span
+class="math inline">0.465</span>) and clearly (trough: lower bound <span
+class="math inline">0.876</span>, above <span
+class="math inline">0.870</span>); these are resolved offsets, not open
+deviations, and both sit far inside <span
+class="math inline">\tau</span>. The largest residual, at the trough, is
+<span class="math inline">\approx 0.012</span>, about a fifth of the
+tolerance.</p>
+<p><strong>The pre-registered verdict, and why it is void.</strong>
+Before the ladder was extended, PR-1 committed a single decision rule
+for the trough (<code>dd6beb0</code>; the <span
 class="math inline">2^{18}</span> Rung-3 clause <code>4a17ebe</code>
 committed <em>before the <span class="math inline">2^{17}</span> rung
 was read</em>). With <span class="math inline">d(X) = \lvert
-\mathrm{trough}_u - 0.805\rvert</span> and <span
-class="math inline">\Delta u = 0.025</span>, the Rung-3 clause reads,
-verbatim:</p>
-<blockquote>
-<p><strong>H1 (finite-<span class="math inline">X</span>, <span
-class="math inline">\le 2^{18}</span>)</strong> iff the trough recovers
-monotonically by <span class="math inline">\ge \Delta u</span> at
-<strong>both</strong> steps: <span class="math inline">d(2^{17}) \le
-d(2^{16}) - \Delta u</span> <strong>and</strong> <span
-class="math inline">d(2^{18}) \le d(2^{17}) - \Delta u</span> …
-<strong>H0 (persistent, <span class="math inline">\le
-2^{18}</span>)</strong> iff the trough stays flat across the ladder (no
-<span class="math inline">\ge \Delta u</span> recovery at either
-step).</p>
-</blockquote>
-<p>Observed <span class="math inline">d = 0.0825</span> at <span
-class="math inline">2^{16}, 2^{17}</span>, and <span
-class="math inline">2^{18}</span>: flat, with no recovery at either
-step, hence H0 (persistent, <span class="math inline">\le
-2^{18}</span>), read at <code>8f64ba1</code>. This is the first rung at
-which the pre-registered full-ladder verdict could be pronounced. It is
-a finite-range statement (<span class="math inline">\le 2^{18}</span>),
-explicitly not the <span class="math inline">X \to \infty</span> verdict
-[SS25] describe. <span class="math inline">2^{18}</span> is the bottom
-of their <span class="math inline">2^{16}\text{–}2^{28}</span> decay
-window.</p>
-<p><strong>Supporting observations (not the gate).</strong> (i) The
-first-zero series <span class="math inline">0.672894 \to 0.670328 \to
-0.673202 \to 0.671945</span> is flat near about 0.671, non-monotone,
-converging to neither the 0.645 target nor away, direction only. (ii)
-The trough <em>depth</em> eases monotonically across the three extension
-rungs <span class="math inline">-3.715 \to -3.652 \to -3.580</span> even
-as its <em>position</em> holds at 0.8875. The <span
-class="math inline">10^4</span> depth (<span
+\mathrm{trough}_u(X) - 0.805\rvert</span> and <span
+class="math inline">\Delta u = 0.025</span>, it declared the
+displacement finite-<span class="math inline">X</span> if <span
+class="math inline">d</span> recovered by <span class="math inline">\ge
+\Delta u</span> at both ladder steps and persistent if <span
+class="math inline">d</span> stayed flat. The rule was applied verbatim
+— <span class="math inline">d = 0.0825</span> at <span
+class="math inline">2^{16}</span>, <span
+class="math inline">2^{17}</span>, <span
+class="math inline">2^{18}</span>, flat, no recovery — and returned H0
+(persistent), read at <code>8f64ba1</code>. The audit round then found
+the target it gated on to be corrupt: <span
+class="math inline">0.805</span> was our <em>mislocated</em> density
+trough, not [SS25]’s, the eq (2) transcription error of erratum #28
+(§6). The verdict is therefore <strong>void as pronounced</strong> — the
+rule was committed and followed honestly, but its target failed beneath
+it. We do <strong>not</strong> re-run it against the corrected target
+<span class="math inline">0.870</span>, a number it was never registered
+against; a decision rule keeps its force only against the value it was
+sealed with. The corrected comparison above is descriptive, and claims
+no persistence verdict.</p>
+<p><strong>Supporting observation (not a gate).</strong> The trough
+<em>depth</em> eases across the three extension rungs (<span
+class="math inline">-3.72 \to -3.65 \to -3.58</span> at <span
+class="math inline">2^{16} \to 2^{17} \to 2^{18}</span>) while its
+position holds; the <span class="math inline">10^4</span> depth (<span
 class="math inline">-3.47</span>) is shallower than <span
-class="math inline">2^{16}</span>, so this easing is a three-rung
-observation, not a monotone four-rung trend. It is a hint of amplitude
-decay consistent with the expected large-<span
-class="math inline">X</span> behaviour, but the committed rule gates on
-position, so it does not move the verdict; logged as an observation, not
-a claim.</p>
+class="math inline">2^{16}</span>, so this is a three-rung easing, not a
+monotone four-rung trend. It has the sign a large-<span
+class="math inline">X</span> amplitude decay would carry, but the
+bootstrap depth intervals overlap heavily across the three rungs, so the
+easing is a point-estimate trend within sampling noise, not a
+bootstrap-resolved one. Logged as an observation, not a claim.</p>
 <h2 id="mechanism-constraints">4. Mechanism constraints</h2>
-<p>Two pre-registered follow-ups constrain candidate mechanisms for the
-trough deviation. Both are bounds/nulls; neither explains it.</p>
-<p><strong>PR-2: analytic-rank split (null).</strong> Pre-registered
-<code>f7415a4</code> (the contrast threshold fixed before any curve was
-split) <span class="math inline">\to</span> read <code>876999f</code>.
-Excising the analytic-rank-2 subpopulation leaves the trough position
-unchanged. The pre-committed recovery gate (leave-out trough moves &lt;
-1 bin, on the full family and on a virgin conductor annulus) is not met,
-so the deficit is not carried by rank-2 over-representation. A secondary
-contrast (rank-2 curves carry an enhanced downward bias) is significant
-but too dilute to move the location gate; the two gate outcomes are
-coherent. <em>Wachs clause (verbatim):</em> this design does not
-distinguish rank per se from BSD invariants (Tamagawa product, |Ш|, real
-period) correlated with rank; “carried by” is a statement about the
-subpopulation, not the mechanism.</p>
+<p>Two pre-registered follow-ups were designed to probe candidate
+mechanisms for the trough deficit — its <em>position</em> (PR-2) and the
+<em>amplitude</em> departure at the trough bin (PR-3). After the eq (2)
+correction the position residual is the small resolved offset of §3, and
+the amplitude departure is itself modest: the empirical <span
+class="math inline">S(u^*) = -3.58</span> against the corrected <span
+class="math inline">D(u^*) = -2.94</span> at <span
+class="math inline">2^{18}</span> is a departure <span
+class="math inline">\approx -0.64</span> in density units, of the same
+order as [SS25]’s own per-bin discrepancy at this height (§6). Both
+follow-ups stand as bounds; neither subpopulation accounts for the
+residual.</p>
+<p><strong>PR-2: analytic-rank split (measurement stands; coded verdict
+superseded).</strong> Pre-registered <code>f7415a4</code> (the contrast
+threshold fixed before any curve was split) <span
+class="math inline">\to</span> read <code>876999f</code>. Excising the
+<span class="math inline">738</span> analytic-rank-2 curves leaves the
+trough <em>position</em> unchanged — the leave-out trough sits at <span
+class="math inline">u = 0.8875</span>, identical to the full family, and
+holds on the geometric-holdout conductor annulus <span
+class="math inline">(10^4, 2^{16}]</span>; the position is not sensitive
+to the rank-2 subpopulation. That measurement stands. The pre-committed
+<em>recovery gate</em> that read it, however, asked whether the trough
+recovered toward <span class="math inline">0.805</span>: it gated on the
+corrupt target, so its verdict is superseded with the rest of the <span
+class="math inline">0.805</span> chain (§3, erratum #28), while the
+leave-out measurement it was computed from is untouched. A secondary
+contrast — the rank-2 curves are markedly more negative on the
+descending branch (mean gap <span class="math inline">-1.73</span>, past
+the committed threshold <span class="math inline">-0.668</span>) — is a
+real value-space effect, significant but too dilute to move the
+position; retained as a measurement. <em>Wachs clause (verbatim):</em>
+this design does not distinguish rank per se from BSD invariants
+(Tamagawa product, |Ш|, real period) correlated with rank; “carried by”
+is a statement about the subpopulation, not the mechanism.</p>
 <p><strong>PR-3: root-number-imbalance leakage (bounded out).</strong>
 Pre-registered <code>21060a0</code> <span class="math inline">\to</span>
 read <code>0d21b62</code> (the <span class="math inline">2^{18}</span>
-row appended with the Rung-3 run, <code>8f64ba1</code>). With <span
-class="math inline">\delta = (n_+ - n_-)/\lvert\mathrm{fam}\rvert</span>
-the root-number imbalance, <span class="math inline">U</span> the
-unsigned bias, leakage <span class="math inline">L = \delta\cdot
-U</span>, and <span class="math inline">f = L/\text{departure}</span> at
-the trough:</p>
-<table>
+row appended with the Rung-3 run, <code>8f64ba1</code>; the leakage
+table regenerated against the corrected density by
+<code>at ss-leakage</code>). With <span class="math inline">\delta =
+(n_+ - n_-)/\lvert\mathrm{fam}\rvert</span> the root-number imbalance,
+<span class="math inline">U</span> the unsigned bias, leakage <span
+class="math inline">L = \delta\cdot U</span>, the trough-bin amplitude
+departure <span class="math inline">\mathrm{dep} = S(u^*) -
+D(u^*)</span>, and <span class="math inline">f =
+L/\mathrm{dep}</span>:</p>
+<table style="width:100%;">
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
 </colgroup>
 <thead>
 <tr>
@@ -630,9 +756,11 @@ the trough:</p>
 class="math inline">\delta</span></th>
 <th style="text-align: right;">leakage <span
 class="math inline">L(u^*)</span></th>
+<th style="text-align: right;">departure <span
+class="math inline">\mathrm{dep}(u^*)</span></th>
 <th style="text-align: right;"><span class="math inline">f =
-L/\text{departure}</span></th>
-<th style="text-align: left;">sign vs. deficit</th>
+L/\mathrm{dep}</span></th>
+<th style="text-align: left;">sign vs. departure</th>
 </tr>
 </thead>
 <tbody>
@@ -644,7 +772,9 @@ class="math inline">-0.0534</span></td>
 <td style="text-align: right;"><span
 class="math inline">-0.0184</span></td>
 <td style="text-align: right;"><span
-class="math inline">+0.0046</span></td>
+class="math inline">-0.531</span></td>
+<td style="text-align: right;"><span
+class="math inline">+0.035</span></td>
 <td style="text-align: left;">same</td>
 </tr>
 <tr>
@@ -655,7 +785,9 @@ class="math inline">-0.0115</span></td>
 <td style="text-align: right;"><span
 class="math inline">+0.0037</span></td>
 <td style="text-align: right;"><span
-class="math inline">-0.0009</span></td>
+class="math inline">-0.776</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.005</span></td>
 <td style="text-align: left;">opposite</td>
 </tr>
 <tr>
@@ -666,7 +798,9 @@ class="math inline">-0.0078</span></td>
 <td style="text-align: right;"><span
 class="math inline">+0.0025</span></td>
 <td style="text-align: right;"><span
-class="math inline">-0.0006</span></td>
+class="math inline">-0.713</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.005</span></td>
 <td style="text-align: left;">opposite</td>
 </tr>
 <tr>
@@ -677,19 +811,23 @@ class="math inline">-0.0103</span></td>
 <td style="text-align: right;"><span
 class="math inline">+0.0032</span></td>
 <td style="text-align: right;"><span
-class="math inline">-0.0008</span></td>
+class="math inline">-0.641</span></td>
+<td style="text-align: right;"><span
+class="math inline">-0.005</span></td>
 <td style="text-align: left;">opposite</td>
 </tr>
 </tbody>
 </table>
-<p><span class="math inline">\lvert f\rvert \le 2\%</span> at every
-rung, it is opposite-signed (points <em>against</em> the deficit) at the
-three reliable rungs, and it does not grow with <span
-class="math inline">X</span>. Leakage of Sutherland’s parity-independent
-bias through the measured imbalance is bounded out as a material
-contributor (<span class="math inline">f \approx 1</span> would require
-the unsigned bias about 3 orders larger than measured). A citable null;
-a bound, not an explanation. <em>Sutherland-bias attribution
+<p>The leakage fraction is <span class="math inline">\le 0.5\%</span>
+and opposite-signed (points <em>against</em> the departure) at the three
+reliable rungs, and <span class="math inline">+3.5\%</span> at <span
+class="math inline">10^4</span> (the smallest family, largest imbalance,
+no bootstrap); it does not grow with <span class="math inline">X</span>.
+Leakage of Sutherland’s parity-independent bias through the measured
+imbalance is bounded out as a material contributor: <span
+class="math inline">f \approx 1</span> would require the unsigned bias
+about two orders of magnitude larger than measured. A citable null; a
+bound, not an explanation. <em>Sutherland-bias attribution
 (verbatim):</em> the parity-independent unsigned bias, the named
 congruence classes, and its cancellation in the signed average are
 Sutherland’s (Sept-2023 talk); PR-3 tests only the leakage
@@ -699,12 +837,14 @@ claim.</p>
 advance the condition under which its more expensive follow-up — a
 congruence-stratified analysis of the same primes — would be
 unnecessary: the leakage fraction <span class="math inline">f</span>
-small, opposite-signed, and with no structured residual at the named
-congruence classes. The result above meets that condition, so the
-stratified pass was not run, and no separate pre-registration for it was
-written.</p>
-<p>The tail deficit remains unexplained by either constrained mechanism.
-What could carry it is future work (§6).</p>
+small, opposite-signed at the reliable rungs, and with no structured
+residual at the named congruence classes. The result above meets that
+condition, so the stratified pass was not run, and no separate
+pre-registration for it was written.</p>
+<p>The small residual of §3 is left unexplained by either constrained
+mechanism — neither the rank-2 subpopulation (position) nor root-number
+leakage (amplitude) accounts for it. What could carry it is future work
+(§6).</p>
 <h2 id="reproducibility">5. Reproducibility</h2>
 <p><strong>A byte-identical published curve.</strong> The emitted
 density JSON is byte-for-byte identical across compilers and platforms.
@@ -715,7 +855,12 @@ fused-multiply-add contraction disabled
 (<code>-ffp-contract=off</code>), so their IEEE operations round the
 same way under GCC and clang. A freshness check re-emits the snapshot at
 the current commit and requires byte-equality with the committed file,
-on CI’s GCC as well as a local build.</p>
+on CI’s GCC as well as a local build. The comparison first normalizes
+one field — the <code>generated_by</code> provenance stamp, a
+<code>git describe</code> string that legitimately varies by checkout —
+and then requires every remaining byte to match exactly;
+“byte-identical” below means identical after that single-field
+normalization.</p>
 <p><strong>Integer <span class="math inline">a_p</span> is
 platform-independent.</strong> A pre-registered, tail-weighted sample of
 79,268 (curve, prime) pairs, with primes up to about 4.15 million, was
@@ -749,8 +894,19 @@ except at a rounding boundary, which the freshness check would
 catch.</p>
 <p><strong>Errata and inputs.</strong> Corrections are logged as
 numbered errata entries in the research spec and the pinning notes, not
-edited away. Everything the note’s numbers depend on is committed,
-including the from-scratch code, the oracle <span
+edited away. One convention correction post-dates the committed grids:
+[SS25] eq (1) sums over the half-open prime interval <span
+class="math inline">(C_1N, C_2N]</span>, and our binning had used the
+opposite (left-closed) convention (erratum #30). The committed runs
+pre-date the fix; the only pairs it touches are the two-to-three
+conductor-<span class="math inline">40</span> curves per rung whose good
+primes fall on a bin’s right edge — all at low <span
+class="math inline">u</span>, enumerated in #30 — so no number this note
+reports changes, and a from-scratch regeneration under the corrected
+convention would differ at exactly those pairs and nowhere else (the
+diff is documented, not latent; the recompute is deferred as heavy and
+without scientific effect). Everything the note’s numbers depend on is
+committed, including the from-scratch code, the oracle <span
 class="math inline">N</span>/<span class="math inline">\epsilon</span>
 caches, the per-curve partials, and the <code>at ap-sample</code>
 subcommand. The one input that cannot be regenerated byte-for-byte is
@@ -771,23 +927,114 @@ class="uri">https://github.com/DerekMarshall/primeknots</a>, release tag
 <code>[PLACEHOLDER]</code>. To reproduce the results this note reports,
 from the tagged commit:</p>
 <pre><code>cmake -B build -DCMAKE_BUILD_TYPE=Release &amp;&amp; cmake --build build -j
-ctest --test-dir build -L m5                          # the M5 verification suites
+ctest --test-dir build -L m5 -LE heavy                # M5 suites, ~7 min on a laptop (excludes the heavy 2^18 gate)
 ./build/bin/at emit --stage m5      --out viz/data/   # empirical-vs-D(u) overlay JSON
 ./build/bin/at emit --stage m5split --out viz/data/   # rank-split overlay JSON
+python3 -m pip install matplotlib                     # figure prerequisite (use a venv; not needed for the suites)
 python3 docs/notes/data-note/figures/make_figures.py  # Fig. 1 and the rank-split figure</code></pre>
+<p><strong>The heavy gate, run separately.</strong> The
+<code>-LE heavy</code> above excludes one long check,
+<code>m5gate.twin_m0b_bruteforce_x18_tailweighted</code>, which
+recomputes on the order of <span
+class="math inline">2.8\times10^7</span> <span
+class="math inline">a_p</span> to twin the <span
+class="math inline">2^{18}</span> tail-weighted sample against the
+frozen referee. It runs about one to two hours on the 48-core compute
+box (not on a laptop, not in CI) and is invoked explicitly with
+<code>ctest --test-dir build -L heavy</code>.</p>
+<p><strong>Regenerating the inputs, and the robustness grid.</strong>
+The large <span class="math inline">a_p</span> caches regenerate with
+<code>at ap-cache --X &lt;H&gt; --cache &lt;ne_cache&gt; --out &lt;bin&gt; --checkpoint &lt;ckpt&gt;</code>
+(hours on the compute box for <span
+class="math inline">2^{17}</span>/<span
+class="math inline">2^{18}</span>; SHA-256 and byte counts pinned in
+<code>docs/notes/libm-partial-diff-spec.md</code>), and the run/partials
+files with <code>at ss-run</code>. The referee-round robustness studies
+are runnable from the committed data with no recompute: the density
+truncation scan (<code>at ss-density-scan</code>, seconds per cutoff,
+about nine seconds at <span class="math inline">B=2000</span>) and the
+bootstrap/interpolation study
+(<code>python3 docs/notes/referee_b2b3.py</code>, under a second), both
+documented in <code>docs/notes/referee-round-2026-07.md</code>.</p>
 <p>The cross-platform <code>a_p</code> sample is reproduced by
-<code>./build/bin/at ap-sample --X 131072 --cache data/m5/ne_cache_x131072.txt</code>
-on two toolchains; its output SHA-256 is pinned in the reproducibility
-spec.</p>
+<code>./build/bin/at ap-sample --X 131072 --cache data/m5/ne_cache_x131072.txt</code>;
+a single-platform run suffices to verify the committed sample against
+its pinned SHA-256, and it is the byte-identity of two such
+single-platform runs (laptop and compute box) that supplies the
+cross-platform evidence. The pin lives in the reproducibility spec.</p>
 <h2 id="discussion">6. Discussion</h2>
-<p><strong>What could carry the tail deficit.</strong> Neither
-constrained mechanism (§4) explains the trough deficit; both are bounds
-or nulls. A candidate the design has not isolated is the family of BSD
-invariants correlated with analytic rank (the Tamagawa product, the
-analytic order of Ш, and the real period), which Wachs shows modulate
-murmuration profiles at fixed rank. Separating those invariants from
-rank is a pre-registered follow-up (PR-4, a split by BSD invariant at
-fixed rank), named here as future work and not claimed.</p>
+<p><strong>The corrected comparison in context.</strong> Agreement with
+the conjectured density at the heights we can reach is not automatic
+even for [SS25] themselves. Their Table 4 reports the mean per-bin
+discrepancy <span class="math inline">\lvert\text{empirical} -
+\text{density}\rvert</span> of their <em>own</em> curve as <span
+class="math inline">1.17</span>, <span class="math inline">0.91</span>,
+<span class="math inline">0.73</span> at <span
+class="math inline">2^{16}</span>, <span
+class="math inline">2^{17}</span>, <span
+class="math inline">2^{18}</span>, decaying to <span
+class="math inline">\approx 0.10</span> only by <span
+class="math inline">2^{28}</span> — twelve doublings above our top rung.
+Our rungs sit at the bottom of that window, where the finite-<span
+class="math inline">X</span> curve is still far from the limit in
+amplitude. Against that backdrop the three shape-invariant
+<em>positions</em> land on the corrected density within <span
+class="math inline">\tau</span> (§3), while the trough-bin amplitude
+departure we measure (<span class="math inline">\approx 0.64</span> at
+<span class="math inline">2^{18}</span>, §4) is of the same order as
+[SS25]’s own per-bin figure at that height — read here as positional
+agreement with an amplitude that has not yet converged, not as a
+discrepancy of the replication.</p>
+<p><strong>The eq (2) transcription error (erratum #28).</strong> An
+earlier version of this note reported a persistent trough displacement
+of <span class="math inline">\approx 0.0825</span> against a density
+target of <span class="math inline">0.805</span>; that target was our
+error, not the data’s. Our reading of eq (2) had transposed the two
+local-factor products — placing <span
+class="math inline">\hat{\ell}</span> on the primes <span
+class="math inline">p \mid m,\, p \nmid q</span> and <span
+class="math inline">\ell</span> on <span class="math inline">p \mid
+q</span> — and mis-set the <span class="math inline">p \mid q</span>
+exponent to <span class="math inline">v_p(m)</span> rather than <span
+class="math inline">2v_p(m)</span>, moving the density trough from its
+true position near <span class="math inline">0.87</span> to a spurious
+<span class="math inline">0.805</span>. The error was shared, not
+isolated: it lived in a pinning note, in the C++ density evaluator built
+from that note, and in an independent PARI/GP oracle built from the same
+quote — three internally consistent implementations encoding one
+reading, so their mutual agreement certified nothing. What caught it was
+external — the authors’ published density figure troughs near <span
+class="math inline">0.87</span>, and a blind re-transcription from the
+paper against that figure recovered the correct products. The
+correction, its propagation across the code, data, and prose, and the
+standing rule it produced — a transcription check terminates at the
+source artifact, never an internal quote — are erratum #28 and the
+reframe registry it indexes.</p>
+<p><strong>The residuals point one way.</strong> The two non-zero
+position residuals of §3 are both rightward — the hump at <span
+class="math inline">+0.006</span> and the trough at <span
+class="math inline">+0.012</span> (interpolated, empirical above
+target), the first zero essentially on target. A single small horizontal
+dilation of the empirical curve relative to <span
+class="math inline">D(u)</span> would produce exactly this: one
+deformation rather than two independent offsets, the natural
+finite-height reading, and it sharpens the one follow-up that
+remains.</p>
+<p><strong>PR-4, retired.</strong> An earlier draft named a
+pre-registered split by BSD invariant at fixed rank (PR-4) — the
+Tamagawa product, the analytic order of Ш, the real period, which Wachs
+shows modulate murmuration profiles at fixed rank — as the route to
+whatever carried the trough deficit. With the deficit resolved to the
+small residual above, that motivation is gone; PR-4 is retired here
+rather than carried as pending future work.</p>
+<p><strong>PR-5, re-motivated.</strong> The live question is whether the
+coherent rightward shift decays as <span class="math inline">X</span>
+grows: the amplitude easing of §3 and the positional dilation here are
+two faces of the expected finite-height convergence. PR-5 is a decision
+rule on that trajectory — position and depth together — to be committed
+before any rung is added beyond <span class="math inline">2^{18}</span>;
+it is the pre-registered gate for going further, named here and not
+run.</p>
 <p><strong>A scale caveat with a documented precedent.</strong> Our
 computable range, <span class="math inline">X \le 2^{18}</span>, is
 small and finite. Sutherland’s September 2023 talk gives a precedent for
@@ -801,20 +1048,15 @@ have large conductor. In Sutherland’s rank-stratified plot of that sum,
 the ordering by rank emerges only at very large conductor. A picture
 that looks settled at the conductors we can reach need not be the
 asymptotic one.</p>
-<p><strong>A gate for going further.</strong> Across the extension rungs
-the trough depth eases while its position holds (§3). Whether that
-easing is the amplitude decay the large-<span
-class="math inline">X</span> picture predicts is not something our
-position-gated rule tests. A pre-registered amplitude-trajectory gate
-(PR-5), a decision rule on the trough’s depth trajectory fixed before
-the data, is the condition under which rungs beyond <span
-class="math inline">2^{18}</span> would be added. It is named here, not
-run.</p>
-<p><strong>Register, restated once.</strong> The verdict of §3 is H0
-over the finite range <span class="math inline">X \le 2^{18}</span>: the
-trough displacement is persistent there. It is not a claim about the
+<p><strong>Register, restated once.</strong> The claim of this note is
+replication and constraint over the finite range <span
+class="math inline">X \le 2^{18}</span>: the three shape invariants
+agree with the conjectured density within <span
+class="math inline">\tau</span>, with a small resolved residual (<span
+class="math inline">\approx 0.012</span>, largest at the trough), and
+two candidate mechanisms are bounded out. It is not a claim about the
 <span class="math inline">X \to \infty</span> limit [SS25] describe, and
-nothing in this note bears on that limit.</p>
+nothing in this note bears on that limit or proves anything.</p>
 <hr />
 </body>
 </html>
