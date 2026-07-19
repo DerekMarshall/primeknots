@@ -54,7 +54,7 @@ Provenance for all inputs is pinned by hash below.
 Both files carry `generator_hash b87ebd1e188e15dc2d3a1c2a54e5300dc3c7ff3d4adef3e77d5328b9ff526cde`
 (identical statistic source). The partials ckpt header records `complete 0` (an abandoned run),
 `threads 12`, and `n_curves 8640`. Its `ne_cache` field originally held a laptop absolute path
-(`/Users/derekmarshall/…`) written at run time; the Layer-1 QA sweep (2026-07-18) relativized it to
+(`/Users/<user>/…`) written at run time; the Layer-1 QA sweep (2026-07-18) relativized it to
 `data/m5/ne_cache_x131072.txt` so the released artifact carries no local home path — data
 byte-identical apart from that one comment, ckpt sha **re-pinned** `1255608e…` → `ff34a444…` (the
 table above). Derek attests (2026-07-17) that these are the abandoned laptop 2¹⁷ run; the

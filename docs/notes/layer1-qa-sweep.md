@@ -41,7 +41,7 @@ on the laptop); its green status is on the 48-core FreeBSD box per m0b-pinning �
   legitimate GP-bridge temp file) and `libm-partial-diff-spec.md:176` prose ("kept off `/tmp`") —
   both benign, not leaks.
 - **FINDING (absolute laptop paths in committed data headers):** the ss-partials headers embed the
-  full laptop `ne_cache` path `/Users/derekmarshall/src/…/ne_cache_x{…}.txt`:
+  full laptop `ne_cache` path `/Users/<user>/src/…/ne_cache_x{…}.txt`:
   `data/m5/ss_partials_x65536.txt:16`, `data/m5/ss_partials_x131072.txt.ckpt:16` (written by
   `write_ss_partials` from the invocation path; `libm-partial-diff-spec.md:56` mentions it
   deliberately).
