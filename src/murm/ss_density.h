@@ -39,6 +39,10 @@ long long level1_hecke_trace(int k, long long p);
 double ss_ell(long long p, int nu);       // ℓ_{p,ν}
 double ss_ell_hat(long long p, int nu);    // ℓ̂_{p,ν}
 
+// One (q,m) summand of eq (2) WITHOUT the outer 2π√u (0 if q not squarefree). The single
+// source of the corrected product assignment; exercised directly by the term-level anchors.
+double ss_density_term(double u, long long q, long long m);
+
 // D(u): the density at u, truncating the double sum to m ≤ m_bound, q ≤ q_bound
 // (squarefree). Returns the integrand value (not integrated).
 double ss_density(double u, long long m_bound, long long q_bound);

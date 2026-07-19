@@ -156,35 +156,36 @@ double ss_ell(long long p, int nu) {
     return -((1.0 / pd - 1.0 / (pd * pd)) / (1.0 - dpow(pd, -10))) * S;
 }
 
+double ss_density_term(double u, long long q, long long m) {
+    // One (q,m) summand of eq (2), WITHOUT the outer 2π√u. The single source of truth
+    // for the corrected product assignment (ℓ̂ on p|q, ℓ on p|m,p∤q, both exponent
+    // 2v_p(m)); ss_density sums it and the term-level anchors exercise it directly.
+    if (!squarefree(q)) return 0.0;
+    const long long g = gcd_(m, q);
+    const int mu = mobius(g);
+    if (mu == 0) return 0.0;
+    double prod = 1.0;
+    for (long long p : prime_factors(q))               // ∏_{p|q} ℓ̂_{p,2v_p(m)}
+        prod *= ss_ell_hat(p, 2 * v_p(m, p));
+    for (long long p : prime_factors(m)) {             // ∏_{p|m,p∤q} ℓ_{p,2v_p(m)}
+        if (q % p == 0) continue;
+        const double e = ss_ell(p, 2 * v_p(m, p));
+        if (e == 0.0) return 0.0;                       // ℓ vanishes for p>3, 2v_p(m)<10
+        prod *= e;
+    }
+    const double coef = static_cast<double>(mu) /
+        (static_cast<double>(q) * static_cast<double>(m) * static_cast<double>(euler_phi(q / g)));
+    return coef * prod * at::core::bessel_j1(4.0 * kPi * std::sqrt(u) * static_cast<double>(m)
+                                             / static_cast<double>(q));
+}
+
 double ss_density(double u, long long m_bound, long long q_bound) {
-    const double su = std::sqrt(u);
     double sum = 0.0;
     for (long long q = 1; q <= q_bound; ++q) {
         if (!squarefree(q)) continue;
-        const std::vector<long long> qp = prime_factors(q);
-        for (long long m = 1; m <= m_bound; ++m) {
-            const long long g = gcd_(m, q);
-            const int mu = mobius(g);
-            if (mu == 0) continue;
-            double prod = 1.0;
-            for (long long p : qp)                         // ∏_{p|q} ℓ̂_{p,2v_p(m)}
-                prod *= ss_ell_hat(p, 2 * v_p(m, p));
-            bool zero = false;
-            for (long long p : prime_factors(m)) {         // ∏_{p|m,p∤q} ℓ_{p,2v_p(m)}
-                if (q % p == 0) continue;
-                const double e = ss_ell(p, 2 * v_p(m, p));
-                if (e == 0.0) { zero = true; break; }      // ℓ vanishes for p>3, 2v_p(m)<10
-                prod *= e;
-            }
-            if (zero) continue;
-            const double coef = static_cast<double>(mu) /
-                (static_cast<double>(q) * static_cast<double>(m)
-                 * static_cast<double>(euler_phi(q / g)));
-            sum += coef * prod *
-                   at::core::bessel_j1(4.0 * kPi * su * static_cast<double>(m) / static_cast<double>(q));
-        }
+        for (long long m = 1; m <= m_bound; ++m) sum += ss_density_term(u, q, m);
     }
-    return 2.0 * kPi * su * sum;
+    return 2.0 * kPi * std::sqrt(u) * sum;
 }
 
 SSShape extract_shape(const std::vector<double>& us, const std::vector<double>& ds) {
