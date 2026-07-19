@@ -33,14 +33,15 @@ it against their conjectured Bessel-$J_1$ density over a four-rung height ladder
 $X = 10^4~(\approx 2^{13.3}),\, 2^{16},\, 2^{17},\, 2^{18}$. An initial comparison showed an apparent
 persistent trough displacement of $\approx 0.0825$ against a density target of $0.805$. A
 pre-registered audit round traced that displacement to a transcription error in our reading of the
-density's defining equation — the two local-factor products transposed and one exponent mis-set,
-which had mislocated the conjectured trough — logged as erratum #28. Corrected, the three pre-fixed
-shape invariants (the positive hump, the first post-hump zero, and the trough) agree with the density
-within the a-priori tolerance $\tau = 0.06$, the largest residual $\approx 0.012$ at the trough, and
-two pre-registered follow-ups bound candidate mechanisms: excising the analytic-rank-2 subpopulation
-does not move the trough, and root-number-imbalance leakage is $\le 0.5\%$ at the reliable rungs.
-Every result is numerical over a stated finite range, twinned or oracle-refereed, and cross-checked
-for cross-platform reproducibility; we claim replication and constraint, not proof.
+density's defining equation: the two local-factor products were transposed and one exponent mis-set,
+which had mislocated the conjectured trough. We log the correction as erratum #28. Corrected, the
+three shape invariants fixed in advance (the positive hump, the first post-hump zero, and the trough)
+agree with the density within the a-priori tolerance $\tau = 0.06$, the largest residual
+$\approx 0.012$ at the trough. Two pre-registered follow-ups bound candidate mechanisms: excising the
+analytic-rank-2 subpopulation does not move the trough, and root-number-imbalance leakage is
+$\le 0.5\%$ at the reliable rungs. Every result is numerical over a stated finite range, twinned or
+oracle-refereed, and reproducible across compilers and platforms; we claim replication and
+constraint, not proof.
 
 ---
 
@@ -215,7 +216,7 @@ emitted curve is byte-portable across compilers and platforms, a property we ver
 
 ## 3. Results
 
-**The ladder.** Over four height cutoffs the three pre-fixed shape invariants — the positive hump,
+**The ladder.** Over four height cutoffs the three shape invariants fixed in advance — the positive hump,
 the first post-hump zero, and the trough — agree with the conjectured density $D(u)$ within the
 a-priori tolerance $\tau = 0.06$. The invariants are stable across the ladder: the binned hump holds
 at $u = 0.4625$ and the binned trough at $u = 0.8875$ at every rung, and the first zero stays near
@@ -254,29 +255,29 @@ marginally (hump: lower bound $0.467$, just above $0.465$) and clearly (trough: 
 above $0.870$); these are resolved offsets, not open deviations, and both sit far inside $\tau$. The
 largest residual, at the trough, is $\approx 0.012$, about a fifth of the tolerance. <!-- claim:N3-3 -->
 
-**The pre-registered verdict, and why it is void.** Before the ladder was extended, PR-1 committed a
+**The pre-registered verdict, superseded.** Before the ladder was extended, PR-1 committed a
 single decision rule for the trough (`dd6beb0`; the $2^{18}$ Rung-3 clause `4a17ebe` committed
 *before the $2^{17}$ rung was read*). With $d(X) = \lvert \mathrm{trough}_u(X) - 0.805\rvert$ and
 $\Delta u = 0.025$, it declared the displacement finite-$X$ if $d$ recovered by $\ge \Delta u$ at
-both ladder steps and persistent if $d$ stayed flat. The rule was applied verbatim — $d = 0.0825$ at
-$2^{16}$, $2^{17}$, $2^{18}$, flat, no recovery — and returned H0 (persistent), read at `8f64ba1`.
-The audit round then found the target it gated on to be corrupt: $0.805$ was our *mislocated*
-density trough, not [SS25]'s, the eq (2) transcription error of erratum #28 (§6). The verdict is
-therefore **void as pronounced** — the rule was committed and followed honestly, but its target
-failed beneath it. We do **not** re-run it against the corrected target $0.870$, a number it was
-never registered against; a decision rule keeps its force only against the value it was sealed with.
-The corrected comparison above is descriptive, and claims no persistence verdict. <!-- claim:N3-4 -->
+both ladder steps and persistent if $d$ stayed flat. The rule was applied verbatim: $d = 0.0825$ at
+$2^{16}$, $2^{17}$, and $2^{18}$, flat, with no recovery, so it returned H0 (persistent), read at
+`8f64ba1`. The audit round then found the target it gated on to be corrupt: $0.805$ was our
+mislocated density trough, not [SS25]'s, the eq (2) transcription error of erratum #28 (§6). The
+verdict is therefore void as pronounced: the rule was committed and followed honestly, but the target
+it gated on was wrong. We do not re-run it against the corrected target $0.870$, a number it was
+never registered against. The corrected comparison above is descriptive, and claims no persistence
+verdict. <!-- claim:N3-4 -->
 
 **Supporting observation (not a gate).** The trough *depth* eases across the three extension rungs
 ($-3.72 \to -3.65 \to -3.58$ at $2^{16} \to 2^{17} \to 2^{18}$) while its position holds; the $10^4$
 depth ($-3.47$) is shallower than $2^{16}$, so this is a three-rung easing, not a monotone four-rung
 trend. It has the sign a large-$X$ amplitude decay would carry, but the bootstrap depth intervals
 overlap heavily across the three rungs, so the easing is a point-estimate trend within sampling
-noise, not a bootstrap-resolved one. Logged as an observation, not a claim. <!-- claim:N3-5 -->
+noise, not a bootstrap-resolved one. We log it as an observation. <!-- claim:N3-5 -->
 
 ## 4. Mechanism constraints
 
-Two pre-registered follow-ups were designed to probe candidate mechanisms for the trough deficit —
+Two pre-registered follow-ups were designed to probe candidate mechanisms for the trough deficit:
 its *position* (PR-2) and the *amplitude* departure at the trough bin (PR-3). After the eq (2)
 correction the position residual is the small resolved offset of §3, and the amplitude departure is
 itself modest: the empirical $S(u^*) = -3.58$ against the corrected $D(u^*) = -2.94$ at $2^{18}$ is a
@@ -419,46 +420,46 @@ The pin lives in the reproducibility spec. <!-- claim:N5-5 -->
 
 **The corrected comparison in context.** Agreement with the conjectured density at the heights we
 can reach is not automatic even for [SS25] themselves. Their Table 4 reports the mean per-bin
-discrepancy $\lvert\text{empirical} - \text{density}\rvert$ of their *own* curve as $1.17$, $0.91$,
-$0.73$ at $2^{16}$, $2^{17}$, $2^{18}$, decaying to $\approx 0.10$ only by $2^{28}$ — twelve doublings
+discrepancy $\lvert\text{empirical} - \text{density}\rvert$ of their own curve as $1.17$, $0.91$,
+$0.73$ at $2^{16}$, $2^{17}$, $2^{18}$, decaying to $\approx 0.10$ only by $2^{28}$, twelve doublings
 above our top rung. Our rungs sit at the bottom of that window, where the finite-$X$ curve is still
-far from the limit in amplitude. Against that backdrop the three shape-invariant *positions* land on
+far from the limit in amplitude. At these heights the three shape-invariant positions land on
 the corrected density within $\tau$ (§3), while the trough-bin amplitude departure we measure
-($\approx 0.64$ at $2^{18}$, §4) is of the same order as [SS25]'s own per-bin figure at that height —
-read here as positional agreement with an amplitude that has not yet converged, not as a discrepancy
-of the replication. <!-- claim:N6-1 -->
+($\approx 0.64$ at $2^{18}$, §4) is of the same order as [SS25]'s own per-bin figure. We read this as
+positional agreement with an amplitude that has not yet converged, not as a discrepancy of the
+replication. <!-- claim:N6-1 -->
 
 **The eq (2) transcription error (erratum #28).** An earlier version of this note reported a
 persistent trough displacement of $\approx 0.0825$ against a density target of $0.805$; that target
-was our error, not the data's. Our reading of eq (2) had transposed the two local-factor products —
-placing $\hat{\ell}$ on the primes $p \mid m,\, p \nmid q$ and $\ell$ on $p \mid q$ — and mis-set the
+was our error, not the data's. Our reading of eq (2) had transposed the two local-factor products
+(placing $\hat{\ell}$ on the primes $p \mid m,\, p \nmid q$ and $\ell$ on $p \mid q$) and mis-set the
 $p \mid q$ exponent to $v_p(m)$ rather than $2v_p(m)$, moving the density trough from its true
-position near $0.87$ to a spurious $0.805$. The error was shared, not isolated: it lived in a pinning
-note, in the C++ density evaluator built from that note, and in an independent PARI/GP oracle built
-from the same quote — three internally consistent implementations encoding one reading, so their
-mutual agreement certified nothing. What caught it was external — the authors' published density
-figure troughs near $0.87$, and a blind re-transcription from the paper against that figure recovered
-the correct products. The correction, its propagation across the code, data, and prose, and the
-standing rule it produced — a transcription check terminates at the source artifact, never an
-internal quote — are erratum #28 and the reframe registry it indexes. <!-- claim:N6-2 -->
+position near $0.87$ to a spurious $0.805$. The error was shared. It lived in a pinning note, in the
+C++ density evaluator built from that note, and in an independent PARI/GP oracle built from the same
+quote: three internally consistent implementations encoding one reading, so their mutual agreement
+certified nothing. What caught it was external: the authors' published density figure troughs near
+$0.87$, and a blind re-transcription from the paper against that figure recovered the correct
+products. The correction and its propagation across the code, data, and prose are erratum #28 and the
+reframe registry it indexes. The standing rule it produced is that a transcription check terminates
+at the source artifact, never an internal quote. <!-- claim:N6-2 -->
 
-**The residuals point one way.** The two non-zero position residuals of §3 are both rightward — the
+**Direction of the residuals.** The two non-zero position residuals of §3 are both rightward: the
 hump at $+0.006$ and the trough at $+0.012$ (interpolated, empirical above target), the first zero
 essentially on target. A single small horizontal dilation of the empirical curve relative to $D(u)$
-would produce exactly this: one deformation rather than two independent offsets, the natural
-finite-height reading, and it sharpens the one follow-up that remains. <!-- claim:N6-3 -->
+would produce exactly this, one deformation rather than two independent offsets; it is the natural
+finite-height reading and sharpens the one follow-up that remains. <!-- claim:N6-3 -->
 
 **PR-4, retired.** An earlier draft named a pre-registered split by BSD invariant at fixed rank
-(PR-4) — the Tamagawa product, the analytic order of Ш, the real period, which Wachs shows modulate
-murmuration profiles at fixed rank — as the route to whatever carried the trough deficit. With the
-deficit resolved to the small residual above, that motivation is gone; PR-4 is retired here rather
-than carried as pending future work. <!-- claim:N6-4 -->
+(PR-4) as the route to whatever carried the trough deficit; the invariants in view (the Tamagawa
+product, the analytic order of Ш, the real period) are ones Wachs shows modulate murmuration profiles
+at fixed rank. With the deficit resolved to the small residual above, that motivation is gone, and
+PR-4 is retired. <!-- claim:N6-4 -->
 
 **PR-5, re-motivated.** The live question is whether the coherent rightward shift decays as $X$
-grows: the amplitude easing of §3 and the positional dilation here are two faces of the expected
-finite-height convergence. PR-5 is a decision rule on that trajectory — position and depth together —
-to be committed before any rung is added beyond $2^{18}$; it is the pre-registered gate for going
-further, named here and not run. <!-- claim:N6-5 -->
+grows; the amplitude easing of §3 and the positional dilation here are both consistent with the
+expected finite-height convergence. PR-5 is a decision rule on that trajectory (position and depth
+together), to be committed before any rung is added beyond $2^{18}$. It is the pre-registered gate
+for going further, and has not been run. <!-- claim:N6-5 -->
 
 **A scale caveat with a documented precedent.** Our computable range, $X \le 2^{18}$, is small and
 finite. Sutherland's September 2023 talk gives a precedent for reading such a range cautiously. One

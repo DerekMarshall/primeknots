@@ -240,19 +240,20 @@ apparent persistent trough displacement of <span
 class="math inline">\approx 0.0825</span> against a density target of
 <span class="math inline">0.805</span>. A pre-registered audit round
 traced that displacement to a transcription error in our reading of the
-density’s defining equation — the two local-factor products transposed
-and one exponent mis-set, which had mislocated the conjectured trough —
-logged as erratum #28. Corrected, the three pre-fixed shape invariants
-(the positive hump, the first post-hump zero, and the trough) agree with
-the density within the a-priori tolerance <span class="math inline">\tau
-= 0.06</span>, the largest residual <span class="math inline">\approx
-0.012</span> at the trough, and two pre-registered follow-ups bound
-candidate mechanisms: excising the analytic-rank-2 subpopulation does
-not move the trough, and root-number-imbalance leakage is <span
-class="math inline">\le 0.5\%</span> at the reliable rungs. Every result
-is numerical over a stated finite range, twinned or oracle-refereed, and
-cross-checked for cross-platform reproducibility; we claim replication
-and constraint, not proof.</p>
+density’s defining equation: the two local-factor products were
+transposed and one exponent mis-set, which had mislocated the
+conjectured trough. We log the correction as erratum #28. Corrected, the
+three shape invariants fixed in advance (the positive hump, the first
+post-hump zero, and the trough) agree with the density within the
+a-priori tolerance <span class="math inline">\tau = 0.06</span>, the
+largest residual <span class="math inline">\approx 0.012</span> at the
+trough. Two pre-registered follow-ups bound candidate mechanisms:
+excising the analytic-rank-2 subpopulation does not move the trough, and
+root-number-imbalance leakage is <span class="math inline">\le
+0.5\%</span> at the reliable rungs. Every result is numerical over a
+stated finite range, twinned or oracle-refereed, and reproducible across
+compilers and platforms; we claim replication and constraint, not
+proof.</p>
 <hr />
 <h2 id="introduction">1. Introduction</h2>
 <p>Murmurations are an oscillating correlation between the Frobenius
@@ -495,8 +496,8 @@ byte-portable across compilers and platforms, a property we verify
 (§5).</p>
 <hr />
 <h2 id="results">3. Results</h2>
-<p><strong>The ladder.</strong> Over four height cutoffs the three
-pre-fixed shape invariants — the positive hump, the first post-hump
+<p><strong>The ladder.</strong> Over four height cutoffs the three shape
+invariants fixed in advance — the positive hump, the first post-hump
 zero, and the trough — agree with the conjectured density <span
 class="math inline">D(u)</span> within the a-priori tolerance <span
 class="math inline">\tau = 0.06</span>. The invariants are stable across
@@ -653,9 +654,9 @@ deviations, and both sit far inside <span
 class="math inline">\tau</span>. The largest residual, at the trough, is
 <span class="math inline">\approx 0.012</span>, about a fifth of the
 tolerance.</p>
-<p><strong>The pre-registered verdict, and why it is void.</strong>
-Before the ladder was extended, PR-1 committed a single decision rule
-for the trough (<code>dd6beb0</code>; the <span
+<p><strong>The pre-registered verdict, superseded.</strong> Before the
+ladder was extended, PR-1 committed a single decision rule for the
+trough (<code>dd6beb0</code>; the <span
 class="math inline">2^{18}</span> Rung-3 clause <code>4a17ebe</code>
 committed <em>before the <span class="math inline">2^{17}</span> rung
 was read</em>). With <span class="math inline">d(X) = \lvert
@@ -664,22 +665,21 @@ class="math inline">\Delta u = 0.025</span>, it declared the
 displacement finite-<span class="math inline">X</span> if <span
 class="math inline">d</span> recovered by <span class="math inline">\ge
 \Delta u</span> at both ladder steps and persistent if <span
-class="math inline">d</span> stayed flat. The rule was applied verbatim
-— <span class="math inline">d = 0.0825</span> at <span
+class="math inline">d</span> stayed flat. The rule was applied verbatim:
+<span class="math inline">d = 0.0825</span> at <span
 class="math inline">2^{16}</span>, <span
-class="math inline">2^{17}</span>, <span
-class="math inline">2^{18}</span>, flat, no recovery — and returned H0
-(persistent), read at <code>8f64ba1</code>. The audit round then found
-the target it gated on to be corrupt: <span
-class="math inline">0.805</span> was our <em>mislocated</em> density
-trough, not [SS25]’s, the eq (2) transcription error of erratum #28
-(§6). The verdict is therefore <strong>void as pronounced</strong> — the
-rule was committed and followed honestly, but its target failed beneath
-it. We do <strong>not</strong> re-run it against the corrected target
-<span class="math inline">0.870</span>, a number it was never registered
-against; a decision rule keeps its force only against the value it was
-sealed with. The corrected comparison above is descriptive, and claims
-no persistence verdict.</p>
+class="math inline">2^{17}</span>, and <span
+class="math inline">2^{18}</span>, flat, with no recovery, so it
+returned H0 (persistent), read at <code>8f64ba1</code>. The audit round
+then found the target it gated on to be corrupt: <span
+class="math inline">0.805</span> was our mislocated density trough, not
+[SS25]’s, the eq (2) transcription error of erratum #28 (§6). The
+verdict is therefore void as pronounced: the rule was committed and
+followed honestly, but the target it gated on was wrong. We do not
+re-run it against the corrected target <span
+class="math inline">0.870</span>, a number it was never registered
+against. The corrected comparison above is descriptive, and claims no
+persistence verdict.</p>
 <p><strong>Supporting observation (not a gate).</strong> The trough
 <em>depth</em> eases across the three extension rungs (<span
 class="math inline">-3.72 \to -3.65 \to -3.58</span> at <span
@@ -691,10 +691,10 @@ monotone four-rung trend. It has the sign a large-<span
 class="math inline">X</span> amplitude decay would carry, but the
 bootstrap depth intervals overlap heavily across the three rungs, so the
 easing is a point-estimate trend within sampling noise, not a
-bootstrap-resolved one. Logged as an observation, not a claim.</p>
+bootstrap-resolved one. We log it as an observation.</p>
 <h2 id="mechanism-constraints">4. Mechanism constraints</h2>
 <p>Two pre-registered follow-ups were designed to probe candidate
-mechanisms for the trough deficit — its <em>position</em> (PR-2) and the
+mechanisms for the trough deficit: its <em>position</em> (PR-2) and the
 <em>amplitude</em> departure at the trough bin (PR-3). After the eq (2)
 correction the position residual is the small resolved offset of §3, and
 the amplitude departure is itself modest: the empirical <span
@@ -967,74 +967,73 @@ cross-platform evidence. The pin lives in the reproducibility spec.</p>
 the conjectured density at the heights we can reach is not automatic
 even for [SS25] themselves. Their Table 4 reports the mean per-bin
 discrepancy <span class="math inline">\lvert\text{empirical} -
-\text{density}\rvert</span> of their <em>own</em> curve as <span
+\text{density}\rvert</span> of their own curve as <span
 class="math inline">1.17</span>, <span class="math inline">0.91</span>,
 <span class="math inline">0.73</span> at <span
 class="math inline">2^{16}</span>, <span
 class="math inline">2^{17}</span>, <span
 class="math inline">2^{18}</span>, decaying to <span
 class="math inline">\approx 0.10</span> only by <span
-class="math inline">2^{28}</span> — twelve doublings above our top rung.
+class="math inline">2^{28}</span>, twelve doublings above our top rung.
 Our rungs sit at the bottom of that window, where the finite-<span
 class="math inline">X</span> curve is still far from the limit in
-amplitude. Against that backdrop the three shape-invariant
-<em>positions</em> land on the corrected density within <span
-class="math inline">\tau</span> (§3), while the trough-bin amplitude
-departure we measure (<span class="math inline">\approx 0.64</span> at
-<span class="math inline">2^{18}</span>, §4) is of the same order as
-[SS25]’s own per-bin figure at that height — read here as positional
-agreement with an amplitude that has not yet converged, not as a
-discrepancy of the replication.</p>
+amplitude. At these heights the three shape-invariant positions land on
+the corrected density within <span class="math inline">\tau</span> (§3),
+while the trough-bin amplitude departure we measure (<span
+class="math inline">\approx 0.64</span> at <span
+class="math inline">2^{18}</span>, §4) is of the same order as [SS25]’s
+own per-bin figure. We read this as positional agreement with an
+amplitude that has not yet converged, not as a discrepancy of the
+replication.</p>
 <p><strong>The eq (2) transcription error (erratum #28).</strong> An
 earlier version of this note reported a persistent trough displacement
 of <span class="math inline">\approx 0.0825</span> against a density
 target of <span class="math inline">0.805</span>; that target was our
 error, not the data’s. Our reading of eq (2) had transposed the two
-local-factor products — placing <span
+local-factor products (placing <span
 class="math inline">\hat{\ell}</span> on the primes <span
 class="math inline">p \mid m,\, p \nmid q</span> and <span
 class="math inline">\ell</span> on <span class="math inline">p \mid
-q</span> — and mis-set the <span class="math inline">p \mid q</span>
+q</span>) and mis-set the <span class="math inline">p \mid q</span>
 exponent to <span class="math inline">v_p(m)</span> rather than <span
 class="math inline">2v_p(m)</span>, moving the density trough from its
 true position near <span class="math inline">0.87</span> to a spurious
-<span class="math inline">0.805</span>. The error was shared, not
-isolated: it lived in a pinning note, in the C++ density evaluator built
-from that note, and in an independent PARI/GP oracle built from the same
-quote — three internally consistent implementations encoding one
-reading, so their mutual agreement certified nothing. What caught it was
-external — the authors’ published density figure troughs near <span
+<span class="math inline">0.805</span>. The error was shared. It lived
+in a pinning note, in the C++ density evaluator built from that note,
+and in an independent PARI/GP oracle built from the same quote: three
+internally consistent implementations encoding one reading, so their
+mutual agreement certified nothing. What caught it was external: the
+authors’ published density figure troughs near <span
 class="math inline">0.87</span>, and a blind re-transcription from the
-paper against that figure recovered the correct products. The
-correction, its propagation across the code, data, and prose, and the
-standing rule it produced — a transcription check terminates at the
-source artifact, never an internal quote — are erratum #28 and the
-reframe registry it indexes.</p>
-<p><strong>The residuals point one way.</strong> The two non-zero
-position residuals of §3 are both rightward — the hump at <span
+paper against that figure recovered the correct products. The correction
+and its propagation across the code, data, and prose are erratum #28 and
+the reframe registry it indexes. The standing rule it produced is that a
+transcription check terminates at the source artifact, never an internal
+quote.</p>
+<p><strong>Direction of the residuals.</strong> The two non-zero
+position residuals of §3 are both rightward: the hump at <span
 class="math inline">+0.006</span> and the trough at <span
 class="math inline">+0.012</span> (interpolated, empirical above
 target), the first zero essentially on target. A single small horizontal
 dilation of the empirical curve relative to <span
-class="math inline">D(u)</span> would produce exactly this: one
-deformation rather than two independent offsets, the natural
-finite-height reading, and it sharpens the one follow-up that
-remains.</p>
+class="math inline">D(u)</span> would produce exactly this, one
+deformation rather than two independent offsets; it is the natural
+finite-height reading and sharpens the one follow-up that remains.</p>
 <p><strong>PR-4, retired.</strong> An earlier draft named a
-pre-registered split by BSD invariant at fixed rank (PR-4) — the
-Tamagawa product, the analytic order of Ш, the real period, which Wachs
-shows modulate murmuration profiles at fixed rank — as the route to
-whatever carried the trough deficit. With the deficit resolved to the
-small residual above, that motivation is gone; PR-4 is retired here
-rather than carried as pending future work.</p>
+pre-registered split by BSD invariant at fixed rank (PR-4) as the route
+to whatever carried the trough deficit; the invariants in view (the
+Tamagawa product, the analytic order of Ш, the real period) are ones
+Wachs shows modulate murmuration profiles at fixed rank. With the
+deficit resolved to the small residual above, that motivation is gone,
+and PR-4 is retired.</p>
 <p><strong>PR-5, re-motivated.</strong> The live question is whether the
 coherent rightward shift decays as <span class="math inline">X</span>
-grows: the amplitude easing of §3 and the positional dilation here are
-two faces of the expected finite-height convergence. PR-5 is a decision
-rule on that trajectory — position and depth together — to be committed
-before any rung is added beyond <span class="math inline">2^{18}</span>;
-it is the pre-registered gate for going further, named here and not
-run.</p>
+grows; the amplitude easing of §3 and the positional dilation here are
+both consistent with the expected finite-height convergence. PR-5 is a
+decision rule on that trajectory (position and depth together), to be
+committed before any rung is added beyond <span
+class="math inline">2^{18}</span>. It is the pre-registered gate for
+going further, and has not been run.</p>
 <p><strong>A scale caveat with a documented precedent.</strong> Our
 computable range, <span class="math inline">X \le 2^{18}</span>, is
 small and finite. Sutherland’s September 2023 talk gives a precedent for

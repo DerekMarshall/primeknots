@@ -12,11 +12,28 @@ draft rules R1–R5, whose register target remains *"a skeptical [SS25] author f
 correct."* Dropped: arXiv-only packaging (subject class, abstract-form limits).
 
 **House style.** The prose follows a deliberate house style, applied section by section, whose
-target is that a skeptical [SS25] author finds nothing to correct. It favors short sentences,
-words over symbols, notation defined before use, one hedge per section rather than one per
-sentence, and no significance inflation. It avoids the formatting and vocabulary now catalogued as
-tells of machine-generated text: mid-sentence bold, ALL-CAPS emphasis, em-dash sprawl, reflexive
-lists of three, and a fixed roster of inflated adjectives. The style draws on three sources. The two mathematical-writing guides are vendored under
+target is that a skeptical [SS25] author finds nothing to correct. The rules are numbered so a
+style pass can cite them:
+
+- **S1 — short sentences.** One clause carries one idea; prefer a period to a subordinate pile-up.
+- **S2 — words over symbols.** Define notation before first use; prose beats an inline formula
+  where either reads.
+- **S3 — one hedge per section, not per sentence; no significance inflation.** State a bound once,
+  plainly.
+- **S4 — no em-dash sprawl.** At most one em-dash pair per paragraph, and none where a colon, comma,
+  or period serves; a parenthetical aside takes parentheses.
+- **S5 — no mid-sentence bold, no ALL-CAPS emphasis.** Bold is for run-in paragraph headers only,
+  and those headers stay topical, not aphoristic.
+- **S6 — no reflexive lists of three, no inflated-adjective roster** (the machine-text tells
+  catalogued in the Wikipedia field guide); cap antithesis ("X, not Y") at the one or two instances
+  per passage where the contrast is the mathematical content.
+- **S7 — no minted aphorisms.** A sentence that restates the previous sentence's content as a maxim
+  is deleted, not reworded (e.g. "a decision rule keeps its force only against the value it was
+  sealed with" — the preceding sentence already says it).
+- **S8 — no dramatic metaphor.** Targets do not "fail beneath" rules, residuals do not "point one
+  way," observations are not "two faces" of anything. Describe, don't stage.
+
+The style draws on three sources. The two mathematical-writing guides are vendored under
 `docs/papers/`, gitignored per repo convention (third-party copyright), so fetch them from the
 source URLs; the Wikipedia field guide is a living page cited by URL:
 
