@@ -99,7 +99,7 @@ arXiv:2504.12295.
 | E3-11 | PR-1 committed the finite-X-vs-persistent decision rule + interpretation fork before reading the larger scale; applied verbatim over the four-rung ladder (10⁴–2¹⁸), it returned the "persists" branch (verdict H0, ≤2¹⁸) | docs/preregistered/PR-1.md (decision rule; commit before ladder; Rung-3 postscript) |
 | E3-12 | PR-2 committed the exact contrast threshold before the split data was computed | docs/preregistered/PR-2.md §"Step 2" |
 | E3-13 | Every exploratory statistic looked at is logged in a looks ledger | docs/preregistered/LOOKS.md; RESEARCH-M §7 |
-| E3-14 | The errata ledger currently holds 27 entries | docs/ERRATA.md (27 rows) |
+| E3-14 | The errata ledger currently holds 29 entries | docs/ERRATA.md (29 rows) |
 | E3-15 | Rule 8 (no constant typed from memory): a typed constant is invisible to twins (#25) | CLAUDE.md rule 8; docs/ERRATA.md #25 |
 | E3-16 | #26: a self-caught breach with consequences — the peek appeared to show trough agreement, which the clean confirmation overturned (trough is a persistent deviation) | docs/ERRATA.md #26; m4-pinning (confirmation §); docs/preregistered/PR-1.md postscript |
 | E3-17 | Committed viz/data JSON is byte-identical to what the code emits at HEAD | verify/freshness_check.py |

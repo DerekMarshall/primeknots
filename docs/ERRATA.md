@@ -45,15 +45,26 @@ quote), not an argument from authority.
 
 | 27 | M0b (murm.) | RESEARCH-M §8 gave M0b's baby-step–giant-step a_p as **O(p^{1/2})** and grouped Schoof–Elkies–Atkin with a "smalljac-class" at **O(p^{1/4})**. Both mislabel the complexity: O(p^{1/2}) is the cost of the *linear scan* of the width-4√p Hasse interval, not of the Shanks–Mestre BSGS that M0b actually implements; and SEA is *polynomial-time in log p*, not O(p^{1/4}) | spec author (RESEARCH-M §8) | **Source reading at the M0b pinning review** — Sutherland's notes [S-notes §7.4] give BSGS over the Hasse interval as **O(p^{1/4})** group operations (the improvement over the O(√p) scan), exactly the complexity the implemented `ap_shanks_mestre` achieves (m0b-pinning §7, line 75); SEA's polynomial-time bound is [Schoof85]. Corrected §8 to O(p^{1/4}) for BSGS and "polynomial-time in log p" for SEA. A prose-lags-code characterization error — the implementation was already O(p^{1/4}); no numerical result changes |
 
+| 28 | M4 (murm.) | The eq (2) density (Conjecture 1) was **transcribed wrong two ways** — in m4-pinning §P3 (entered `aa2b0ae`, M4 phase 1) and thence in `ss_density` (`d3a7fd4`): the two products were **swapped** (ℓ̂ placed on p∤q, ℓ on p\|q) and the p\|q exponent was v_p(m) not 2v_p(m). Correct, from the paper: `∏_{p|q} ℓ̂_{p,2v_p(m)} · ∏_{p|m,p∤q} ℓ_{p,2v_p(m)}` (only even ν appear, [SS25] p.9; the ν-domains of Lemmas 3/4 — ℓ̂ even ν incl. 0, ℓ positive ν — force it). This placed the density trough at a spurious **0.805** instead of **0.870**, manufacturing the note's central "persistent trough displacement" | coding agent / spec author (m4-pinning §P3 transcription) | **The authors' published figure (referee C), after a twin-blind trap.** A pre-registered audit round (`docs/notes/referee-round-2026-07.md`): the digitized Fig 1 green curve troughs at ~0.87, not 0.805. A fresh PARI oracle built from the SAME internal quote **agreed** with the C++ at 0.805 — twin-blindness (**#25 class**: two independent *codings* sharing one *reading*). An independent **blind transcription from the paper** then found the two errors; corrected, C++ + oracle + figure agree at 0.870 (hump 0.465, zero 0.671), matching the empirical on all three invariants. The displacement dissolves — replication succeeds. Durable fix: the standing rule that transcription checks terminate at the SOURCE artifact (the paper PDF), never an internal quote |
+| 29 | M4 (murm.) | The weight-≥12 Hecke eigenvalue-sum **truncation** in `level1_hecke_trace` (returned 0) was justified as "sparse, high-m, bounded contribution folded into the density-eval tolerance." That bound was certified **against the corrupted products of #28** (under which no surviving term reached weight ≥12); it **expired** on correction — under the correct eq (2) a surviving ℓ-term REQUIRES 2v_p(m) ≥ 10 (weight ≥12), so the truncation would have zeroed exactly the load-bearing terms | coding agent (m4-pinning §P3 / ss_density) | **The corrected #28 products (referee C).** Replaced by a from-scratch level-1 **Eichler–Selberg trace** reusing M3 Hurwitz class numbers (rule 3: no oracle values in the core), anchored on published τ(p)=Tr(T_p\|S₁₂) and term-level survivors. Lesson: an approximation's bound is valid only under the derivation it was certified against — **re-verify every bound after a corrected reading** (the sweep below) |
+
+**Sweep — approximations certified against the old (corrupted) density (referee C).** (i) The
+R1 density-evaluation tolerance (m4-pinning §R1, ≈0.056) folded in an eigenvalue-truncation
+component that #29 makes void — the ES trace is exact in that respect. (ii) The "refuted
+tail-argmin hypothesis" concerned the *old* density's argmin — moot. (iii) The PR-2/PR-3
+recovery gates and PR-1's clause referenced the 0.805 target (superseded; see the blast-radius
+list). (iv) τ = 0.06 is **a-priori** (a Hasse/CLT sampling model + macroscopic-curvature jitter,
+m4-pinning §R0), *not* density-derived — unaffected. No other density-certified bound found.
+
 ## Tally by party — nobody was exempt
 
 | Party | Caught in |
 |---|---|
 | Roadmap generator | #1 (O_x scope) |
-| Spec author (RESEARCH.md/-M) | #8 (p=2 unlicensed), #10 (ψ midpoint), #24 (SS25 "proves" → conjectures), #27 (BSGS complexity, O(p^{1/2}) → O(p^{1/4})) |
+| Spec author (RESEARCH.md/-M) | #8 (p=2 unlicensed), #10 (ψ midpoint), #24 (SS25 "proves" → conjectures), #27 (BSGS complexity, O(p^{1/2}) → O(p^{1/4})), #28 (eq (2) transcribed with swapped products — m4-pinning §P3) |
 | Human reviewer (riders/oracles) | #2 (R1 misclassification), #5 (ordinary-vs-narrow oracle), #9 (equal-parity), #11 (signature-mix, void by Stickelberger), #26 (peek reclassified + post-hoc tolerance quarantined — R0 directive) |
 | External (LLM) referee | #3 (fabricated `D_{L/K₁}=(a₂)` citation), #20 (own H(220) slip) — *the same party made the genuine R1 catch in #2, caught the agent's deck errors #16–#17 and the M1 null-swap #19, and had its own #20 caught by the P4 twin* |
-| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution), #18 (oracle-dependent snapshot), #19 (M1 post-hoc null swap), #21 (missing headers again — branch un-CI'd), #22 (non-byte-portable snapshots), #23 (CI jsonschema env), #25 (constants typed from memory — twin-blind), #26 (post-hoc tolerance fit to a confirmation-class peek — #19 class) |
+| Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution), #18 (oracle-dependent snapshot), #19 (M1 post-hoc null swap), #21 (missing headers again — branch un-CI'd), #22 (non-byte-portable snapshots), #23 (CI jsonschema env), #25 (constants typed from memory — twin-blind), #26 (post-hoc tolerance fit to a confirmation-class peek — #19 class), #28 (eq (2) products swapped, carried into ss_density — twin-blind, caught by the authors' figure), #29 (Hecke-trace truncation bound expired when #28 was corrected) |
 
 ## Tally by mechanism — every catch was a computation or a citation
 
@@ -66,7 +77,10 @@ enumeration (1) · twin disagreement (1) · second-compiler build (1) · externa
 referee review (deck + M1-deviation, from prose / citation trace) (3) · CI freshness
 guard (1) · twin class-number computation (P4 Hurwitz, #20) (1) · second-compiler
 build (GCC — #15 build, #21 build, #22 freshness byte-identity) (via a local GCC
-install once the branch's CI gap was found). **Arguments from authority: 0.**
+install once the branch's CI gap was found) · authors' published figure digitized +
+independent blind transcription of the source (referee C, #28 — the catch a twin-blind
+oracle could not make) · corrected-reading bound re-verification (#29 sweep). **Arguments
+from authority: 0.**
 
 Entries #16–#20 are catches of this project's own artifacts and process: two deck
 defects (a coverage conflation and a mis-attribution, both caught by the referee —
