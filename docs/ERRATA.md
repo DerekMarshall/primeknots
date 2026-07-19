@@ -56,6 +56,10 @@ recovery gates and PR-1's clause referenced the 0.805 target (superseded; see th
 list). (iv) τ = 0.06 is **a-priori** (a Hasse/CLT sampling model + macroscopic-curvature jitter,
 m4-pinning §R0), *not* density-derived — unaffected. No other density-certified bound found.
 
+**Granularity note (ratified 2026-07-19).** The corrections to the emitter/JSON, the prereg
+tests, the explainers, and the note prose are all *propagations* of this single root cause
+(#28), not separate errata; `docs/notes/reframe-registry.md` is their propagation map.
+
 ## Tally by party — nobody was exempt
 
 | Party | Caught in |
