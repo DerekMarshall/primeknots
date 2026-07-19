@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>What it took: methods, failures, and costs of an AI-driven
+replication in computational number theory</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    body{max-width:820px;margin:2rem auto;padding:0 1.1rem;
+         font-family:-apple-system,BlinkMacSystemFont,system-ui,"Segoe UI",sans-serif;
+         line-height:1.55;color:#1b1b1b}
+    h1{font-size:1.7rem;line-height:1.25} h2{margin-top:2rem;border-bottom:1px solid #e3e3e3;padding-bottom:.2rem}
+    h3{margin-top:1.4rem}
+    code{background:#f3f3f3;padding:.1em .3em;border-radius:3px;font-size:.92em}
+    pre{background:#f7f7f7;padding:.8rem 1rem;overflow-x:auto;border-radius:6px;border:1px solid #ececec}
+    pre code{background:none;padding:0}
+    table{border-collapse:collapse;margin:1.1rem 0;font-size:.95em;display:block;overflow-x:auto}
+    th,td{border:1px solid #d0d0d0;padding:.35em .7em;text-align:left}
+    th{background:#f5f5f5}
+    blockquote{border-left:3px solid #c9c9c9;margin:1.1rem 0;padding:.2rem .7rem;color:#3a3a3a;background:#fafafa}
+    a{color:#0b62c4}
+    hr{border:none;border-top:1px solid #e3e3e3;margin:2rem 0}
+    /* wide display formulas scroll inside their own box, never the page body */
+    .katex-display{overflow-x:auto;overflow-y:hidden;padding:.3rem 0}
+  </style>
+</head>
+<body>
+<h1
+id="what-it-took-methods-failures-and-costs-of-an-ai-driven-replication-in-computational-number-theory">What
+it took: methods, failures, and costs of an AI-driven replication in
+computational number theory</h1>
+<p><strong>Author:</strong> Derek Marshall (ORCID
+0009-0001-8101-3908).</p>
+<p><strong>Companion to:</strong> <em>A pre-registered replication of
+the Sawin–Sutherland height-ordered murmuration</em>, DOI
+10.5281/zenodo.21438901. The replication note states the mathematics.
+This document states how the work was done, what it cost, where it
+failed, and what caught the failures. Every claim here cites a commit,
+an erratum row, a ledger entry, or a measured total in the repository’s
+methods dossiers.</p>
+<hr />
+<h2 id="why">1. Why</h2>
+<p>I wanted to see how well I could drive a frontier language model to
+write C++ that studies prime numbers. A paper cited during early
+research seemed interesting and I wanted to reproduce it. The subject
+felt reminiscent of results from string theory, and that instinct turned
+out to be literal: murmurations were discovered in 2022 by He, Lee,
+Oliver, and Pozdnyakov, applying machine-learning techniques from
+mathematical physics to the large public databases of elliptic curves.
+The paper I set out to replicate is the 2025 Sawin–Sutherland conjecture
+(arXiv:2504.12295) that grew out of that discovery: an explicit
+candidate density for the murmuration of elliptic curves ordered by
+naive height.</p>
+<p>There was no point beyond the question itself: is it possible to
+reach a correct result in an extremely complex domain, without being a
+direct expert in the details, by directing language models under a
+discipline strict enough to catch their errors and mine. The answer is
+yes, conditionally. The conditions are this paper.</p>
+<p>The replication succeeded (at least until I am proven wrong by an
+expert in the field). The three shape invariants of the empirical
+murmuration agree with the corrected conjectured density within the
+pre-registered tolerance, at the bottom of the height window the authors
+studied. Along the way the project produced a wrong headline result,
+sustained it for eight days through every internal check I had built,
+and then caught it. That sequence, not the mathematics, is the useful
+output.</p>
+<h2 id="the-architecture">2. The architecture</h2>
+<p>The build ran in four stages, across three vendors’ models, with one
+human in the loop.</p>
+<p><strong>Stage 1: landscape research.</strong> Google Gemini Deep
+Research produced the initial survey of the murmuration literature and
+the candidate papers. This stage chose the target.</p>
+<p><strong>Stage 2: orchestration.</strong> A Claude (Fable) session in
+the web interface acted as the standing orchestrator. It held the
+project state, triaged findings, drafted the prompts for the build
+sessions, and was one of the referees. I relayed its output to the
+builders and the builders’ output back.</p>
+<p><strong>Stage 3: build.</strong> Claude Code sessions running Opus at
+high effort did the work: the C++, the runs, the documents, the ledgers,
+the fixes. This is where nearly all tokens were spent.</p>
+<p><strong>Stage 4: secondary review.</strong> Gemini reviewed selected
+outputs. Its observations caught real defects (three errata rows credit
+external model review). Its proposed wordings consistently failed the
+project’s own style gates (which could have been better organized and
+documented at the outset so that all agents could use the same playbook;
+section 7, rule 12), and it once cited a repository file that did not
+exist. It was useful as a defect detector. Cross-vendor review earns its
+place in the table below on the detector side alone.</p>
+<p>A session-level analysis of my own prompts (methods dossier,
+session-shapes section) classifies my keystrokes: roughly forty percent
+relaying prepared prompts, the rest split among approvals, corrections,
+questions, and decisions. By keystroke count I was a router. The
+decisions were another matter. Every fork in the project terminated at
+me: which specs to pin, which deviations to ratify, which drafted prompt
+to send and which to sit on, when a paragraph read wrong, when to stop a
+session, when to merge, when to mint. The prompts themselves were
+drafted by the orchestrator model. I selected, edited, and vetoed. The
+model drafted everything in this setup, including its own instructions,
+while the human kept control of every gate. The retrospective
+corrections to my own process are folded into section 7 as rules 9
+through 12.</p>
+<p>The decision ledger, kept separately, sorts my interventions into
+four kinds: scientific gates (spec approvals, deviation ratifications,
+one reversal of my own prior ruling), editorial judgments (title,
+disclosure wording, three occasions of “I do not like this paragraph,”
+each of which produced a standing rule), process calls (fresh-session
+boundaries, commissioning the external reviews, stopping compute), and
+the irreversibles.</p>
+<h2 id="the-machinery">3. The machinery</h2>
+<p>The repository ran under working rules committed before the science
+started. Each rule below is listed with what it caught, cited to the
+errata ledger and the mechanisms dossier, and with its observable
+cost.</p>
+<p><strong>Pre-registration, commit before run.</strong> Every decision
+rule, tolerance, and threshold was committed to version control before
+the data it judges existed, citable afterward as ordered commit pairs. A
+cold review of the repository at v1.0.0 independently re-derived every
+claimed ordering from the git graph and confirmed them. The one ordering
+the graph cannot prove is the one the notes themselves decline to claim.
+Cost: one commit per rule, plus the discipline of writing rules before
+wanting them.</p>
+<p><strong>Twin implementations.</strong> Every function the result
+depends on had two independent implementations (a different algorithm,
+never a refactor) or an external oracle. The Frobenius trace ended up
+with three algorithms agreeing exactly over hundreds of millions of
+values. Twins caught implementation errors at a median latency of zero
+days. Cost: roughly double the implementation effort on the covered
+paths.</p>
+<p><strong>Oracles as referees only.</strong> PARI, LMFDB, and published
+values check the computation and never feed it; an absent oracle skips
+visibly instead of passing silently. This rule decided a fork late in
+the project: a proposed table of oracle-generated constants inside the
+density evaluator was rejected because it would have put referee
+provenance in the computational core. Cost: occasional extra
+implementation where a lookup would have been easier.</p>
+<p><strong>No constants from memory.</strong> Models state numbers
+fluently whether or not the numbers are real. Every constant in the
+repository is generated, transcribed from a cited source, or computed.
+Cost: negligible. Benefit: several, including one case where a
+from-memory curve count would have been wrong. There was one case where
+the Opus agent hilariously recited pi from memory and produced
+3.14159265358979311600: the decimal expansion of the nearest double,
+printed past its own precision. The number looked funny enough that I
+stopped the session, which produced this rule, the constant-generation
+remedy (erratum #25, commit fecb9d9), and a substantial amount of
+refactoring.</p>
+<p><strong>Claims ledgers.</strong> Every sentence in the published note
+carries a marker tied to a ledger row citing the artifact that supports
+it (49 markers at release). The ledger caught sourcing drift repeatedly.
+It did not catch a mis-rounded table cell; recomputation did. Ledgers
+verify sourcing; verifying arithmetic takes recomputation.</p>
+<p><strong>Deviations as deliverables.</strong> Any departure from a
+committed plan gets its own commit stating the change and the reason,
+before proceeding. The ledger holds 31 numbered errata at v1.0.0. None
+were smoothed over. Several are the most informative objects in the
+repository.</p>
+<p><strong>Guard tests.</strong> Tests written against anticipated
+failure modes, before the failures exist. Most fired immediately or
+never. One (a copy-drift check between a canonical file and its
+byte-copy) sat silent for 66 commits and then fired at the final release
+gate, catching a fix that had been applied to one copy of a formula and
+not the other. It was the last bug found before the tag.</p>
+<p><strong>A style checklist for published prose.</strong> The note
+targets a register in which a skeptical author of the source paper finds
+nothing to correct. The checklist began as six rules against catalogued
+tells of machine-generated text and grew to eight during the project
+(section 7). Fresh model prose regressed to the tells every time it was
+written without the checklist applied afterward. The working conclusion:
+the style pass is a post-condition of writing, not a phase of the
+project.</p>
+<h2 id="what-the-machinery-could-not-catch">4. What the machinery could
+not catch</h2>
+<p>The headline result of the note was wrong for eight days, and every
+mechanism in section 3 passed it.</p>
+<p>The note compares an empirical curve against a conjectured density.
+Our reading of the density’s defining equation carried a transcription
+error: two products of local factors were transposed, and one exponent
+was mis-set. The error entered a pinning note early in the project. The
+C++ evaluator was built from that note. An independent PARI/GP oracle
+was built from the same note. The two implementations agreed to high
+precision, at every check, on the wrong function.</p>
+<p>Every internal mechanism then did its job correctly on the corrupted
+object. The transcription check verified the note’s formula character by
+character against the pinning note, confirming fidelity to an internal
+copy rather than to the source. The twin check verified that two
+implementations agreed, which only confirmed that both had been built
+from the same wrong reading. A truncation study, run in response to an
+external referee’s concern, verified that the wrong density’s trough was
+stable across a 24-fold range of cutoffs: an accurate convergence study
+of a formula the source paper never wrote. The pre-registered decision
+rule gated the empirical trough against the wrong target and returned
+its verdict honestly. The result read as a persistent open deviation
+from the conjecture. It was a bug.</p>
+<p>The detection latencies in the errata ledger are bimodal. Errors
+caught by internal machinery (implementation slips, propagation misses,
+prose drift) have a median latency of zero days. The two errors in the
+shared-reading class, the transposed products and a related expired
+approximation bound, took eight to nine days and over a hundred commits
+each to surface. The internal machinery is nearly free and nearly
+instant. The errors it structurally cannot catch are the expensive ones,
+because every internal check verifies consistency with a shared source,
+and when that shared source is corrupted, consistency guarantees
+nothing.</p>
+<p>The same class produced a second, subtler failure. A weight cutoff in
+the local factors had been justified as negligible, with the bound
+checked and true under the corrupted formula. Correcting the formula
+changed which terms mattered, and the justification silently expired. An
+approximation’s validity certificate is conditional on the formula it
+was certified against.</p>
+<h2 id="what-caught-it">5. What caught it</h2>
+<p>Everything that caught the expensive errors came from outside the
+shared context.</p>
+<p><strong>An adversarial referee pass.</strong> A fresh model session
+was given only the rendered note and told to review it as a skeptical
+author of the source paper. Its report identified the framing problem
+(comparing a finite-height curve against an asymptotic density and
+calling the gap a deviation) and demanded the truncation study. The
+study was methodologically sound and still could not find the bug,
+because the bug was upstream of it. But the referee round put the
+density’s provenance under pressure for the first time.</p>
+<p><strong>A published figure.</strong> The source paper’s own density
+plot, digitized and read numerically, put the density trough far from
+where our implementations put it. Two internally consistent
+implementations against one external artifact: the artifact was right.
+This was the first check in the project whose provenance did not pass
+through our own reading of the equation.</p>
+<p><strong>A blind re-transcription.</strong> A separate session that
+had never seen our code, our notes, or our reading of the formula
+transcribed the equation directly from the paper. The diff against our
+version identified both errors in one pass. The corrected
+implementations, rebuilt from the paper rather than patched, landed on
+the published figure’s trough exactly.</p>
+<p><strong>A cold clone.</strong> A fresh model session with no project
+context cloned the public repository and followed the note’s
+reproduction instructions literally. It found every place the
+instructions assumed knowledge a stranger lacks, and its clean-clone
+build was the gate at which the 66-commit guard test finally fired.</p>
+<p>The census over all 31 errata rows is one-sided: internal mechanisms
+caught the cheap errors, external mechanisms caught all of the expensive
+ones. The correction to the project’s rules was structural, not
+incremental: a transcription check terminates at the source artifact and
+never at an internal quotation of it, and external context-free review
+is part of the machinery, not quality assurance applied to it.</p>
+<p>One number belongs here. The three external review conversations
+together cost an estimated few tens of dollars, the cheapest category in
+the entire budget, and they were what corrected the headline result.</p>
+<h2 id="what-it-cost">6. What it cost</h2>
+<p>All figures are transferable equivalents, not bills. The build ran on
+Claude Team subscription seats and my own hardware; the tables price the
+measured usage at published API rates and list AWS on-demand rates for
+the compute, so that someone estimating a similar project has numbers to
+scale from. Sources and methods are in the repository’s usage and costs
+dossiers.</p>
+<p><strong>Tokens (build, measured).</strong> The Claude Code sessions
+made 3,857 API round-trips over the project. Measured usage and
+API-equivalent pricing (Opus, July 2026 rates):</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th style="text-align: right;">Tokens</th>
+<th style="text-align: right;">Rate</th>
+<th style="text-align: right;">Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input (non-cached)</td>
+<td style="text-align: right;">197,683</td>
+<td style="text-align: right;">$5/M</td>
+<td style="text-align: right;">~$1</td>
+</tr>
+<tr>
+<td>Output</td>
+<td style="text-align: right;">7,466,688</td>
+<td style="text-align: right;">$25/M</td>
+<td style="text-align: right;">~$187</td>
+</tr>
+<tr>
+<td>Cache write</td>
+<td style="text-align: right;">32,421,769</td>
+<td style="text-align: right;">$6.25/M</td>
+<td style="text-align: right;">~$203</td>
+</tr>
+<tr>
+<td>Cache read</td>
+<td style="text-align: right;">1,793,674,751</td>
+<td style="text-align: right;">$0.50/M</td>
+<td style="text-align: right;">~$897</td>
+</tr>
+<tr>
+<td>Build total</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">~$1,288</td>
+</tr>
+</tbody>
+</table>
+<p>Cache reads dominate. That column is the model re-reading its
+accumulated context on every call, roughly 465,000 tokens per
+round-trip, priced at a tenth of fresh input. The non-cached input row
+is the human-side steering signal entering the build: under 200,000
+tokens against 7.5 million of output. That steering was about 2.6
+percent of the volume of the work it directed.</p>
+<p><strong>Tokens (orchestration and review, estimated).</strong> The
+web sessions (orchestration, referee rounds, cold-clone review, blind
+transcription) total an estimated 1.29 million tokens by character
+count, with a stated ±30 percent band and no input/output split (the
+export path stripped speaker roles). Priced at the bounding cases, the
+web layer adds roughly $15 to $65. The orchestration layer ran about 17
+percent of the build’s input-plus-output volume: a measured answer to
+how much steering the architecture in section 2 requires.</p>
+<p><strong>Compute (recorded).</strong> All jobs, priced at us-east-1
+on-demand equivalents (rates retrieved 2026-07-19; the work actually ran
+on owned hardware):</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th style="text-align: right;">Hours</th>
+<th>Equivalent</th>
+<th style="text-align: right;">Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>48-core box jobs</td>
+<td style="text-align: right;">17.2</td>
+<td>c7a.12xlarge, $2.46/h</td>
+<td style="text-align: right;">~$42</td>
+</tr>
+<tr>
+<td>Laptop jobs</td>
+<td style="text-align: right;">25.3</td>
+<td>c7a.4xlarge, $0.82/h</td>
+<td style="text-align: right;">~$21</td>
+</tr>
+<tr>
+<td>CI</td>
+<td style="text-align: right;">14.7</td>
+<td>public repo, free</td>
+<td style="text-align: right;">$0</td>
+</tr>
+<tr>
+<td>Compute total</td>
+<td style="text-align: right;"></td>
+<td></td>
+<td style="text-align: right;">~$63</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Grand total: roughly $1,350, with a stated ceiling near
+$1,400.</strong> For scale: the project’s entire scientific compute is
+on the order of 0.13 CPU-years. Sawin and Sutherland’s computation at
+the top of the height window, the one this project replicates the bottom
+of, is reported at 140 CPU-years. Against that scale the replication
+cost a rounding error, and the audit that corrected it cost a rounding
+error against the replication.</p>
+<h2 id="the-rules-i-would-start-with-next-time">7. The rules I would
+start with next time</h2>
+<p>The project began with a rule set and ended with a larger one. The
+delta is the learnings, generated mechanically by diffing the committed
+rules at kickoff against the rules at v1.0.0.</p>
+<ol type="1">
+<li>A transcription check terminates at the source artifact (the paper
+itself), never at an internal quotation of it. Adopted after erratum
+#28.</li>
+<li>Internal consistency machinery must be paired with external,
+context-free review as standing practice: an adversarial referee pass on
+the rendered artifact, and a cold-clone reproduction, both by sessions
+with no project context, before any release. The blind spots of a
+collaboration are shared by everyone inside it, including the
+human.</li>
+<li>Any edit to source re-runs its affected test suites before the
+change is reported done. Adopted after a fix shipped against one copy of
+a formula and a guard test caught the other copy 66 commits later.</li>
+<li>When a formula is corrected, every downstream approximation whose
+bound was certified under the old reading is re-audited. Validity
+certificates expire silently.</li>
+<li>Oracle-provenance values never enter the computational core, even as
+pinned tables. That convenience is the same shared-source failure mode
+in another form.</li>
+<li>A style pass over published prose is a post-condition of writing it,
+applied to exactly the sentences just written. Fresh model prose
+regresses to catalogued tells without it. Two rules joined the checklist
+mid-project: no minted aphorisms, and no dramatic metaphor.</li>
+<li>Register-critical prose is never drafted at the tail of a long
+session. The builder sessions learned to refuse this on their own; the
+refusals were correct every time.</li>
+<li>Numbers come from committed artifacts or from recomputation, never
+from memory and never from prose. Ledgers verify sourcing; verifying
+arithmetic takes recomputation.</li>
+<li>Select the production algorithm before generating bulk data. The
+point-counting provider ran at roughly 145 times less CPU than the
+character sum it replaced, and the early caches were generated under the
+slow provider; the cost of that ordering is visible in the compute table
+as laptop hours.</li>
+<li>Keep the continuous-integration loop fast from the first commit.
+Every gate in the project waits on it; the recorded CI time (14.7 hours)
+is a floor on that waiting.</li>
+<li>Commit the code style guide at kickoff. Once results freeze, the
+code is evidence: a late restyle would have broken the validation chain,
+so the right to fix style is lost exactly when the urge to fix it
+arrives.</li>
+<li>The prose style playbook is a kickoff artifact: versioned, numbered,
+and handed to every agent in the pipeline, internal and external. This
+project’s house style existed as prose until late and was formalized as
+numbered rules only near release, which is part of why external review
+kept failing it.</li>
+</ol>
+<p>The next iteration of the project is to restructure the repository as
+an easily reusable and reliable library, under the rules above from the
+first commit.</p>
+<p>What this project demonstrates: one non-expert, directing frontier
+models under the discipline above, replicated a contemporary
+conjecture’s numerical evidence in a domain he could not have entered
+alone, caught a headline-inverting error before publication, and shipped
+the corrected result with its full audit trail for about the price of a
+conference registration. What it does not demonstrate: that this
+generalizes. It is one project, one domain, one person, n = 1, and the
+discipline was most of the work. The note claims replication and
+constraint, not proof. This companion sets out a method and its
+receipts, and claims nothing more.</p>
+</body>
+</html>

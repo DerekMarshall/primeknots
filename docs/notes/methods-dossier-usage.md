@@ -1,10 +1,10 @@
 # Methods dossier — token & compute accounting
 
 Token and compute accounting for `primeknots` v1.0.0. **Measurement and estimate are kept
-strictly separate.** §1 (Claude Code) is measured from session transcripts. §2 (Claude web) is
-an estimate from supplied browser-copy pastes and is labelled a **floor** throughout (the pastes
-strip roles, collapse tool I/O and attachments, and truncate the largest conversation).
-§3 (compute) is recorded from committed artifacts. §4 is a join, no interpretation. Provenance
+strictly separate.** §1 (Claude Code) is measured from session transcripts. §2 (Claude web) is an
+estimate (chars÷4): a representative ≈ 1.29 M-token figure from the full conversations, plus a
+reproducible ≈ 7,600-token floor from the lossy committed pastes; both carry a ±30% band and no
+input/output split. §3 (compute) is recorded from committed artifacts. §4 is a join, no interpretation. Provenance
 is stated on every number. Phases P1–P6 are as defined in `docs/notes/cold-retro-v1.0.0.md §1`.
 
 ---
@@ -91,47 +91,41 @@ per-session `lastActivity` dates are session-level and do not give a temporal br
 
 ---
 
-## 2. Claude web — ESTIMATED (chars÷4 from supplied browser-copy pastes; a FLOOR)
+## 2. Claude web — ESTIMATED (chars÷4; representative ≈ 1.29 M, with a reproducible floor)
 
-**Status: estimated from pastes, labelled a floor.** The structured web export archive (JSON with
-per-message roles and full history) was not supplied. In its place, browser copies ("save-as-HTML"
-text) of the tagged conversations were provided and are estimated here under the pre-fixed method.
-Because the browser copies **strip speaker roles, collapse assistant tool I/O, collapse pasted
-attachments to `Show more`/`[pasted]` stubs, and — for the largest conversation — truncate the
-head**, every figure below is a **lower bound** and the total is a **floor**, not a representative
-web-token count.
+**Status: estimated (chars÷4), not measured.** The web layer — the Claude Fable
+orchestration/referee session plus the external-review conversations (referee rounds, cold-clone,
+blind transcription) — has no per-token usage record, so it is estimated by the chars÷4 proxy. The
+sources carry no per-message role separation, so **no input/output split is possible — totals
+only** (consequence: costs §1b prices the web total by bounding cases, not a blended point). Two
+figures are kept distinct — a representative estimate and a reproducible floor:
 
-**Method (as fixed in advance, applied).** chars ÷ 4 per conversation, counted from the supplied
-paste text (reproduced verbatim into `scratchpad/web/*.txt` and `wc -c`-counted; the count
-includes a few bracketed provenance markers, <5%). Tag each into: orchestration / referee rounds /
-cold-clone / blind transcription. **±30% band** on every figure (chars/4 is a proxy, not a
-tokenizer count).
+- **Representative estimate: ≈ 1.29 M tokens (±30%: ~0.90–1.68 M).** chars÷4 over the full four
+  web conversations; ≈ 17% of the §1 measured build input+output (7,664,371). This is the figure
+  the methods companion cites (§6). It rests on the full browser exports and is **not reproducible
+  from the inputs committed in this repo** — the committed pastes are a lossy subset (see the
+  floor). Carried per Derek's decision (Option A); the full exports are the basis.
+- **Reproducible floor: ≈ 7,600 tokens.** chars÷4 over the *lossy* browser-copy pastes actually
+  available here (reproduced into `scratchpad/web/*.txt`, `wc -c`-counted). A hard lower bound —
+  the largest conversation is head-truncated, tool I/O and attachments are collapsed, and the
+  blind-transcription conversation is absent — retained for reproducibility, **not** representative.
 
-**Role limitation (binding).** The pastes carry no per-message role separation, so **no
-input/output split is possible — totals only.** (Consequence: costs §1b prices the web total by
-bounding cases, not a blended point.)
+### 2a. Reproducible floor, per conversation (chars÷4 over the committed lossy pastes)
 
-### 2a. Per-conversation (chars÷4 from supplied paste; totals only)
-
-| Tag | In paste? | chars (supplied) | tokens (÷4) | ±30% band | Basis / bound |
+| Tag | In paste? | chars | tokens (÷4) | ±30% band | Basis / bound |
 |---|---|--:|--:|--:|---|
-| orchestration | yes, **head-truncated** | ~14,700 | ~3,700 | 2,600–4,800 | **hard lower bound** — paste begins mid-token (`…ATIONS —` = a truncated `MURMURATIONS`); attachments (data-note.md, CLAIMS-N.md, README) + tool I/O collapsed to stubs |
+| orchestration | yes, **head-truncated** | ~14,700 | ~3,700 | 2,600–4,800 | hard lower bound — paste begins mid-token (`…ATIONS —` = a truncated `MURMURATIONS`); attachments (data-note.md, CLAIMS-N.md, README) + tool I/O collapsed to stubs |
 | referee rounds | yes | ~11,200 | ~2,800 | 2,000–3,600 | fairly complete (SS-author prompt + full report + 2²⁸ exchange) |
 | cold-clone | yes | ~4,500 | ~1,100 | 800–1,400 | lower bound — 20+ tool runs collapsed (`Ran 20 commands`) |
-| blind transcription | **NO** | — | — | — | **NOT SUPPLIED** — named in the export plan and referenced in-paste, but no conversation text is present; no figure invented |
-| **TOTAL (3 of 4)** | | **~30,400** | **~7,600** | **5,300–9,900** | **floor** (roles stripped; one conversation absent; largest truncated) |
+| blind transcription | **NO** | — | — | — | **NOT SUPPLIED** — named in the export plan and referenced in-paste, no conversation text present; no figure invented |
+| **Floor total (3 of 4)** | | **~30,400** | **~7,600** | **5,300–9,900** | **floor** (roles stripped; one conversation absent; largest truncated) |
 
-**Truncation call (as instructed).** The largest conversation (orchestration) shows a
-mid-conversation start and collapsed attachments; per the pre-fixed rule it is reported as a
-**lower bound**, and the whole §2 total inherits that bound.
-
-**Distance from a representative figure (flagged, not smoothed).** This floor omits all assistant
-tool I/O, all pasted attachments (the note draft alone is tens of KB), the orchestration head, and
-the entire blind-transcription conversation. The representative web total is therefore higher — by
-a large factor the pastes do not let us bound — and the structured export remains the only route
-to it. The floor is reported because it is what the supplied inputs measure; it is **not** adjusted
-toward an expected value (rule 1). These estimates are never combined with the §1 measured Claude
-Code tokens into a single number.
+The gap between the ~7,600 floor and the ~1.29 M representative figure is exactly the browser
+copies' losses (collapsed tool I/O, collapsed attachments, truncated head, one missing
+conversation): the committed pastes preserve only a fraction of the conversations they sample. The
+representative figure is not adjusted toward an expected value (rule 1) — it is the full-export
+chars÷4 total that the companion carries; the floor is what this repo's committed inputs
+reproduce. Neither is combined with the §1 measured Claude Code tokens into a single number.
 
 ---
 
@@ -184,9 +178,9 @@ CI wall time (14.69 h over 74 runs) spans P2→P6 and is not phase-attributable 
 ---
 
 **Provenance summary.** §1 measured from `~/.claude/projects/…/*.jsonl` usage blocks,
-de-duplicated by message ID, cross-checked against ccusage 20.0.17. §2 estimated from supplied
-browser-copy pastes (chars÷4, a floor: roles stripped, tool I/O + attachments collapsed, largest
-conversation truncated, blind-transcription conversation not supplied); ±30% band. §3 recorded
+de-duplicated by message ID, cross-checked against ccusage 20.0.17. §2 estimated by chars÷4:
+representative ≈ 1.29 M tokens (full conversations, Option A) with a reproducible ≈ 7,600-token
+floor from the committed lossy pastes; ±30% band, totals only (no role split). §3 recorded
 from PR-1.md, m0b-pinning.md,
 libm-partial-diff-spec.md, docs/ERRATA.md #30, CLAIMS-N N5-5, and `gh run list`. §4 joins the
 three against cold-retro-v1.0.0.md §1/§2b. Compiled 2026-07-19.
