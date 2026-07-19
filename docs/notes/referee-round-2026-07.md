@@ -372,3 +372,19 @@ forbids. The defect must come from a genuinely reading-independent re-derivation
 3/4. First suspect (truncation) ruled out; remaining candidates — the product structure
 (∏_{p|m,p∤q} vs ∏_{p|m,p|q}; the ℓ↔ℓ̂ assignment), the J₁ argument/√u weight, a local-factor
 exponent. **Held for Derek before the formula-hunt.** Errata row pending the pinned defect.
+
+### Step C (code search, ran first per Derek): no authors' density code exists to diff against
+
+Checked whether SS25 cite public code for the DENSITY (a rule-1-clean executable referee, unlike
+the figure). Result — none:
+- **smalljac [15]** is cited only for computing `a_p` (point counting) — the *empirical* side, which
+  we already implement and twin; it does not referee the density.
+- **`math.mit.edu/~drew/ssplots`** (cited for the plots): fetched — 9 animated GIFs of Figs 1–5,
+  **no code, no numeric data, no repo**.
+- Web search (arXiv/GitHub/Zenodo): no code repository for this paper's density.
+- Audit-relevant citations for A: **[17] Gradshteyn–Ryzhik** (Table of Integrals — the Bessel
+  integral behind eq (2)) and **[23] Hijikata** (Hecke-trace formula). Sources, not code.
+
+**Option C is exhausted.** The remaining referees are A (my re-audit against the *unread*
+Definitions 5/6 + Lemmas 26/28 + the "adjustment to simplify" step) and B (the external blind
+transcription). B is the only genuinely reading-independent check.
