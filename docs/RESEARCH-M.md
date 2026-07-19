@@ -101,9 +101,11 @@ M0 → M1 → M2 → M3 → M4 → M5, gated as always. Reuse: `symbols/` (Legen
 - **M0b — fast a_p (sub-linear point counting).** The M0 a_p is O(p) per prime
   (`ap_charsum` referee, `ap_fast` table path). This caps the height-family statistic:
   PR-1's honest runtime estimate makes **X = 2¹⁸ infeasible (~22 days)** at O(p), and
-  [SS25] reach 2²⁸ only via Sutherland's sub-linear counting. M0b = baby-step–giant-step
-  (O(p^{1/2})) and/or Schoof–Elkies–Atkin / smalljac-class (O(p^{1/4})) a_p, with its own
-  pinning + twin against the frozen `ap_charsum`. Motivated by, and blocking, the upper
+  [SS25] reach 2²⁸ only via Sutherland's sub-linear counting. M0b = baby-step–giant-step /
+  Shanks–Mestre (**O(p^{1/4})** group operations — BSGS over the width-4√p Hasse interval, the
+  improvement over the O(√p) linear scan; complexity pinned in m0b-pinning §7) and/or
+  Schoof–Elkies–Atkin (polynomial-time in log p) a_p, with its own pinning + twin against the
+  frozen `ap_charsum`. Motivated by, and blocking, the upper
   rungs of PR-1 and any X ≥ 2¹⁸ work. Not built.
 - **M0b (conductor/root-number from scratch) — the Tate twin** (already noted in the §2
   M4/C3 amendment): Tate's algorithm for N + local root-number formulas for ε, to retire

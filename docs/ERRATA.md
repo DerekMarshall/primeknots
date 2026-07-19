@@ -43,12 +43,14 @@ quote), not an argument from authority.
 
 | 26 | M4 (murm.) | A **confirmation-class computation was performed outside the pre-registration protocol, and a tolerance was then fit to its result**: the checkpoint's X=3000 "exploration" actually evaluated the real statistic (1) against the committed R2 targets — a confirmation — and the "COMMITTED empirical-side shape tolerance = 0.08" was written to sit just above its observed ≈0.05 residuals ("finite-X deviation + density-eval 0.056"). The softer "bounded exploration" framing did not change what the computation was. This is the **#19 class** (a pre-declared design set/changed after results were seen), one step worse: the number was *derived from* the peeked residual | coding agent (M4 checkpoint) | **Human referee (R0 directive), reading the checkpoint prose** — flagged the peek as confirmation-class and the 0.08 as post-hoc. Unlike #19, the **git record corroborates the timing**: commit `e2dbadc` introduced the peek outcomes AND the 0.08 line together, and the tolerance's own stated derivation cites the "finite-X deviation" it was fit around. Remedy (m4-pinning §R0): the peek relabelled an *unofficial confirmation-class peek* in the exploration register (sanity only, sets no tolerance); **X_confirm = 10⁴** named before any data exists at it (the peek touched only X=3000); the empirical tolerance **re-derived a priori** as τ = 0.06 from the R1 chain + a Hasse/CLT sampling model + macroscopic-curvature location jitter (tighter than 0.08 → a stronger gate, and cross-checked against — not fit to — the peek); the 0.08 **quarantined**. Durable lesson reaffirmed (RESEARCH-M §7): a confirmation run is defined by the computation it performs, not the label on it |
 
+| 27 | M0b (murm.) | RESEARCH-M §8 gave M0b's baby-step–giant-step a_p as **O(p^{1/2})** and grouped Schoof–Elkies–Atkin with a "smalljac-class" at **O(p^{1/4})**. Both mislabel the complexity: O(p^{1/2}) is the cost of the *linear scan* of the width-4√p Hasse interval, not of the Shanks–Mestre BSGS that M0b actually implements; and SEA is *polynomial-time in log p*, not O(p^{1/4}) | spec author (RESEARCH-M §8) | **Source reading at the M0b pinning review** — Sutherland's notes [S-notes §7.4] give BSGS over the Hasse interval as **O(p^{1/4})** group operations (the improvement over the O(√p) scan), exactly the complexity the implemented `ap_shanks_mestre` achieves (m0b-pinning §7, line 75); SEA's polynomial-time bound is [Schoof85]. Corrected §8 to O(p^{1/4}) for BSGS and "polynomial-time in log p" for SEA. A prose-lags-code characterization error — the implementation was already O(p^{1/4}); no numerical result changes |
+
 ## Tally by party — nobody was exempt
 
 | Party | Caught in |
 |---|---|
 | Roadmap generator | #1 (O_x scope) |
-| Spec author (RESEARCH.md/-M) | #8 (p=2 unlicensed), #10 (ψ midpoint), #24 (SS25 "proves" → conjectures) |
+| Spec author (RESEARCH.md/-M) | #8 (p=2 unlicensed), #10 (ψ midpoint), #24 (SS25 "proves" → conjectures), #27 (BSGS complexity, O(p^{1/2}) → O(p^{1/4})) |
 | Human reviewer (riders/oracles) | #2 (R1 misclassification), #5 (ordinary-vs-narrow oracle), #9 (equal-parity), #11 (signature-mix, void by Stickelberger), #26 (peek reclassified + post-hoc tolerance quarantined — R0 directive) |
 | External (LLM) referee | #3 (fabricated `D_{L/K₁}=(a₂)` citation), #20 (own H(220) slip) — *the same party made the genuine R1 catch in #2, caught the agent's deck errors #16–#17 and the M1 null-swap #19, and had its own #20 caught by the P4 twin* |
 | Coding agent | #4 (strat counter), #6 (signed-a), #7 (generator cap), #12 (2c/6c), #13 (PDFs in history), #14 (Belabas filter), #15 (missing headers), #16 (deck coverage conflation), #17 (deck mis-attribution), #18 (oracle-dependent snapshot), #19 (M1 post-hoc null swap), #21 (missing headers again — branch un-CI'd), #22 (non-byte-portable snapshots), #23 (CI jsonschema env), #25 (constants typed from memory — twin-blind), #26 (post-hoc tolerance fit to a confirmation-class peek — #19 class) |
@@ -57,7 +59,8 @@ quote), not an argument from authority.
 
 coherence check (1) · CFT re-derivation (1) · verbatim quote (1) · parity argument
 (1) · oracle gp cross-check (1) · algebraic identity / associativity (1) ·
-exhaustive sweep (1) · source-hypothesis reading (1) · anchor witness (2) ·
+exhaustive sweep (1) · source-hypothesis reading (1) · complexity source-reading
+(#27, [S-notes §7.4]) (1) · anchor witness (2) ·
 Stickelberger's theorem (1) · exact-rational identity (1) · git reachability
 enumeration (1) · twin disagreement (1) · second-compiler build (1) · external
 referee review (deck + M1-deviation, from prose / citation trace) (3) · CI freshness
