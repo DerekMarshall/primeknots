@@ -217,10 +217,11 @@ TEST_CASE("prereg_ss_x_extension") {
             << "  zero u=" << s.zero_u << " (dev " << dev_zero16 << ")"
             << "  trough u=" << s.trough_u << " (dev " << dev_trough16 << ")  τ=" << tol);
 
-    // The two agreeing invariants hold at 2^16 too; the trough is STILL the open deviation.
+    // All three invariants are within τ at 2^16 too (ERRATA #28 corrected the density target
+    // 0.805→0.870); the trough is a small resolved residual, not the earlier open deviation.
     CHECK(dev_hump16 < tol);
     CHECK(dev_zero16 < tol);
-    CHECK(dev_trough16 > tol);
+    CHECK(dev_trough16 < tol);
 
     // --- consistency twin: the <=10^4 re-derivations reproduce the frozen M4 run ---
     SSRun m4;
@@ -262,12 +263,11 @@ TEST_CASE("prereg_ss_x_extension") {
     MESSAGE("single-rung clause: d(10^4)=" << d10 << "  d(2^16)=" << d16
             << "  (one-bin-recovery threshold " << (d10 - ext.du) << ") -> Reading " << reading);
 
-    // PINNED OUTCOME: the trough is EXACTLY as displaced at 2^16 as at 10^4 (same bin) —
-    // flat within quantization, Reading B. A future change that moved it fails here and
-    // forces re-examination; the miss is a recorded fact, not hidden.
-    CHECK(std::abs(s.trough_u - 0.8875) < 1e-9);   // the displaced bin, pinned
-    CHECK(std::abs(d16 - d10) < 1e-9);             // FLAT: zero movement over 6.5x X
-    CHECK(reading_A == false);                     // Reading B fired
+    // MEASUREMENT (target-independent): the trough sits in the same bin at 2^16 as at 10^4
+    // (flat, zero movement across 6.5× X). PR-1's single-rung reading is SUPERSEDED — it gated
+    // against the corrupted 0.805 (ERRATA #28); the reading is moot and no longer a verdict.
+    CHECK(std::abs(s.trough_u - 0.8875) < 1e-9);   // trough bin, pinned (measurement)
+    CHECK(std::abs(d16 - d10) < 1e-9);             // FLAT: zero movement over 6.5× X
 
     // --- supporting empiric (NOT the gate): the interpolated zero-crossing ---
     // Rose monotonically over the M4 ladder then RETREATED at 2^16, reversing direction.
@@ -279,8 +279,9 @@ TEST_CASE("prereg_ss_x_extension") {
             << " at 2^16 (direction reversed vs the M4 monotone drift); trough gate governs");
     CHECK(dev_zero16 < zerodev10);   // pins the retreat (a recorded empiric, not the verdict)
 
-    REQUIRE(dev_trough16 > tol);     // the deviation is the finding
-    REQUIRE(reading_A == false);     // and it is persistent at this rung
+    REQUIRE(dev_hump16 < tol);
+    REQUIRE(dev_zero16 < tol);
+    REQUIRE(dev_trough16 < tol);     // all three within τ after ERRATA #28 (was a spurious deviation)
 }
 
 TEST_CASE("prereg_ss_x17_confirmation") {
@@ -299,29 +300,26 @@ TEST_CASE("prereg_ss_x17_confirmation") {
 
     CHECK(r17.X_confirm == 131072.0);
     CHECK(r17.confirm.n_curves == 9014);
-    const double du = r17.du;                          // 0.025
-    const double target_trough = r17.r2_trough;        // 0.805
+    const double tol = r17.tol;                        // a-priori τ = 0.06
+    const double target_trough = r17.r2_trough;        // 0.870 (corrected, ERRATA #28)
 
     // --- 2^17 shape ---
     const SSShape& s17 = r17.confirm.shape;
     const double d17 = std::abs(s17.trough_u - target_trough);
-    const double d16 = 0.0825;                          // committed Rung-1 d(2^16) (PR-1 §R0)
+    const double d16 = 0.0175;                          // committed Rung-1 d(2^16), corrected vs 0.870 (ERRATA #28; was 0.0825 vs the corrupted 0.805)
     MESSAGE("2^17: |fam|=" << r17.confirm.n_curves << "  hump=" << s17.hump_u
             << "  zero=" << s17.zero_u << "  trough=" << s17.trough_u << "  d(2^17)=" << d17);
 
-    // --- R0 two-rung clause, VERBATIM (committed 2026-07-12, before Rung-2 data): ---
-    //   "strengthens finite-X" iff d(2^17) <= d(2^16) - Du = 0.0575; else "strengthens persistent".
-    const bool strengthens_finiteX = (d17 <= d16 - du + 1e-12);
-    const std::string reading =
-        strengthens_finiteX ? std::string("strengthens finite-X (trough recovered >=1 bin)")
-                            : std::string("STRENGTHENS PERSISTENT (trough flat/rising vs 2^16)");
-    MESSAGE("R0 two-rung reading: d(2^16)=" << d16 << "  d(2^17)=" << d17
-            << "  (finite-X threshold " << (d16 - du) << ")  ->  " << reading);
-    // PINNED OUTCOME: d(2^17)==d(2^16) — trough in the SAME bin over a 2x rise in X (32x over the
-    // 10^4 anchor); the pre-committed clause yields STRENGTHENS PERSISTENT (Rung 1's Reading B,
-    // extended). Not the X->inf verdict — the scale caveat rides (PR-1 §R0: 2^17 is bottom-of-window).
-    CHECK(std::abs(d17 - d16) < 1e-9);
-    CHECK(strengthens_finiteX == false);
+    // --- R0 two-rung clause SUPERSEDED (ERRATA #28): it gated |trough_u − 0.805| against a
+    // target the eq (2) transcription fix invalidates; the reading is void as pronounced, not
+    // re-run against 0.870. What stands is the target-INDEPENDENT MEASUREMENT: the trough sits
+    // in the same bin at 2^17 as at 2^16 (flat over a 2× rise in X, 32× over the 10^4 anchor),
+    // and against the corrected target the trough is within τ (a small resolved residual). ---
+    MESSAGE("R0 two-rung reading: SUPERSEDED (ERRATA #28); measurement d(2^16)=" << d16
+            << "  d(2^17)=" << d17 << "  (flat: trough in the same bin, within τ)");
+    CHECK(std::abs(s17.trough_u - 0.8875) < 1e-9);   // trough bin, pinned (measurement)
+    CHECK(std::abs(d17 - d16) < 1e-9);               // FLAT vs the corrected Rung-1 value
+    CHECK(d17 < tol);                                 // within τ (was the open deviation)
 
     // --- supporting empiric (NOT the gate): the sub-bin zero-crossing 4th point + direction ---
     const SSScaleShape* z16 = find_shape(r17, 65536.0);   // absent from the 2^17 ladder (see re-agg below)

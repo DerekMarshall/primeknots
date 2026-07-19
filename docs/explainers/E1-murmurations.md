@@ -149,8 +149,9 @@ out. <!-- claim:E1-37 -->
   data of elliptic curve murmurations does not match" the modular-form density. The average
   over the full modular-form family does not determine the average over the sparse elliptic-curve
   subfamily. <!-- claim:E1-27 --> The **height-ordered** elliptic-curve density is a separate
-  conjecture (above), and the behaviour of its *tail* is where our own results flag a deviation
-  (below). <!-- claim:E1-36 -->
+  conjecture (above); the behaviour of its *tail* is where an initial comparison flagged an
+  apparent deviation that a pre-registered audit later traced to our own transcription of
+  eq (2) (below; ERRATA #28). <!-- claim:E1-36 -->
 
 Throughout: murmurations give **statistical** information about rank across a family. They do
 not "crack" the Birch–Swinnerton-Dyer conjecture, which is about the rank of an *individual*
@@ -175,23 +176,26 @@ referees) and renders each stage as a JSON artifact with a static viewer:
   <!-- claim:E1-31 -->
 - **Stage M4 + PR-1** test **Sawin–Sutherland Conjecture 1** on the height-ordered family we
   build and count end to end, over a four-rung ladder (1048, 5042, 9014, 15936 curves at
-  heights ≤ 10⁴, 2¹⁶, 2¹⁷, 2¹⁸). The hump and the first zero-crossing land within our
-  pre-registered tolerance at every rung; the **trough is an openly flagged deviation** that
-  stayed put (did not move toward the target) at all four scales, so the pre-registered rule
-  returns the verdict **H0 (persistent)** over the computed range ≤ 2¹⁸ — a finite-range
-  statement, not a claim about the infinite limit (`sawin_sutherland_murmuration.json`,
+  heights ≤ 10⁴, 2¹⁶, 2¹⁷, 2¹⁸). An initial comparison showed an apparent persistent trough
+  displacement; a pre-registered audit round traced it to a **transcription error in our reading
+  of eq (2)** — the two products swapped and the wrong exponent (**ERRATA #28**). Corrected,
+  **all three shape invariants — hump, first zero-crossing, and trough — agree within the
+  pre-registered tolerance** at the bottom of the authors' 2¹⁶–2²⁸ window; the trough is a small
+  resolved residual (≈0.012). PR-1's committed Rung-3 verdict is **superseded** — it gated
+  against the corrupted target and is void as pronounced (`sawin_sutherland_murmuration.json`,
   `ss_x_extension_murmuration.json`; the pre-registration is `docs/preregistered/PR-1.md`).
   <!-- claim:E1-32 -->
 
 ## What remains open
 
 The conductor-ordered elliptic-curve density is open. Sawin–Sutherland's height density is a
-**conjecture**, not a theorem. Our own height-ordered **trough deviation** has the verdict H0
-(persistent) on our range — we have shown that it does not decay like a finite-size effect
-should — but its **mechanism is unresolved**: two follow-up pre-registrations each tested a
-candidate and neither explains it. PR-2 (an over-representation of analytic-rank-2 curves):
-excising that subpopulation does not recover the trough. PR-3 (a root-number imbalance leaking
-into the average): the leakage is bounded well below the deviation. We have *not* claimed to
-know why the trough sits where it does; that is logged as an open deliverable. <!-- claim:E1-33 --> Nothing here
+**conjecture**, not a theorem. Our own height-ordered replication **succeeds within tolerance**
+after ERRATA #28 — the earlier "trough deviation" was our transcription error, not a phenomenon.
+Two follow-up pre-registrations, run while that displacement was still under investigation, stand
+as measurements/bounds: PR-2 (an over-representation of analytic-rank-2 curves) — excising that
+subpopulation does not move the empirical trough; PR-3 (a root-number imbalance leaking into the
+average) — the leakage is bounded well below the residual. What remains genuinely open is whether
+the small resolved residual (≈0.012; both non-zero residuals point rightward, a hint of a single
+horizontal dilation) decays as X grows — the question PR-5 governs. <!-- claim:E1-33 --> Nothing here
 proves a conjecture or resolves BSD; "verified" in this project always means *numerically,
 over a stated range, cross-checked* — never a formal proof. <!-- claim:E1-34 -->
