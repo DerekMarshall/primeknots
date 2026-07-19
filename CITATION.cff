@@ -6,7 +6,8 @@ authors:
   - family-names: Marshall
     given-names: Derek
     orcid: "https://orcid.org/0009-0001-8101-3908"
-version: 1.0.0
+version: 1.1.0
+date-released: 2026-07-19
 doi: 10.5281/zenodo.21438901
 license: MIT
 repository-code: "https://github.com/DerekMarshall/primeknots"
@@ -40,7 +41,7 @@ preferred-citation:
       given-names: Derek
       orcid: "https://orcid.org/0009-0001-8101-3908"
   year: 2026
-  version: 1.0.0
+  version: 1.1.0
   license: MIT
   url: "https://derekmarshall.github.io/primeknots/"
   repository-code: "https://github.com/DerekMarshall/primeknots"
