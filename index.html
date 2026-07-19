@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>primeknots — arithmetic topology &amp; elliptic-curve murmurations, executable</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 760px; margin: 2.5rem auto; padding: 0 1.1rem;
+         font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", sans-serif;
+         line-height: 1.55; color: #1b1b1b; }
+  @media (prefers-color-scheme: dark) { body { background: #121212; color: #e6e6e6; } a { color: #6fb3ff; } }
+  h1 { font-size: 1.6rem; line-height: 1.25; margin-bottom: .2rem; }
+  .sub { color: #666; margin-top: 0; }
+  @media (prefers-color-scheme: dark) { .sub { color: #9a9a9a; } }
+  h2 { font-size: 1.05rem; margin: 1.8rem 0 .5rem; border-bottom: 1px solid #e3e3e3; padding-bottom: .2rem; }
+  @media (prefers-color-scheme: dark) { h2 { border-color: #333; } }
+  ul { padding-left: 1.2rem; } li { margin: .3rem 0; }
+  a { color: #0b62c4; text-decoration: none; } a:hover { text-decoration: underline; }
+  .note { font-size: .92rem; color: #666; } @media (prefers-color-scheme: dark) { .note { color: #9a9a9a; } }
+  code { font-size: .92em; }
+</style>
+</head>
+<body>
+  <h1>primeknots</h1>
+  <p class="sub">Arithmetic topology and elliptic-curve murmurations, made executable — named
+  theorems of number theory verified in from-scratch C++, with visualizations rendered from
+  emitted JSON. "Verified" means numerically, over a stated range, twinned or oracle-refereed;
+  no proofs are claimed.</p>
+
+  <h2>Data note (research track, M5)</h2>
+  <ul>
+    <li><a href="docs/notes/data-note/data-note.html">A pre-registered replication of the
+      Sawin–Sutherland height-ordered murmuration</a> — the headline write-up
+      (<a href="docs/notes/data-note/data-note.pdf">PDF</a>).</li>
+  </ul>
+
+  <h2>Explainer deck</h2>
+  <ul>
+    <li><a href="docs/deck/">Project explainer deck</a></li>
+  </ul>
+
+  <h2>Interactive viewers</h2>
+  <p class="note">Murmurations (M-ladder):</p>
+  <ul>
+    <li><a href="viz/murmurations.html">Murmurations (the discovery)</a></li>
+    <li><a href="viz/dirichlet.html">Dirichlet characters</a></li>
+    <li><a href="viz/zubrilina.html">Zubrilina density</a></li>
+    <li><a href="viz/sawin_sutherland.html">Sawin–Sutherland height-ordered density</a></li>
+    <li><a href="viz/ss_rank_split.html">Sawin–Sutherland analytic-rank split</a></li>
+  </ul>
+  <p class="note">Arithmetic topology (stages 0–6):</p>
+  <ul>
+    <li><a href="viz/borromean.html">Borromean rings / Rédei symbol</a></li>
+    <li><a href="viz/linking.html">Linking &amp; quadratic reciprocity</a></li>
+    <li><a href="viz/classgroups.html">Class groups &amp; 4-rank</a></li>
+    <li><a href="viz/cs.html">Arithmetic Chern–Simons</a></li>
+    <li><a href="viz/explicit_formula.html">Weil explicit formula</a></li>
+    <li><a href="viz/dw.html">Dijkgraaf–Witten / S₃ counting</a></li>
+  </ul>
+
+  <h2>Source</h2>
+  <ul>
+    <li><a href="https://github.com/DerekMarshall/primeknots">Repository on GitHub</a>
+      (build, tests, and the errata ledger <code>docs/ERRATA.md</code>).</li>
+  </ul>
+
+  <p class="note">Author: Derek Marshall
+    (<a href="https://orcid.org/0009-0001-8101-3908">ORCID 0009-0001-8101-3908</a>). MIT-licensed.</p>
+</body>
+</html>
