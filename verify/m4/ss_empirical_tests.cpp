@@ -54,22 +54,21 @@ TEST_CASE("theorem_ss_height_murmuration") {
     CHECK(dev_hump < tol);
     CHECK(dev_zero < tol);
 
-    // The trough is the OPEN DEVIATION (fork verdict): asserted present, not hidden.
-    // A future change that brought it within τ would (correctly) fail this and force the
-    // finding to be re-examined — the miss is pinned as a fact.
-    CHECK(dev_trough > tol);
+    // The trough is now within τ too (ERRATA #28: the eq (2) transcription fix moved the
+    // density trough 0.805→0.870; the earlier CHECK(dev_trough > tol) asserted the spurious
+    // open deviation, and — exactly as its comment predicted — the correction that brought it
+    // within τ flips it. All three invariants now agree within τ; the trough is a small
+    // resolved residual (≈0.0175 binned), not a deviation.
+    CHECK(dev_trough < tol);
 
     // Localization discriminant (pre-registered window u∈[0.7,0.9], same extractor):
-    // windowed == global ⇒ the displacement is real, not a far-tail-argmin artifact.
+    // windowed == global trough (the earlier tail-argmin check).
     const double win_trough = windowed_trough_u(run.confirm, 0.7, 0.9);
     MESSAGE("localization: global trough u=" << s.trough_u
-            << ", windowed[0.7,0.9] trough u=" << win_trough
-            << " (equal ⇒ not a tail artifact)");
-    CHECK(std::abs(win_trough - s.trough_u) < 0.03);   // both land in the same displaced bin
+            << ", windowed[0.7,0.9] trough u=" << win_trough << " (equal)");
+    CHECK(std::abs(win_trough - s.trough_u) < 0.03);   // both land in the same bin
 
-    // Convergence empiric: the trough deviation is FLAT (does not decay) across the
-    // ladder — the recorded basis for the OPEN-DEVIATION verdict. Reported; and the
-    // hump/zero stay within τ at every scale (assert).
+    // Across the ladder all three invariants stay within τ (ERRATA #28 corrected targets).
     for (const SSScaleShape& sc : run.shapes) {
         const double dh = std::abs(sc.shape.hump_u - run.r2_hump);
         const double dz = std::abs(sc.shape.zero_u - run.r2_zero);
@@ -78,11 +77,12 @@ TEST_CASE("theorem_ss_height_murmuration") {
                 << "  dev(hump)=" << dh << " dev(zero)=" << dz << " dev(trough)=" << dt);
         CHECK(dh < tol);
         CHECK(dz < tol);
+        CHECK(dt < tol);   // trough within τ at every rung (ERRATA #28 corrected target)
     }
 
     REQUIRE(dev_hump < tol);
     REQUIRE(dev_zero < tol);
-    REQUIRE(dev_trough > tol);   // the deviation is the finding
+    REQUIRE(dev_trough < tol);   // all three within τ after ERRATA #28 (was a spurious deviation)
 }
 
 TEST_CASE("twin_ap_fast_vs_charsum_m4") {

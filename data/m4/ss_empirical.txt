@@ -8,7 +8,7 @@
 # X_confirm 10000
 # du 0.025
 # tol 0.06
-# r2 0.475 0.645 0.805
+# r2 0.465 0.671 0.870
 # ladder 4000 6000 8000 10000
 # shape X n_curves hump_u hump_v zero_u trough_u trough_v
 shape 4000 522 0.4625 2.4045 0.667642 0.8875 -3.64229

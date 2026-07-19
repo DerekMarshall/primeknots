@@ -12,9 +12,10 @@
 // committed `ss_aggregate` / `extract_shape` (nothing in the statistic TU is touched).
 //
 // Two axes, kept separate (PR-2 Amendment 4; m4-pinning §R0c):
-//   PRIMARY  (u-space, well-powered): the LEAVE-OUT trough recovery. D̂ over F∖S₂ (all
-//     curves of analytic rank ≠ 2). "Recovers" iff |trough_u(F∖S₂) − 0.805| ≤ τ=0.06 AND
-//     is ≥ one bin (Δu) closer to 0.805 than the full-family trough (dev 0.0825).
+//   PRIMARY  (u-space): the LEAVE-OUT trough position over F∖S₂ (all curves of analytic
+//     rank ≠ 2). The recovery-gate VERDICT is SUPERSEDED (ERRATA #28: it targeted the
+//     corrupted 0.805; corrected target 0.870, full-family dev ≈0.0175); the MEASUREMENT —
+//     whether the leave-out trough differs from the full family — stands as an empirical bound.
 //   SECONDARY (value-space, f₂-limited): the S₂-vs-S₀ descending-branch (u∈[0.7,0.9]) mean
 //     gap. Downward-significant iff gap = mean D̂_{S₂} − mean D̂_{S₀} < −threshold (the
 //     committed 0.668, PR-2 step 2), one-sided (downward). Sub-threshold ⇒ pre-declared

@@ -359,7 +359,7 @@ int main(int argc, char** argv) {
         if (use_m0b) run.provider_hash = at::murm::m0b_provider_hash();
         run.du = 0.025;                                   // committed bin width (§R0)
         run.tol = 0.06;                                   // a-priori empirical tolerance (§R0c)
-        run.r2_hump = 0.475; run.r2_zero = 0.645; run.r2_trough = 0.805;  // committed R2 (formula side)
+        run.r2_hump = 0.465; run.r2_zero = 0.671; run.r2_trough = 0.870;  // R2 (formula side), corrected ERRATA #28
         run.X_confirm = static_cast<double>(X);           // pre-named confirmation scale (§R0b / PR-1)
         // Ladder = the M4 peek-untouched rungs that are ≤ X, plus X itself. For X=10⁴ this
         // is exactly {4000,6000,8000,10000} (M4). For an extension rung the ≤10⁴ points are
@@ -996,7 +996,7 @@ int main(int argc, char** argv) {
         const char* partials_path = opt(argc, argv, "--partials", "data/m5/ss_partials_x65536.txt");
         const char* rank_path = opt(argc, argv, "--rank-cache", "data/m5/rank_cache_x65536.txt");
         // Committed thresholds (pre-registered): PR-2 Amendment 4 + step 2, m4-pinning §R0c.
-        const double target_trough = 0.805, tol = 0.06, contrast_threshold = 0.668;
+        const double target_trough = 0.870, tol = 0.06, contrast_threshold = 0.668;  // corrected ERRATA #28
         const double u_lo = 0.7, u_hi = 0.9;
 
         at::murm::SSPartialsMeta pm;

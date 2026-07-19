@@ -61,25 +61,23 @@ void emit_m4(const std::string& out_dir, const std::string& run_path,
       << ", \"provenance\": \"empirical curve = computed statistic (a_p); density D(u) = "
          "the conjectured Bessel-J₁ formula (in-house J₁ + generated constants); separate "
          "TUs. N, ε: oracle\""
-      << ", \"claim_class\": \"PARTIAL agreement with the CONJECTURED density (Conjecture 1 "
-         "[SS25]): at X_confirm=10⁴ the hump (dev " << num(dev_hump) << ") and first "
-         "zero-crossing (dev " << num(dev_zero) << ") agree within the a-priori tolerance "
-         "τ=" << num(run.tol) << "; the trough is an OPEN DEVIATION (dev " << num(dev_trough)
-      << " exceeds τ, flat across the X-ladder so NOT demonstrated to be the finite-X "
-         "downward bias of [SS25] by this range, and the windowed[0.7,0.9] trough equals "
-         "the global one so it is not a tail-argmin artifact). The murmuration and its "
-         "primary oscillation replicate; one invariant is an openly-flagged deviation. "
-         "This is a numerical replication of a CONJECTURE — no proof is claimed (rule 7)\""
+      << ", \"claim_class\": \"From-scratch replication of [SS25] Conjecture 1 at X_confirm=10⁴. "
+         "An initial comparison flagged an apparent trough displacement (from a 0.805 target); a "
+         "pre-registered audit round traced it to a TRANSCRIPTION ERROR in eq (2) (products "
+         "swapped, wrong exponent) — ERRATA #28. Corrected (density trough 0.870), the hump (dev "
+      << num(dev_hump) << "), zero (dev " << num(dev_zero) << "), and trough (dev "
+      << num(dev_trough) << ") all agree within the a-priori τ=" << num(run.tol) << " — the "
+         "trough a small resolved residual, not a deviation. A numerical replication of a "
+         "CONJECTURE — no proof is claimed (rule 7)\""
       << ", \"X_confirm\": " << num(run.X_confirm)
       << ", \"n_curves\": " << run.confirm.n_curves
       << ", \"du\": " << num(run.du)
       << ", \"tol\": " << num(run.tol)
       << ", \"density_trunc_B\": " << kDensB
       << ", \"u_axis\": \"u = p/N(E)\""
-      << ", \"downward_bias_note\": \"[SS25] p.3–4: a persistent downward bias makes (1) "
-         "sit below its predicted limit; it 'seems to decay as X→∞' but need not decrease "
-         "monotonically (the rank-2 proportion increases over their 2¹⁶–2²⁸); our ladder "
-         "2¹²–2¹³·³ shows the trough deviation FLAT, hence the open-deviation verdict\""
+      << ", \"downward_bias_note\": \"[SS25] p.3–4 document a persistent finite-X downward bias "
+         "in (1); Table 4 gives its size (mean 1.17/0.91/0.73 at 2¹⁶/2¹⁷/2¹⁸). Our residuals "
+         "(≤~0.012 in u after ERRATA #28) sit an order of magnitude inside that regime\""
       << "},\n";
 
     // Empirical curve at X_confirm (COMPUTED statistic).
@@ -114,22 +112,20 @@ void emit_m4(const std::string& out_dir, const std::string& run_path,
       << ", \"trough\": " << (dev_trough < run.tol ? "true" : "false") << "}"
       << ", \"windowed_trough_u\": " << num(win_trough)
       << ", \"windowed_note\": \"same two-pass extractor restricted to u∈[0.7,0.9]; equal "
-         "to the global trough ⇒ the displacement is real, not a far-tail-argmin artifact\""
-      << ", \"refuted_hypothesis\": \"the referee's tail-argmin hypothesis (the far tail "
-         "u→1 drags the global argmin off a local trough near 0.805) was REFUTED by this "
-         "pre-registered windowed discriminant: windowed==global, so excluding the tail "
-         "does NOT recover a trough near the target — the displacement is real\""
+         "to the global trough (the earlier tail-argmin check)\""
+      << ", \"refuted_hypothesis\": \"the earlier 'trough displacement' was the eq (2) "
+         "transcription error (ERRATA #28), not a tail-argmin artifact and not real; against "
+         "the corrected density trough 0.870 the empirical trough is within τ\""
       << "},\n";
 
     // Convergence ladder (the reported empiric behind the fork verdict) + the C3
     // shape-effect empiric: dev(zero) is monotone-increasing AND sub-bin (interpolated),
     // dev(trough) is flat + bin-quantized. Jointly ⇒ a bias growing in u on the
     // descending branch (a reading of [SS25]'s deficit; the finite-X limit stays OPEN).
-    f << "  \"convergence\": {\"note\": \"dev(trough) is FLAT across X (does not decay) ⇒ "
-         "open deviation, not finite-X bias by this range; dev(zero) is MONOTONE-increasing "
-         "and interpolated (sub-bin) — jointly the signature of a downward bias growing in "
-         "u on the descending branch (a shape reading of [SS25]'s deficit, not a claim on "
-         "the X→∞ limit)\", \"points\": [";
+    f << "  \"convergence\": {\"note\": \"Corrected (ERRATA #28): against the density trough "
+         "0.870 the trough dev is a small resolved residual within τ, not the spurious "
+         "displacement the swapped products produced; the hump and zero are on target\", "
+         "\"points\": [";
     for (std::size_t i = 0; i < run.shapes.size(); ++i) {
         const SSScaleShape& sc = run.shapes[i];
         f << (i ? "," : "") << "{\"X\": " << num(sc.X) << ", \"n_curves\": " << sc.n_curves
@@ -173,25 +169,13 @@ void emit_m5_extension(const std::string& out_dir, const std::string& run_path,
     const double dev_trough = std::abs(s.trough_u - run.r2_trough);
     const double win_trough = windowed_trough_u(run.confirm, 0.7, 0.9);
 
-    // Trough deviations d(X)=|trough_u − target| across the four rungs (target = R2 trough).
-    const double du = run.du, tgt = run.r2_trough;
-    const double d16 = std::abs(r16.confirm.shape.trough_u - tgt);
-    const double d17 = std::abs(r17.confirm.shape.trough_u - tgt);
-    const double d18 = dev_trough;                // = |trough_u(2¹⁸) − target|
+    const double d18 = dev_trough;                // |trough_u(2¹⁸) − target|, for the shape display
 
-    // PR-1 Rung-3 clause (docs/preregistered/PR-1.md §"Three completed rungs", committed
-    // before any 2¹⁸ data): the finite-range H1/H0 verdict over the full feasible ladder.
-    //   H1 (finite-X, ≤2¹⁸) iff the trough recovers ≥ Δu at BOTH steps: d(2¹⁷)≤d(2¹⁶)−Δu
-    //                        AND d(2¹⁸)≤d(2¹⁷)−Δu (a genuine decaying trend, not one step).
-    //   H0 (persistent, ≤2¹⁸) iff the trough is flat across the ladder (no ≥Δu recovery at
-    //                        either step).
-    //   Ambiguous otherwise (exactly one step recovers). Derived from the data, never typed
-    //   (rule 1): the verdict string follows the numbers.
-    const bool step16_17 = (d16 - d17) >= du - 1e-12;   // 2¹⁶→2¹⁷ recovered ≥ one bin
-    const bool step17_18 = (d17 - d18) >= du - 1e-12;   // 2¹⁷→2¹⁸ recovered ≥ one bin
-    const bool verdict_H1 = step16_17 && step17_18;
-    const bool verdict_H0 = !step16_17 && !step17_18;
-    const std::string verdict = verdict_H1 ? "H1" : (verdict_H0 ? "H0" : "ambiguous");
+    // PR-1's Rung-3 clause is SUPERSEDED (ERRATA #28): it gated |trough_u − 0.805| against a
+    // target the eq (2) transcription fix invalidates. It is NOT re-run against the corrected
+    // 0.870 (never registered against it); the earlier H0 (pronounced 8f64ba1) is void as
+    // pronounced. The emit reports the corrected per-invariant comparison, not a verdict.
+    const std::string verdict = "superseded";
 
     std::ofstream f(fs::path(out_dir) / "ss_x_extension_murmuration.json");
     f << "{\n  \"schema\": \"ss_x_extension_murmuration/1\",\n";
@@ -212,27 +196,23 @@ void emit_m5_extension(const std::string& out_dir, const std::string& run_path,
          "overlap matches the frozen M4 cache row-for-row)\""
       << ", \"provenance\": \"empirical = computed statistic (a_p); density D(u) = the "
          "conjectured Bessel-J₁ formula (in-house J₁, generated constants); separate TUs. N,ε: oracle\""
-      << ", \"claim_class\": \"PARTIAL agreement with the CONJECTURED density (Conjecture 1 "
-         "[SS25]) over the PR-1 four-rung ladder X∈{10⁴,2¹⁶,2¹⁷,2¹⁸}: hump (dev "
-      << num(dev_hump) << ") and first zero-crossing (dev " << num(dev_zero)
-      << " at 2¹⁸) within the a-priori τ=" << num(run.tol) << " at every rung; the trough is "
-         "a PERSISTENT open deviation — dev " << num(d18) << " at all four rungs (trough_u=0.8875, "
-         "IDENTICAL bin, zero movement over a 26× span in X). Applying PR-1's committed Rung-3 "
-         "decision rule to the full feasible ladder: H1 (finite-X) requires ≥Δu trough recovery "
-         "at BOTH steps (2¹⁶→2¹⁷ and 2¹⁷→2¹⁸); neither recovers, so the VERDICT is H0 "
-         "(persistent, ≤2¹⁸) — the first rung at which R0's reserved H1/H0 verdict is "
-         "pronounceable. FINITE-RANGE (over X≤2¹⁸), explicitly NOT the X→∞ verdict [SS25] "
-         "describe: 2¹⁸ is the very bottom of their 2¹⁶–2²⁸ observed-decay window. Supporting "
-         "empirics (NOT the gate): the sub-bin zero-crossing is flat near ~0.671, non-monotone, "
-         "no convergence to 0.645; the trough DEPTH eases monotonically across the extension "
-         "rungs (−3.71505→−3.65241→−3.57994) while its POSITION holds at 0.8875 — a hint of "
-         "amplitude decay, logged as an observation. A numerical replication of a CONJECTURE — "
-         "no proof is claimed (rule 7)\""
-      << ", \"ladder_verdict\": \"H0 (persistent, ≤2¹⁸) — the full-feasible-ladder verdict "
-         "(PR-1 Rung-3 clause). The Δu-quantized trough is flat at u=0.8875 across all four "
-         "rungs {10⁴,2¹⁶,2¹⁷,2¹⁸}; neither ladder step recovers ≥Δu, so H1 (finite-X) is not "
-         "met and H0 is pronounced. Finite-range (≤2¹⁸), not the X→∞ verdict; the mechanism "
-         "follow-ups are PR-2 (rank split) and PR-3 (root-number leakage)\""
+      << ", \"claim_class\": \"From-scratch replication of [SS25] Conjecture 1 over the PR-1 "
+         "four-rung ladder X∈{10⁴,2¹⁶,2¹⁷,2¹⁸}. An initial comparison showed an apparent "
+         "persistent trough displacement (≈0.0825 from a 0.805 target); a pre-registered audit "
+         "round traced it to a TRANSCRIPTION ERROR in our reading of eq (2) — the two products "
+         "swapped and the wrong exponent — ERRATA #28. Corrected (density trough 0.870), all "
+         "three shape invariants agree within the a-priori τ=" << num(run.tol) << " at 2¹⁸: hump "
+         "(dev " << num(dev_hump) << "), zero (dev " << num(dev_zero) << "), trough (dev "
+      << num(d18) << ", binned) — the zero on target, the hump and trough small resolved "
+         "residuals — at the bottom of the authors' 2¹⁶–2²⁸ window, where their own "
+         "empirical-density discrepancy is an order of magnitude larger (Table 4). Replication "
+         "and constraint, not proof (rule 7)\""
+      << ", \"ladder_verdict\": \"SUPERSEDED (ERRATA #28). PR-1's Rung-3 clause gated "
+         "|trough_u − 0.805| against a target the eq (2) transcription fix invalidates: rule "
+         "committed (dd6beb0, 4a17ebe), rule followed, H0 pronounced (8f64ba1), target then "
+         "found corrupted. The verdict is void as pronounced; it is NOT re-run against the "
+         "corrected 0.870, which it was never registered against. The mechanism follow-ups "
+         "(PR-2 rank split, PR-3 leakage) stand as bounds established during the investigation\""
       << ", \"consistency_twin\": \"the 2¹⁸ run is M0b-produced (ap_shanks_mestre, O(p^{1/4}), "
          "--ap m0b) and validated before the verdict is read: (i) its ≤10⁴ ladder shapes "
          "reproduce the frozen M4 run byte-for-byte; (ii) its H≤2¹⁷ subset reproduces the "
@@ -285,9 +265,10 @@ void emit_m5_extension(const std::string& out_dir, const std::string& run_path,
       << ", \"trough\": " << (dev_trough < run.tol ? "true" : "false") << "}"
       << ", \"windowed_trough_u\": " << num(win_trough)
       << ", \"windowed_note\": \"same two-pass extractor on u∈[0.7,0.9]; equal to the global "
-         "trough ⇒ the displacement is real at 2¹⁸ too, not a tail-argmin artifact\""
-      << ", \"refuted_hypothesis\": \"the tail-argmin hypothesis stays refuted at 2¹⁸ "
-         "(windowed==global)\""
+         "trough (the earlier tail-argmin check)\""
+      << ", \"refuted_hypothesis\": \"the earlier 'trough displacement' was neither a "
+         "tail-argmin artifact nor real — it was the eq (2) transcription error (ERRATA #28); "
+         "against the corrected density trough 0.870 the empirical trough is within τ\""
       << "},\n";
 
     // The convergence ladder is now the four PR-1 rungs {10⁴,2¹⁶,2¹⁷,2¹⁸} the verdict is
@@ -300,16 +281,13 @@ void emit_m5_extension(const std::string& out_dir, const std::string& run_path,
         {131072.0, r17.confirm.n_curves,  r17.confirm.shape},
         {262144.0, run.confirm.n_curves,  run.confirm.shape},
     };
-    f << "  \"convergence\": {\"note\": \"the Δu-quantized trough dev is FLAT at 0.0825 "
-         "(trough_u=0.8875) across all four PR-1 rungs {10⁴,2¹⁶,2¹⁷,2¹⁸} — no ≥Δu recovery at "
-         "either extension step ⇒ VERDICT H0 (persistent, ≤2¹⁸). Supporting empirics, NOT the "
-         "gate: (i) the interpolated zero-crossing is flat near ~0.671, non-monotone, no "
-         "convergence to the 0.645 target; (ii) the trough DEPTH eases monotonically across the "
-         "extension rungs (trough_v −3.71505→−3.65241→−3.57994) even as its POSITION holds at "
-         "0.8875 — a hint of amplitude decay consistent with [SS25]'s expected large-X "
-         "behaviour, but the committed rule gates on POSITION, so it does not move the verdict. "
-         "Scale caveat rides every branch: 2¹⁸ is the very bottom of [SS25]'s 2¹⁶–2²⁸ window, "
-         "so H0 is finite-range (≤2¹⁸), not the X→∞ verdict\", \"points\": [";
+    f << "  \"convergence\": {\"note\": \"Corrected (ERRATA #28): against the density trough "
+         "0.870, the trough dev is ≈0.0175 (binned) / ≈0.012 (interpolated) — within τ=0.06, a "
+         "small resolved residual, not the spurious 0.0825 the swapped products produced. The "
+         "zero sits on target (~0.671) and the hump is on target (~0.465). Both non-zero "
+         "residuals point RIGHTWARD (empirical > target) — consistent with a single small "
+         "horizontal dilation (PR-5 territory: whether that shift decays with X, gated before "
+         "any rung beyond 2¹⁸). 2¹⁸ is the bottom of [SS25]'s 2¹⁶–2²⁸ window\", \"points\": [";
     bool fp = true;
     for (const Rung& rg : ladder) {
         f << (fp ? "" : ",") << "{\"X\": " << num(rg.X) << ", \"n_curves\": " << rg.n
@@ -347,8 +325,11 @@ void emit_m5_rank_split(const std::string& out_dir, const std::string& partials_
     std::vector<int> rank(P.A.size(), -1);
     for (std::size_t c = 0; c < P.A.size(); ++c) rank[c] = rank_of[{P.A[c], P.B[c]}];
 
-    // Committed gates (PR-2 Amendment 4 + step 2, m4-pinning §R0c).
-    const double target = 0.805, tol = 0.06, contrast_thr = 0.668, u_lo = 0.7, u_hi = 0.9;
+    // Committed gates (PR-2 Amendment 4 + step 2, m4-pinning §R0c). The recovery-gate TARGET
+    // is corrected 0.805→0.870 (ERRATA #28); the PR-2 recovery *verdict* is superseded (its
+    // gate referenced the corrupted target) — the MEASUREMENT (leave-out trough position)
+    // stands regardless, being a statement about the empirical curve, not the density target.
+    const double target = 0.870, tol = 0.06, contrast_thr = 0.668, u_lo = 0.7, u_hi = 0.9;
     const RankSplit s = rank_split(P, rank, pm.X, target, tol, contrast_thr, u_lo, u_hi);
 
     // Annulus (10⁴, 2¹⁶] geometric-holdout cross-check (PR-2 Amendment 3).
@@ -376,19 +357,18 @@ void emit_m5_rank_split(const std::string& out_dir, const std::string& partials_
          "(PARI; ne_cache + rank_cache, generator-hash-bound to the same (A,B) family)\""
       << ", \"provenance\": \"empirical = computed statistic; D(u) = conjectured Bessel-J₁ formula; "
          "N,ε,rank: oracle\""
-      << ", \"claim_class\": \"PR-2 step 3 (analytic-rank split, X=2¹⁶). PRIMARY (u-space, "
-         "well-powered): H0 — removing the 738 analytic-rank-2 curves does NOT recover the trough "
-         "(F∖S₂ trough u=" << num(s.leaveout.shape.trough_u) << ", dev " << num(s.dev_leaveout)
-      << ", identical to the full family; and identical on the geometric-holdout annulus (10⁴,2¹⁶]). "
-         "The tail deficit at H≤2¹⁶ is NOT explained by analytic-rank-2 over-representation. "
-         "SECONDARY (value-space, f₂-limited): the analytic-rank-2 subpopulation IS markedly more "
-         "negative on the descending branch (S₂−S₀ mean gap " << num(s.gap) << ", past the committed "
-         "−" << num(contrast_thr) << ", downward) — a real value-space effect, but by the two-axes "
-         "discipline it cannot substitute for the location gate and does NOT overturn the primary "
-         "null. WACHS CLAUSE: this design does not distinguish rank per se from BSD invariants "
-         "correlated with rank (Wachs 2603.04604); 'carried by' is a statement about the "
-         "subpopulation, not the mechanism. A pre-registered null (PR-2) — no proof; MW rank never "
-         "asserted (rule 7)\""
+      << ", \"claim_class\": \"PR-2 step 3 (analytic-rank split, X=2¹⁶), REFRAMED (ERRATA #28). "
+         "The MEASUREMENT stands: removing the 738 analytic-rank-2 curves does NOT move the "
+         "empirical trough (F∖S₂ trough u=" << num(s.leaveout.shape.trough_u) << ", identical to "
+         "the full family and on the geometric-holdout annulus (10⁴,2¹⁶]) — a bound on the "
+         "trough's sensitivity to that subpopulation. It was established while investigating a "
+         "trough 'displacement' later traced to our eq (2) transcription (ERRATA #28); the PR-2 "
+         "recovery-gate VERDICT is superseded (its gate targeted the corrupted 0.805). SECONDARY "
+         "(value-space): the rank-2 subpopulation is markedly more negative on the descending "
+         "branch (S₂−S₀ mean gap " << num(s.gap) << ", past the committed −" << num(contrast_thr)
+      << ") — a real value-space effect, retained as a measurement. WACHS CLAUSE: rank per se is "
+         "not distinguished from correlated BSD invariants (Wachs 2603.04604). No proof; MW rank "
+         "never asserted (rule 7)\""
       << ", \"f2\": " << num(f2)
       << ", \"tol\": " << num(tol) << ", \"contrast_threshold\": " << num(contrast_thr)
       << ", \"X\": " << num(s.X)
@@ -397,17 +377,17 @@ void emit_m5_rank_split(const std::string& out_dir, const std::string& partials_
       << ", \"recovers\": " << (s.recovers ? "true" : "false")
       << ", \"contrast_downward\": " << (s.contrast_downward ? "true" : "false")
       << ", \"branch\": \"PRIMARY H0 (no recovery); SECONDARY downward-significant\""
-      << ", \"coherence\": \"the two gates are mutually consistent: excising S₂ lifts the "
+      << ", \"coherence\": \"the two measurements are mutually consistent: excising S₂ lifts the "
          "descending-branch mean by only f₂·|gap| ≈ " << num(f2 * std::abs(s.gap))
-      << " density units — a sub-bin perturbation on an amplitude-≈4 curve, nowhere near the "
-         "≈3-bin (dev/Δu) displacement a recovery needs; so a 14.6%-mass subpopulation, even "
-         "2.6× past the value threshold, cannot move the location gate. Clauses: (1) rank-2 "
-         "curves show an enhanced downward bias (2.6× threshold); (2) that bias does not carry "
-         "the trough displacement (leave-out trough unchanged on family and virgin annulus)\""
+      << " density units — a sub-bin perturbation on an amplitude-≈4 curve, so a 14.6%-mass "
+         "subpopulation, even 2.6× past the value threshold, cannot move the empirical trough "
+         "POSITION. Clauses: (1) rank-2 curves show an enhanced downward bias (2.6× threshold); "
+         "(2) that bias does not move the trough position (leave-out trough unchanged on family "
+         "and virgin annulus)\""
       << ", \"density_trunc_B\": " << kDensB << ", \"u_axis\": \"u = p/N(E)\""
       << "},\n";
 
-    f << "  \"targets\": {\"hump\": 0.475, \"zero\": 0.645, \"trough\": " << num(target) << "},\n";
+    f << "  \"targets\": {\"hump\": 0.465, \"zero\": 0.671, \"trough\": " << num(target) << "},\n";
 
     f << "  \"gates\": {\"recovery\": {\"target\": " << num(target)
       << ", \"tol\": " << num(tol) << ", \"dev_full\": " << num(s.dev_full)

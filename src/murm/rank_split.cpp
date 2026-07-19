@@ -57,9 +57,12 @@ RankSplit rank_split(const SSPartials& P, const std::vector<int>& rank, double X
     r.gap = r.mean_s2 - r.mean_s0;
     r.contrast_downward = (r.gap < -contrast_threshold);
 
+    // MEASUREMENT, not a verdict: the PR-2 recovery gate is superseded (it targeted the
+    // corrupted 0.805; ERRATA #28). The leave-out trough POSITION relative to the full family
+    // is a statement about the empirical curve and stands regardless of the density target.
     r.primary_branch = r.recovers
-        ? "H1 (u-space): removing analytic-rank-2 RECOVERS the trough (≥1 bin toward 0.805, within τ)"
-        : "H0 (u-space): removing analytic-rank-2 does NOT recover the trough";
+        ? "leave-out trough moved ≥1 bin toward the density trough (measurement; PR-2 recovery gate superseded, ERRATA #28)"
+        : "leave-out trough UNCHANGED from the full family (measurement; PR-2 recovery gate superseded, ERRATA #28)";
     r.secondary_branch = r.contrast_downward
         ? "contrast DOWNWARD-significant (S2 mean < S0 mean by > threshold)"
         : "inconclusive (|gap| below the f2-limited threshold — pre-declared, not a null)";
