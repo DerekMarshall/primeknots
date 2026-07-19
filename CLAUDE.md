@@ -6,6 +6,8 @@ Arithmetic topology, executable. We verify named theorems of number theory — q
 
 The mathematical spec lives in `docs/RESEARCH.md`. The engineering spec lives in `docs/ARCHITECTURE.md`. Read the relevant stage of RESEARCH.md before writing stage code. RESEARCH.md is a paraphrase; the papers it cites are normative.
 
+A second track, the **M-ladder** (spec `docs/RESEARCH-M.md`, engineering `docs/ARCHITECTURE-M.md`), replicates elliptic-curve *murmurations* — the oscillating `a_p` / root-number correlation discovered in 2022 — from scratch under the same discipline: replication stages M0 (`a_p` machinery + provenance), M1 (the discovery), M2 (Dirichlet characters), M3 (Zubrilina's density), M4 (Sawin–Sutherland height ordering), and research-mode M5, whose pre-registered result is written up as the data note in `docs/notes/data-note/`. Two modes — replication (M0–M4) and research (M5) — are never blurred (RESEARCH-M §0 rule 5); no proofs are claimed anywhere (rule 7).
+
 ## Non-negotiables
 
 1. **Never fit conventions to expected answers.** If `[13, 61, 937]` comes out `+1`, the bug is in the code or in our reading of the normalization — go to Stevenhagen [S22] / Corsman [C07] and fix the reading. Flipping a sign until the anchor value appears is falsification of the experiment and defeats the entire purpose of the repo. This is the prime directive; it applies with maximum force to Stage 2 normalization and Stage 4 cohomological pinning.
@@ -55,10 +57,11 @@ rule 6 (provenance) is always cited qualified.
 cmake -B build -DCMAKE_BUILD_TYPE=Release   # add -DWITH_GMP=ON when a stage needs it
 cmake --build build -j
 ctest --test-dir build --output-on-failure   # all verification suites
-ctest --test-dir build -L stage1             # one stage (labels: stage0..stage6)
+ctest --test-dir build -L stage1             # one stage (labels: stage0..stage6, m0..m5)
 ctest --test-dir build -L oracle             # oracle-refereed tests only
 ./build/bin/at emit --stage 1 --out viz/data/   # emit JSON for the viewers
 python3 -m http.server -d viz                    # view at localhost:8000
+bash docs/notes/data-note/render.sh              # render the M5 data note (HTML + PDF)
 ```
 
 C++20. Core is dependency-free (u128 built-ins). GMP only behind `src/core/bigint.h`, only where RESEARCH.md says values exceed 128 bits (large-discriminant Stage 3, parts of Stage 4). No other third-party libraries in `src/`. Test framework: doctest (vendored, header-only). Viewers: static HTML + D3 from CDN, no build step, consume JSON only.
@@ -66,7 +69,7 @@ C++20. Core is dependency-free (u128 built-ins). GMP only behind `src/core/bigin
 ## Repo layout
 
 ```
-docs/           RESEARCH.md, ARCHITECTURE.md, notes/ (pinning logs, discrepancies), schemas/ (JSON)
+docs/           RESEARCH.md, ARCHITECTURE.md (+ RESEARCH-M.md/ARCHITECTURE-M.md, the M-ladder), notes/ (pinning logs, discrepancies; data-note/), explainers/, schemas/ (JSON)
 src/core/       u128 arithmetic, modpow, Miller–Rabin, gcd/CRT, bigint facade
 src/symbols/    Legendre (Euler + reciprocity twins), Jacobi, Tonelli–Shanks, n-th power residue
 src/linking/    F2Matrix (bit-packed), LinkingMatrix, rank, stats
@@ -75,8 +78,11 @@ src/classgroup/ quadratic forms, reduction, composition, group structure, Rédei
 src/cs/         S-unit character enumeration, CS phase sum (LHS), Gauss-sum closed form (RHS)
 src/zeta/       Riemann–Siegel, explicit-formula reconstruction, suspension-flow toy zeta
 src/dw/         S3 homomorphism counting (stretch)
-src/emit/       JSON writers (schemas in docs/schemas/)
-verify/         per-stage verification suites — the point of the repo
+src/ell/        M-ladder — elliptic curves: a_p (char-sum referee, O(p) fast, Shanks–Mestre O(p^{1/4})), curve, ecdata, a_p cache
+src/mform/      M-ladder — modular-form side: Hurwitz class numbers, dimension formulas, trace formula
+src/murm/       M-ladder — murmurations: height family, murmuration statistic, Dirichlet/Zubrilina/Sawin–Sutherland densities, rank split, N/ε + a_p caches, ss-run I/O
+src/emit/       JSON writers incl. murmuration/Dirichlet/Zubrilina/Sawin–Sutherland (schemas in docs/schemas/)
+verify/         per-stage verification suites (stage0..6, m0..m5) — the point of the repo
 oracle/         PARI/GP scripts, LMFDB fetch/cache scripts, adapters
 viz/            index.html + per-stage viewers, viz/data/ (emitted JSON, gitignored)
 data/           Odlyzko zero tables, LMFDB extracts (cached, checksummed)
@@ -91,6 +97,7 @@ Every suite in `verify/` is built from these patterns; name tests accordingly:
 - `anchor_*` — a specific published value (e.g. `anchor_redei_13_61_937_is_minus_1`, `anchor_zeros_match_odlyzko`).
 - `invariance_*` — result independent of arbitrary choices (e.g. `invariance_redei_solution_choice`, `invariance_sqrt_branch`).
 - `oracle_*` — PARI/LMFDB referee checks.
+- `prereg_*` — a pre-registered M5 prediction whose design (tolerance / null / threshold) was committed *before* the confirming run (RESEARCH-M §7).
 
 A stage's definition of done: all five categories present where applicable, green, plus JSON emitted and rendered by its viewer. Property-test ranges and seeds are fixed in the suite (reproducible), with an opt-in `--extended` mode for larger sweeps.
 
