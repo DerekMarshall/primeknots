@@ -95,7 +95,7 @@ surprise interpretable; unlogged exploration is the quiet form of the pattern-fi
 ## 6. The errata ledger — mistakes are recorded, not erased
 
 When a rule is broken or a subtle error is caught, it is written into a numbered **errata
-ledger** (`docs/ERRATA.md`), which currently holds **29** entries. <!-- claim:E3-14 --> Two are
+ledger** (`docs/ERRATA.md`), which currently holds **30** entries. <!-- claim:E3-14 --> Two are
 worth naming as illustrations. The *constants incident* (#25) is the reason for a standing rule
 that **no floating-point mathematical constant is ever typed from memory** — a typed constant is
 invisible to twins, because both twins share it, so it must instead be transcribed from a cited

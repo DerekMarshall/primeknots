@@ -99,7 +99,7 @@ arXiv:2504.12295.
 | E3-11 | PR-1 committed the finite-X-vs-persistent decision rule + fork before reading the larger scale; applied verbatim it returned "persists" — but against a density target later found corrupted (ERRATA #28), so the verdict is SUPERSEDED/void as pronounced, recorded not re-run; pre-registration + errata working together | docs/preregistered/PR-1.md; ERRATA #28 |
 | E3-12 | PR-2 committed the exact contrast threshold before the split data was computed | docs/preregistered/PR-2.md §"Step 2" |
 | E3-13 | Every exploratory statistic looked at is logged in a looks ledger | docs/preregistered/LOOKS.md; RESEARCH-M §7 |
-| E3-14 | The errata ledger currently holds 29 entries | docs/ERRATA.md (29 rows) |
+| E3-14 | The errata ledger currently holds 30 entries | docs/ERRATA.md (30 rows) |
 | E3-15 | Rule 8 (no constant typed from memory): a typed constant is invisible to twins (#25) | CLAUDE.md rule 8; docs/ERRATA.md #25 |
 | E3-16 | #28 is the reason for the transcription-terminates-at-the-source rule (swapped-product eq (2) misread agreed on by three internally-consistent implementations, caught by the authors' figure); it re-inverted #26 — the "deviation" that #26 said overturned the peek's agreement was itself the artifact, so #26's breach stands but its punchline does not | docs/ERRATA.md #28, #26; docs/notes/referee-round-2026-07.md |
 | E3-17 | Committed viz/data JSON is byte-identical to what the code emits at HEAD | verify/freshness_check.py |

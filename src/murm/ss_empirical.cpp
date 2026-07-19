@@ -66,8 +66,14 @@ SSPartials ss_empirical_partials(const std::vector<NeRow>& rows, double du, int 
             for (std::size_t c = 0; c < C; ++c) {
                 if (P.N[c] < p) continue;             // u = p/N ≤ 1 only
                 if (disc[c] % p == 0) continue;       // bad reduction (p | N for p>3 here)
-                const double u = static_cast<double>(p) / static_cast<double>(P.N[c]);
-                int b = static_cast<int>(u / du);
+                // eq (1)'s interval is HALF-OPEN (C₁N, C₂N] — left-open, right-closed ([SS25]
+                // p.2). A prime on a bin's RIGHT edge (p = C₂N, i.e. u = p/N a multiple of Δu)
+                // belongs to that bin, not the next. Integer bin index (exact — no FP boundary
+                // fragility): the right-closed bin b has b·N < NB·p ≤ (b+1)·N. Differs from a
+                // floor(u/Δu) only for p = C₂N, which for good primes p∤N needs N | NB (here
+                // N=40): a documented handful of conductor-40 curves (see eq1-interval note).
+                const long long np = static_cast<long long>(NB) * p;
+                int b = static_cast<int>((np + P.N[c] - 1) / P.N[c]) - 1;
                 if (b < 0 || b >= NB) continue;
                 const at::ell::Curve E{0, 0, 0, P.A[c], P.B[c]};
                 const int a = at::ell::ap_fast(E, qr);
