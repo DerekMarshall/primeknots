@@ -184,4 +184,89 @@ run; the results section below is a later commit. The git history is the audit t
 
 ## Block B — results
 
-*(pending; appended after the runs — a separate commit from the specs above)*
+All numbers **as measured**. No verdict — interpretation is deferred to Block C. Tooling:
+`at ss-density-scan` (B1, committed), `docs/notes/referee_b2b3.py` (B2/B3, committed).
+
+### B1 — density truncation study (`ss-density-scan --du 0.005`)
+
+| B (q,m ≤ B) | hump_u | zero_u | **trough_u** | trough_v |
+|---|---|---|---|---|
+| 500  | 0.4750 | 0.644767 | **0.805000** | −3.37441 |
+| 750  | 0.4750 | 0.644696 | **0.805000** | −3.35437 |
+| 1000 | 0.4750 | 0.644705 | **0.805000** | −3.36902 |
+| 1250 | 0.4750 | 0.644721 | **0.805000** | −3.36349 |
+| 1500 | 0.4750 | 0.644915 | **0.805000** | −3.40450 |
+| 1750 | 0.4750 | 0.644927 | **0.805000** | −3.40007 |
+| 2000 | 0.4750 | 0.644922 | **0.805000** | −3.40028 |
+| 3000 | 0.4750 | 0.644918 | **0.805000** | −3.40574 |
+| 5000 | 0.4750 | 0.644901 | **0.805000** | −3.40350 |
+| 8000 | 0.4750 | 0.644949 | **0.805000** | −3.38777 |
+| 12000| 0.4750 | 0.644953 | **0.805000** | −3.38859 |
+
+**trough_u = 0.805000 exactly at all 11 cutoffs** — a 24× range (2⁹ → 2¹³·⁵), zero movement. hump_u
+is constant (0.4750); zero_u is stable to ±0.0002 (0.6447–0.6450); trough_v (depth) wobbles within
+[−3.406, −3.354] with no trend. **This refutes the A.4 truncation hypothesis:** the conjectured
+density D(u) troughs at 0.805, and that position is truncation-stable — it does not drift toward
+~0.88 as B grows. (The extension was capped at B = 12000 ≈ 2¹³·⁵, which took 6.6 s… 6.6 min; the
+naive Σ_{q,m≤B} is ~B² per u-point, so SS25's B = 10⁵ / their 2¹⁵ resolution threshold is beyond
+the naive method. The 24× range with zero position movement makes further B overwhelmingly likely
+to hold 0.805 — a limitation of reach, not an open question of the trend.)
+
+**Consequence:** the empirical trough (~0.88, B2/B3) versus the density trough (0.805, B1) is a
+**real displacement, not a truncation artifact.** ~0.077 in u, ≈ 3.3 bins.
+
+### B2 — interpolated trough + grid-offset
+
+Reproduce gate (per rung, from committed partials): `denom` = n_curves·du **exactly** (126.049989
+vs 126.05 at 2¹⁶, rel-diff 8.8e-8; likewise 2¹⁷/2¹⁸), confirming the re-aggregation formula. The
+residual vs the committed curve is ~5e-6 — **the committed run file's 6-significant-figure print
+floor**, not a reconstruction error. *(Disclosure: the pre-registered gate said "≤ 1e-9"; that is
+infeasible against a 6-sig-fig text file regardless of correctness — a mis-set tolerance. The
+substantive gate — `denom` = n_curves·du exactly, residual at the file's print precision — passes.
+The gate constant was corrected in the committed script with this note; no scientific threshold was
+moved.)*
+
+| rung | argmin bin u (v) | **parabolic-vertex u (v)** |
+|---|---|---|
+| 10⁴  | 0.8875 (−3.47052) | **0.88952** (−3.47645) |
+| 2¹⁶  | 0.8875 (−3.71505) | **0.88227** (−3.76614) |
+| 2¹⁷  | 0.8875 (−3.65241) | **0.88176** (−3.70297) |
+| 2¹⁸  | 0.8875 (−3.57994) | **0.88216** (−3.61546) |
+
+Sub-bin empirical trough ≈ **0.882–0.890**, all four rungs. **Δu/2 grid-offset:** the committed
+partials store per-bin sums (`num[c][b]`), not per-prime u, so a true half-bin re-bin is not
+possible from committed data (pre-registered fallback taken). The displacement from 0.805 is
+**3.3 bins ≫ 0.5 bin**, so 0.8875 is not a half-bin grid-quantization artifact. (10⁴ has no
+committed partials: parabolic only, no bootstrap.)
+
+### B3 — bootstrap over curves (N_boot = 2000, seed = 20260718)
+
+| rung | trough_u argmin: mean [95% CI] | trough_u parabolic: mean [95% CI] | trough_v depth: mean [95% CI] |
+|---|---|---|---|
+| 2¹⁶ | 0.89100 [0.88750, **0.98750**] | 0.88617 [0.87530, **0.98750**] | −3.72430 [−4.17405, −3.25738] |
+| 2¹⁷ | 0.88929 [0.88750, 0.88750] | 0.88391 [0.87521, 0.88646] | −3.65963 [−4.03699, −3.30830] |
+| 2¹⁸ | 0.88730 [0.88750, 0.88750] | 0.88208 [0.87611, 0.88567] | −3.57758 [−3.88600, −3.28405] |
+
+Two findings, reported flat:
+1. **Trough position is bootstrap-stable at 2¹⁷ and 2¹⁸** (argmin CI is a single bin, 0.8875;
+   parabolic CI ≈ [0.876, 0.886]) — the ~0.88 trough is not a sampling accident there. **At 2¹⁶ it
+   is looser:** the argmin's upper CI reaches 0.98750 — under resampling the smaller family (5042
+   curves) occasionally puts its global minimum in the far-right tail rather than at ~0.88.
+2. **(Adverse to the ladder.) The trough-*depth* CIs overlap heavily** across the three rungs
+   ([−4.17, −3.26] / [−4.04, −3.31] / [−3.89, −3.28]). The depth-easing means the note reports as a
+   supporting observation (−3.72 → −3.66 → −3.58) sit well inside this bootstrap noise, so that
+   easing is **not a curve-bootstrap-resolved monotone trend**. Recorded as measured.
+
+### B — summary of the measured picture (no verdict)
+
+- Density trough (D(u), B1): **0.805, truncation-stable** over 2⁹–2¹³·⁵ → the 0.805 target is real,
+  not under-truncated (A.4 refuted).
+- Empirical trough (B2 parabolic; B3 CI): **~0.882–0.889, bootstrap-stable at 2¹⁷/2¹⁸**, looser at
+  2¹⁶ → the ~0.88 position is real, ≈ 3.3 bins from 0.805, not a grid artifact.
+- Trough **depth** easing: **within bootstrap noise** (B3) — not a resolved trend.
+- (From A) our rungs sit where SS25's own mean |empirical − density| is 0.73–1.17, converging only
+  by 2²⁸.
+
+Interpretation (is the real, bootstrap-stable ~0.077 displacement a finite-X effect consistent with
+SS25's documented slow convergence, or something else, and how the depth-easing should be reworded
+given B3) is **Block C**.
