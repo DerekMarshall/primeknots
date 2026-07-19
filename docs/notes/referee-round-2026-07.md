@@ -182,6 +182,13 @@ run; the results section below is a later commit. The git history is the audit t
 
 ---
 
+## Block B — spec amendment (referee C prerequisite, 2026-07-18)
+
+`referee_b2b3.py` extended from the trough alone to **all three invariants** (hump, first
++→− zero after the hump, trough) — parabolic interpolation for the two extrema, linear for
+the zero — with the SAME seed discipline (N_boot=2000, seed=20260718), so the §3 table is
+uniformly treated. Amended before the run; results feed the corrected §3 comparison.
+
 ## Block B — results
 
 All numbers **as measured**. No verdict — interpretation is deferred to Block C. Tooling:
