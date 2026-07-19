@@ -40,6 +40,7 @@
 #include "murm/ne_cache.h"
 #include "murm/rank_cache.h"
 #include "murm/rank_split.h"
+#include "murm/ss_density.h"
 #include "murm/ss_empirical.h"
 #include "oracle/pari.h"
 
@@ -66,13 +67,25 @@ std::string resolve_generated_by() {
 
 void print_usage(std::FILE* out) {
     std::fprintf(out,
-        "at — arithmetic-topology toolkit\n"
+        "at — arithmetic-topology + murmurations toolkit\n"
         "usage:\n"
-        "  at emit --stage <N> [--out <dir>] [--bound <B>] [--graph-nodes <M>]\n"
-        "      --stage        stage to emit (1 supported)\n"
-        "      --out          output directory (default viz/data)\n"
-        "      --bound        prime bound (default 1000)\n"
-        "      --graph-nodes  force-graph vertex cap (default 40)\n"
+        "  at emit --stage <S> [--out <dir>] [--bound <B>] [--graph-nodes <M>]\n"
+        "      emit viewer JSON.  <S> in {1,2,3,4,5,6, m1,m2,m3,m4,m5,m5split};\n"
+        "      --out default viz/data; --bound default 1000 (2000000 for 3/4, 500 for 5).\n"
+        "  at ss-run --X <H> --cache <ne_cache> [--ap fast|m0b] [--out <run>] [--du <d>]\n"
+        "      compute the [SS25] height murmuration statistic (1) from a committed cache.\n"
+        "  at ss-density-scan [--du <d>] [--bs <B1,B2,...>]\n"
+        "      conjectured density D(u) shape (hump/zero/trough) vs truncation cutoff B.\n"
+        "  at ss-leakage --partials <p> --ne <n> [--check-run <r>] [--ladder <csv>]\n"
+        "      root-number-imbalance leakage diagnostic (read-only; recomputes no a_p).\n"
+        "  at ap-sample --X <H> --cache <ne_cache> [--out <txt>]\n"
+        "      tail-weighted (curve,prime) a_p sample for the cross-platform SHA check.\n"
+        "  at ap-cache --X <H> --cache <ne_cache> --out <bin> --checkpoint <ckpt> [--threads <n>]\n"
+        "      HEAVY reference a_p cache generator (compute-box only).  ALWAYS pass\n"
+        "      --X/--cache/--out/--checkpoint explicitly: with missing args it does NOT\n"
+        "      print help — it RUNS at X=65536, --checkpoint defaults to <out>.ckpt.\n"
+        "  at ne-cache | rank-cache | rank-split | ecdata-extract\n"
+        "      M-ladder input/aggregation helpers (see docs/RESEARCH-M.md, ARCHITECTURE-M.md).\n"
         "  at --help\n");
 }
 
@@ -1202,6 +1215,36 @@ int main(int argc, char** argv) {
                 const double L = r.delta * r.U[b], dep = r.S[b] - Dc[b], f = dep != 0 ? L / dep : 0.0;
                 std::printf("%.4f  %.5f %.5f %.5f  %.6f %.6f  %.4f\n", umid[b], r.S[b], r.U[b], Dc[b], dep, L, f);
             }
+        }
+        return 0;
+    }
+
+    if (std::strcmp(argv[1], "ss-density-scan") == 0) {
+        // Referee round B1 (docs/notes/referee-round-2026-07.md) — density truncation study.
+        // READ-ONLY, consumes no data files: evaluates the CONJECTURED density D(u) [SS25 (2)]
+        // via the emitter's own formula-side shape extractor ss_shape(B, du) at a grid of
+        // truncation cutoffs B (q, m <= B squarefree), reporting the shape (hump / first zero /
+        // global trough) as a function of B. Fits nothing; prints a table. B=2000 reproduces
+        // the emitted overlay's trough (emit_sawin_sutherland.cpp / ss-leakage kDensB).
+        std::string bs = opt(argc, argv, "--bs", "500,750,1000,1250,1500,1750,2000");
+        double du = std::strtod(opt(argc, argv, "--du", "0.005"), nullptr);
+        std::vector<long long> Bs;
+        {
+            std::stringstream ss(bs);
+            std::string tok;
+            while (std::getline(ss, tok, ','))
+                if (!tok.empty()) Bs.push_back(std::strtoll(tok.c_str(), nullptr, 10));
+        }
+        std::printf("# ss-density-scan: D(u) shape vs truncation B (q,m<=B squarefree); du=%.6g\n", du);
+        std::printf("# B  hump_u hump_v  zero_u  trough_u trough_v\n");
+        for (long long B : Bs) {
+            const auto t0 = std::chrono::steady_clock::now();
+            at::murm::SSShape s = at::murm::ss_shape(B, du);
+            const double secs = std::chrono::duration<double>(
+                std::chrono::steady_clock::now() - t0).count();
+            std::printf("%lld  %.4f %.5f  %.6f  %.6f %.5f   # %.1fs\n",
+                        B, s.hump_u, s.hump_v, s.zero_u, s.trough_u, s.trough_v, secs);
+            std::fflush(stdout);
         }
         return 0;
     }
