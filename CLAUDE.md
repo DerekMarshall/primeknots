@@ -104,6 +104,7 @@ A stage's definition of done: all five categories present where applicable, gree
 ## Working style
 
 - Small commits, one mathematical object per commit where possible; commit messages name the object or theorem, not the file.
+- **After any change to `src/`, re-run the affected verification suites (the touched stage's ctest) *before* reporting the commit done** — never push a src edit on the strength of a spot-check. A byte-copy or twin can ride along stale otherwise (ERRATA #31: the eq (1) binning fix shipped without re-running m5, and its `ss_empirical_m0b.cpp` byte-copy stayed on the old convention until the pre-merge clean-clone gate caught the drift).
 - Performance matters after correctness: get the twin implementations agreeing, then optimize one of them (keep the naive twin as the referee — never optimize both).
 - When mathematical uncertainty arises mid-task and can't be resolved from the cited sources in-repo, write the question into `docs/notes/open-questions.md` with full context and stop that thread rather than guessing.
 - Visualizations follow the JSON contract in ARCHITECTURE.md; never inline data into viewer HTML.

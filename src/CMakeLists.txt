@@ -87,7 +87,14 @@ set_source_files_properties(murm/rank_cache.cpp PROPERTIES
 # M0B_PROVIDER_HASH (wiring R1): sha256 of the M0b a_p-provider TU, stamped on
 # --ap m0b runs so an M0b-produced file names its a_p algorithm AND pins the exact
 # provider source (copy-drift is caught by the R2 twin; provenance by this hash).
-file(SHA256 ${CMAKE_CURRENT_SOURCE_DIR}/murm/ss_empirical.cpp AT_SS_GENERATOR_HASH)
+# SS_GENERATOR_HASH covers BOTH the canonical statistic AND its m0b byte-copy (ERRATA #31):
+# the eq-(1) fix (ERRATA #30) edited the canonical loop only, the copy was missed, and the old
+# single-file hash could not see that — a canonical-only edit left the copy silently stale. Hashing
+# the concatenation means any edit to EITHER loop invalidates every committed run, forcing a regen
+# (and thereby the provider-drift guard twin_ss_provider_fast_vs_m0b) rather than letting drift land.
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/murm/ss_empirical.cpp _AT_SS_CANON)
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/murm/ss_empirical_m0b.cpp _AT_SS_M0B)
+string(SHA256 AT_SS_GENERATOR_HASH "${_AT_SS_CANON}${_AT_SS_M0B}")
 file(SHA256 ${CMAKE_CURRENT_SOURCE_DIR}/murm/ss_empirical_m0b.cpp AT_M0B_PROVIDER_HASH)
 set_source_files_properties(murm/ss_run_io.cpp PROPERTIES
   COMPILE_DEFINITIONS "SS_GENERATOR_HASH=\"${AT_SS_GENERATOR_HASH}\";M0B_PROVIDER_HASH=\"${AT_M0B_PROVIDER_HASH}\"")

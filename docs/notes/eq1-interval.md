@@ -25,15 +25,21 @@ region is empty for these curves, since p ≤ 40 ⇒ u ≤ 1 and the trough bin 
 only p = 37 lands high, in one curve's worth). The convention shifts each such prime's contribution
 by exactly one bin.
 
-## Impact — negligible; committed data unchanged; regen deferred
+## Impact — shape unchanged; a code/data coherence defect corrected pre-release
 
 - **Shape / verdict / the note's reported numbers: unaffected.** 2–3 curves out of 5042–15936, a
   one-bin shift of ~9 low-u primes each, cannot move the argmin/argmax bins (hump 0.465, zero 0.671,
   trough 0.870 all hold) — the affected primes are low-u, the trough is high-u.
-- **No green-gate breaks.** The committed run/partials files are frozen INPUTS; no ctest or the
-  freshness check re-runs the statistic's binning (they read the committed curves). The fix changes
-  only *future* `ss-run` output.
-- **Regen deferred (flagged).** Regenerating the runs to match the corrected convention is a
-  compute-box `ss-run` (a_p over the family) — heavy, for a negligible low-u change. The committed
-  runs remain old-convention; this note is the provenance record. Derek's call whether to spend the
-  box time; the note's scientific numbers do not depend on it.
+- **CORRECTION (referee C, clean-clone gate — ERRATA #31).** An earlier version of this note claimed
+  "no ctest re-runs the statistic's binning." That was **false**: `twin_ss_provider_fast_vs_m0b`
+  (test 123) re-bins live from the committed `ne_cache` under both a_p providers, and the ap-cache
+  reproduce test re-bins too. The fix was applied to `ss_empirical.cpp` only and its byte-copy
+  `ss_empirical_m0b.cpp` was missed, so the two providers drifted at the conductor-40 edge primes and
+  test 123 went red on the pre-merge clean-clone gate. Both loops (and the reproduce test) are now
+  unified on the right-closed bin, and `SS_GENERATOR_HASH` is widened to cover the copy (#31).
+- **Regen reversed from deferred → executed this release.** Leaving the code corrected but the runs
+  stale meant HEAD could no longer regenerate the committed runs byte-identically and the stamped
+  `SS_GENERATOR_HASH` no longer matched — a §5-level defect, not a negligible deferral. The
+  runs/partials are regenerated on the compute box under the corrected binning in this release
+  series; the flat prediction (only conductor-40 pairs move; every shape invariant and §3/§4 number
+  unchanged) is confirmed with that regen.

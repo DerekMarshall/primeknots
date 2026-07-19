@@ -76,8 +76,12 @@ SSPartials ss_empirical_partials_m0b(const std::vector<NeRow>& rows, double du, 
             for (std::size_t c = 0; c < C; ++c) {
                 if (P.N[c] < p) continue;             // u = p/N ≤ 1 only
                 if (disc[c] % p == 0) continue;       // bad reduction (p | N for p>3 here)
-                const double u = static_cast<double>(p) / static_cast<double>(P.N[c]);
-                int b = static_cast<int>(u / du);
+                // eq (1)'s interval is HALF-OPEN (C₁N, C₂N] — mirror ss_empirical.cpp's right-closed
+                // integer bin EXACTLY (this loop is its byte-copy twin; ERRATA #30/#31). The
+                // provider-drift guard twin_ss_provider_fast_vs_m0b enforces the match. Right-closed
+                // bin b: b·N < NB·p ≤ (b+1)·N.
+                const long long np = static_cast<long long>(NB) * p;
+                int b = static_cast<int>((np + P.N[c] - 1) / P.N[c]) - 1;
                 if (b < 0 || b >= NB) continue;
                 const at::ell::Curve E{0, 0, 0, P.A[c], P.B[c]};
                 const int a = at::ell::ap_shanks_mestre(E, static_cast<at::core::u64>(p));

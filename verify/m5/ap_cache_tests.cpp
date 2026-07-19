@@ -156,8 +156,10 @@ TEST_CASE("prereg_ap_cache_reproduces_shape") {
             if (d % p == 0) continue;                    // bad prime — same skip as ss_empirical (R3)
             if (off >= cv.size()) { layout_ok = false; break; }
             const int a = static_cast<int>(cv[off++]);
-            const double u = static_cast<double>(p) / static_cast<double>(rows[c].N);
-            const int b = static_cast<int>(u / du);
+            // Right-closed half-open bin, matching ss_empirical.cpp (ERRATA #30): b·N < NB·p ≤ (b+1)·N.
+            // The committed run this reproduces is regenerated under the same convention.
+            const long long np = static_cast<long long>(NB) * p;
+            const int b = static_cast<int>((np + rows[c].N - 1) / rows[c].N) - 1;
             if (b >= 0 && b < NB) {
                 const double u_mid = (b + 0.5) * du;
                 P.num[c][b] += (u_mid * lnN_over_N) * static_cast<double>(rows[c].eps) * static_cast<double>(a);
