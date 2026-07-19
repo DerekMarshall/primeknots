@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it as below."
+title: "A pre-registered replication of the Sawin–Sutherland height-ordered murmuration"
+type: software
+authors:
+  - family-names: Marshall
+    given-names: Derek
+    orcid: "https://orcid.org/0009-0001-8101-3908"
+version: 1.0.0
+license: MIT
+repository-code: "https://github.com/DerekMarshall/primeknots"
+url: "https://derekmarshall.github.io/primeknots/"
+abstract: >-
+  We re-derive the Sawin–Sutherland height-ordered elliptic-curve murmuration from scratch and
+  probe it against their conjectured Bessel-J1 density over a four-rung height ladder,
+  X = 10^4 (about 2^13.3), 2^16, 2^17, 2^18. An initial comparison showed an apparent persistent
+  trough displacement of about 0.0825 against a density target of 0.805. A pre-registered audit
+  round traced that displacement to a transcription error in our reading of the density's defining
+  equation: the two local-factor products were transposed and one exponent mis-set, which had
+  mislocated the conjectured trough. We log the correction as erratum #28. Corrected, the three
+  shape invariants fixed in advance (the positive hump, the first post-hump zero, and the trough)
+  agree with the density within the a-priori tolerance tau = 0.06, the largest residual about 0.012
+  at the trough. Two pre-registered follow-ups bound candidate mechanisms: excising the
+  analytic-rank-2 subpopulation does not move the trough, and root-number-imbalance leakage is at
+  most 0.5% at the reliable rungs. Every result is numerical over a stated finite range, twinned or
+  oracle-refereed, and reproducible across compilers and platforms; we claim replication and
+  constraint, not proof.
+keywords:
+  - murmurations
+  - elliptic curves
+  - replication
+  - pre-registration
+  - computational number theory
+preferred-citation:
+  type: software
+  title: "A pre-registered replication of the Sawin–Sutherland height-ordered murmuration"
+  authors:
+    - family-names: Marshall
+      given-names: Derek
+      orcid: "https://orcid.org/0009-0001-8101-3908"
+  year: 2026
+  version: 1.0.0
+  license: MIT
+  url: "https://derekmarshall.github.io/primeknots/"
+  repository-code: "https://github.com/DerekMarshall/primeknots"
