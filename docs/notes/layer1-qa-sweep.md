@@ -138,3 +138,36 @@ PASS: items 3, 6, 7, 9, LICENSE (8). PASS-with-fix: 1 (build; CI fixed `5b6e148`
 5 (placeholders + stamps). FINDING-flagged, not auto-fixed: item 2 (absolute paths in pinned/data
 headers). Unverifiable-with-reason: CITATION.cff (Phase 3, no `cffconvert`); the heavy m0b gate
 (48-core-box, per m0b-pinning §7).
+
+## Release-gate closing entry (Phase 3, 2026-07-19 — Checkpoint C prep)
+
+Full battery re-run from a fresh clean clone at branch HEAD, after the #28 reframe, the style
+pass, and the eq (1) regen. **Final branch HEAD: the commit carrying this entry** (parent
+`1785ee9`, the box-regenerated runs).
+
+- **Clean clone at HEAD → build (Release, `-DWITH_GMP=ON`):** PASS.
+- **`ctest -L m5 -LE heavy`:** 100% (14). `prereg_ss_x_extension` / `_x17_confirmation` /
+  `_rank_split` and the provider-drift guard `twin_ss_provider_fast_vs_m0b` (the #31 fix) all
+  GREEN; `prereg_ap_cache_reproduces_shape` and `twin_m0b_vs_charsum_x16/x17` SKIP-clean (the
+  gitignored ~GB a_p caches are absent in a bare clone — rule 3, exit 77).
+- **`ctest -L m4`** (incl. `theorem_ss_height_murmuration`, the CI failure): 100% (13) — GREEN.
+- **Freshness:** GREEN, and byte-identical under **both** clang and g++-16 (cross-compiler check;
+  the SS emit path is `-ffp-contract=off` + in-house Bessel, so IEEE-deterministic).
+- **Explainer parity** 77/77; **CLAIMS-N parity** 48/48; **validate-json** SKIP-clean (no `.venv`
+  in a bare clone — it runs for real on CI and in the local worktree).
+- **CI (GitHub Actions) at `1785ee9`:** GREEN (run `29677702029`). The red since the eq (1) commit
+  (stale committed runs vs the new `SS_GENERATOR_HASH`) is resolved by the regen.
+- **No `-dirty` stamps** in committed `viz/data` (re-emitted from a clean tree via a temp-dir emit;
+  `generated_by = 1785ee9`). **No `[PENDING]`** outside the two sanctioned placeholders (release
+  tag, Zenodo DOI — data-note §5).
+
+**Residuals.**
+- **Ш (Cyrillic Sha) in the PDF** — ACCEPTED (above), unchanged.
+- **eq (1) regen — RESOLVED, no longer a residual.** The #30 deferral was reversed and **executed
+  pre-release**: all four rungs regenerated on the box under the corrected binning, re-emitted,
+  re-pinned; flat confirmed (only the enumerated conductor-40 pairs move; shape invariants and every
+  §3/§4 number unchanged). The clean-clone gate caught an incomplete-fix copy-drift en route
+  (**ERRATA #31**: the eq (1) fix had missed the `ss_empirical_m0b.cpp` byte-copy); fixed, and
+  `SS_GENERATOR_HASH` widened to cover the copy.
+- **CITATION.cff** — now **VERIFIED** (cffconvert 2.0.0, CFF schema 1.2.0; item 8's
+  "unverifiable-with-reason" is upgraded to PASS).
