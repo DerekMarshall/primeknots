@@ -1235,6 +1235,15 @@ int main(int argc, char** argv) {
             while (std::getline(ss, tok, ','))
                 if (!tok.empty()) Bs.push_back(std::strtoll(tok.c_str(), nullptr, 10));
         }
+        // --dump 1: print the full u,D(u) curve for the first B (referee C gate — compare
+        // the curve SHAPE against the digitized SS25 figure), then continue the shape scan.
+        if (std::strcmp(opt(argc, argv, "--dump", "0"), "0") != 0 && !Bs.empty()) {
+            const long long Bd = Bs.front();
+            std::printf("# dump D(u) at B=%lld, du=%.6g\n# u D(u)\n", Bd, du);
+            for (double u = du; u <= 1.0 + 1e-12; u += du)
+                std::printf("%.4f %.6f\n", u, at::murm::ss_density(u, Bd, Bd));
+            return 0;
+        }
         std::printf("# ss-density-scan: D(u) shape vs truncation B (q,m<=B squarefree); du=%.6g\n", du);
         std::printf("# B  hump_u hump_v  zero_u  trough_u trough_v\n");
         for (long long B : Bs) {

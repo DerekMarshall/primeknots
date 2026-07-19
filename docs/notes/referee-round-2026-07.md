@@ -270,3 +270,64 @@ Two findings, reported flat:
 Interpretation (is the real, bootstrap-stable ~0.077 displacement a finite-X effect consistent with
 SS25's documented slow convergence, or something else, and how the depth-easing should be reworded
 given B3) is **Block C**.
+
+---
+
+## Block C — GATE (digitize SS25's density): **STOP**
+
+**Task.** Before the reframe prose, digitize SS25's density (green) curve and locate its trough
+numerically, to resolve the A.4 eyeball (~0.85–0.90) against B1's stable 0.805. Resolve to ~0.805 →
+correction line + proceed; otherwise → **stop and report**.
+
+**Method.** 400-dpi renders of Fig 1 (P=∞, the eq-(2) density at B=10⁵) and Fig 5 (P=2,4,8,16). The
+green (density) curve is isolated by colour (`docs/notes/referee_digitize.py`), pixel-x is
+self-calibrated to u by the curve's [0,1] span, and the **hump is the calibration check** — our D(u)
+hump is 0.475 (B1), so a digitized hump near 0.475 validates the mapping.
+
+**Result — the gate does NOT resolve to 0.805.**
+
+| curve | hump u | trough u |
+|---|---|---|
+| SS25 Fig 1 (P=∞, B=10⁵) green | 0.466 | **0.871** |
+| SS25 Fig 5 P=2 / 4 / 8 / 16 green | 0.466 | **0.872 / 0.868 / 0.872 / 0.872** |
+| our `ss_density` (B=2000; B1 to 12000) | 0.475 | **0.807** (0.805 argmin) |
+
+The humps agree (0.466 vs 0.475), so the calibration is sound and this is **not** a global shift. A
+z-scored overlay of our density against the digitized Fig 1 green curve: gross-shape correlation
+0.64, best agreement in the hump region [0.45,0.65] (corr 0.64), **worst in the trough region
+[0.80,0.95] (corr 0.25, mean |Δz| = 1.04)**. The two curves are the same family but **diverge
+specifically where the trough sits.** In the Fig 5 P=2 panel the green line and purple dots are
+coincident (at X=2²⁸ empirical ≈ density) and the deepest excursion is visibly ~0.87–0.88.
+
+**SS25's density troughs at ~0.87. Ours troughs at 0.805.** This is a real shape discrepancy in the
+trough region between our `ss_density` (our reading of Conjecture 1 / eq (2)) and SS25's published
+density.
+
+### What this overturns (flag, don't smooth)
+
+- **A.4's eyeball (~0.85–0.90) was right; B1's "A.4 refuted, displacement real" was wrong.** B1's
+  *measurements* stand (our D(u) troughs at 0.805, truncation-stable; the empirical troughs at ~0.88,
+  B2/B3). What is overturned is the *interpretation* that 0.805 is the correct density target. It is
+  **our** density that is the discrepant party — the presumption (rule 1: the paper is normative) is
+  that our implementation misreads eq (2) in the tail.
+- **The central "trough displacement" is very likely spurious.** SS25's density trough (~0.87) ≈ the
+  empirical trough (~0.88). If our density is corrected to ~0.87, the empirical trough **agrees**
+  with the density and the note's "open deviation / H0-persistent" story largely dissolves. The
+  ~0.0825 displacement was our-density-vs-empirical, with our density mislocated — not
+  empirical-vs-truth.
+
+### Candidate causes (not pre-judged — for the debugging task)
+
+The hump is right and the tail is wrong, so a factor that grows toward large u: the local factors
+ℓ_{p,ν} / ℓ̂_{p,ν} (Lemmas 3, 4), the **weight ≥ 12 eigenvalue-sum truncation** (`ss_density.cpp`
+returns 0 above weight 12), the J₁ argument / √u weight, or a u = p/N convention difference that only
+bites in the tail. Rule 1 applies with full force: fix the *reading of eq (2)* against [SS25], never
+tune the trough to a target.
+
+### Recommendation (STOP)
+
+No reframe prose is written; the data-note narrative is untouched. Next step is an **M4 density
+investigation** — debug `ss_density` against [SS25] Lemmas 3/4 + Conjecture 1 until it reproduces the
+published density trough (~0.87), then re-pin, re-emit, and **re-run this entire A/B comparison** on
+the corrected density. Only then does a Block-C reframe make sense — and it may be a different
+reframe (agreement, not deviation). Reported to Derek for direction.
