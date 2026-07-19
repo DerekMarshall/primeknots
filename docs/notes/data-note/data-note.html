@@ -924,13 +924,14 @@ regeneration. The large <span class="math inline">a_p</span> caches
 outputs (regenerable by <code>at ap-sample</code>) are gitignored and
 pinned by SHA-256 in the reproducibility spec
 (<code>docs/notes/libm-partial-diff-spec.md</code>).</p>
-<p><strong>How to cite and verify.</strong> <em>(Release tag and DOI are
-placeholders, minted after the author’s full review.)</em> Repository:
-<a href="https://github.com/DerekMarshall/primeknots"
+<p><strong>How to cite and verify.</strong> Repository: <a
+href="https://github.com/DerekMarshall/primeknots"
 class="uri">https://github.com/DerekMarshall/primeknots</a>, release tag
-<code>[PLACEHOLDER: v1.0.0]</code>, at its tagged commit. Zenodo DOI
-<code>[PLACEHOLDER]</code>. To reproduce the results this note reports,
-from the tagged commit:</p>
+<code>v1.0.0</code>, at its tagged commit. Zenodo DOI <a
+href="https://doi.org/10.5281/zenodo.21438901">10.5281/zenodo.21438901</a>
+(this version; the concept DOI 10.5281/zenodo.21438900 always resolves
+to the latest). To reproduce the results this note reports, from the
+tagged commit:</p>
 <pre><code>cmake -B build -DCMAKE_BUILD_TYPE=Release &amp;&amp; cmake --build build -j
 ctest --test-dir build -L m5 -LE heavy                # M5 suites, ~7 min on a laptop (excludes the heavy 2^18 gate)
 ./build/bin/at emit --stage m5      --out viz/data/   # empirical-vs-D(u) overlay JSON

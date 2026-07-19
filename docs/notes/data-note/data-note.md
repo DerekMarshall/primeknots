@@ -384,9 +384,10 @@ cross-platform sample outputs
 (regenerable by `at ap-sample`) are gitignored and pinned by SHA-256 in the reproducibility spec
 (`docs/notes/libm-partial-diff-spec.md`). <!-- claim:N5-4 -->
 
-**How to cite and verify.** *(Release tag and DOI are placeholders, minted after the author's full
-review.)* Repository: <https://github.com/DerekMarshall/primeknots>, release tag
-`[PLACEHOLDER: v1.0.0]`, at its tagged commit. Zenodo DOI `[PLACEHOLDER]`. To reproduce the results
+**How to cite and verify.** Repository: <https://github.com/DerekMarshall/primeknots>, release tag
+`v1.0.0`, at its tagged commit. Zenodo DOI
+[10.5281/zenodo.21438901](https://doi.org/10.5281/zenodo.21438901) (this version; the concept DOI
+10.5281/zenodo.21438900 always resolves to the latest). To reproduce the results
 this note reports, from the tagged commit:
 
 ```

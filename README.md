@@ -1,6 +1,7 @@
 # primeknots
 
 [![CI](https://github.com/DerekMarshall/primeknots/actions/workflows/ci.yml/badge.svg)](https://github.com/DerekMarshall/primeknots/actions/workflows/ci.yml)
+&nbsp;·&nbsp; [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21438900.svg)](https://doi.org/10.5281/zenodo.21438900)
 &nbsp;·&nbsp; from-scratch C++20 &nbsp;·&nbsp; 125 verification tests, 0 failing &nbsp;·&nbsp; [MIT](LICENSE)
 
 **▶ [Explainer deck (live, with embedded viewers)](https://derekmarshall.github.io/primeknots/docs/deck/index.html)** · [PDF](docs/deck/deck.pdf) · [the error ledger](docs/ERRATA.md)

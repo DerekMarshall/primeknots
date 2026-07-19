@@ -7,6 +7,7 @@ authors:
     given-names: Derek
     orcid: "https://orcid.org/0009-0001-8101-3908"
 version: 1.0.0
+doi: 10.5281/zenodo.21438901
 license: MIT
 repository-code: "https://github.com/DerekMarshall/primeknots"
 url: "https://derekmarshall.github.io/primeknots/"
@@ -43,3 +44,16 @@ preferred-citation:
   license: MIT
   url: "https://derekmarshall.github.io/primeknots/"
   repository-code: "https://github.com/DerekMarshall/primeknots"
+references:
+  - type: article
+    title: "Murmurations for elliptic curves ordered by height"
+    authors:
+      - family-names: Sawin
+        given-names: Will
+      - family-names: Sutherland
+        given-names: Andrew V.
+    year: 2025
+    identifiers:
+      - type: other
+        value: "arXiv:2504.12295"
+        description: "arXiv preprint (the replicated source, [SS25])"
