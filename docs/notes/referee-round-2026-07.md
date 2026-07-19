@@ -105,3 +105,83 @@ trough *position*, not the true density trough.
 **A does not itself rewrite any claim** — it establishes that (i) we compute SS25's object,
 (ii) SS25's own curve is 0.7–1.2 off the density at our heights, (iii) 0.805 is a
 truncation-bound quantity B1 must re-measure. These gate the C reframe.
+
+---
+
+## Block B — specs (pre-registered; committed *before* any B run)
+
+Descriptive designs only — **no verdict / pass-fail clauses** (the #19/#26 lesson: a
+threshold set or changed after seeing results is the failure mode). Each study says what
+is measured and reported; interpretation is deferred to Block C. Every result is reported
+**as measured**, including any that weakens the ladder. Fixed seeds/params below make the
+runs reproducible. Inputs are the committed files only; no a_p recompute.
+
+**Data availability (governs per-rung coverage).** Committed binned curves exist for all
+four rungs (`data/m4/ss_empirical.txt` = 10⁴; `data/m5/ss_x{65536,131072,262144}.txt` =
+2¹⁶/2¹⁷/2¹⁸). Per-curve partials (`num[c][b]`, ε folded in, NB=40, du=0.025) exist for
+**2¹⁶/2¹⁷/2¹⁸ only** (`data/m5/ss_partials_x{65536,131072,262144}.txt`). **10⁴ has no
+committed partials**, so any partials-based analysis (B2 grid-offset, B3 bootstrap) covers
+2¹⁶–2¹⁸; 10⁴ is reported as unavailable, not skipped silently.
+
+**Aggregation (shared).** The committed density is `density[b] = (Σ_c num[c][b]) / denom`,
+a linear mean over curves (`ss_empirical.cpp:107–111`). Linearity ⇒ resampling curves and
+re-averaging is valid. **Gate for B2(offset)/B3:** the re-aggregation must reproduce the
+committed `density[b]` (hence trough at u = 0.8875) to ≤ 1e-9 before any offset/resample;
+if it does not, the run stops and the discrepancy is reported (no analysis on an
+unverified reconstruction).
+
+### B1 — density truncation study
+
+Vary the truncation cutoff B (both bounds: q ≤ B squarefree, m ≤ B) in
+`at::murm::ss_density` / `ss_shape(B, du)` (the emitter's own formula-side extractor), and
+report the density shape as a function of B.
+
+- **Core grid (as specified):** B ∈ {500, 750, 1000, 1250, 1500, 1750, 2000}.
+- **Extension (added; motivated by A.4):** B ∈ {3000, 5000, 8000, …} up to the largest B
+  that runs in a few minutes with the naive double sum; report the largest B reached.
+  *Matching SS25's B = 10⁵ exactly is infeasible here* (naive Σ_{q,m≤B} is ~B² terms per
+  u; SS25 use FFT). SS25's Table 1 puts their resolution threshold at B ≥ 2¹⁵ = 32768;
+  the extension brackets toward it as far as feasible. This is disclosed, not hidden.
+- **Scan:** du = 0.005 on u ∈ (0,1]; the same two-pass `extract_shape` used by the emitter.
+- **Reported per B:** trough_u, trough_v (depth), and the first post-hump +→− zero_u.
+  No threshold; the table of (B → trough_u, zero_u, trough_v) is the deliverable.
+
+### B2 — interpolated trough + Δu/2 grid-offset, per rung
+
+From the committed data (no recompute):
+
+- **(a) Parabolic interpolation (all four rungs, binned curve).** Around the argmin bin,
+  fit a parabola through that bin and its two neighbors; report the vertex u (sub-bin
+  trough position) and vertex value. Reported alongside the raw argmin-bin-center u.
+- **(b) Δu/2 grid-offset (2¹⁶/2¹⁷/2¹⁸, from partials).** Re-bin each curve's prime
+  contributions onto a bin grid whose edges are shifted by Δu/2 = 0.0125, re-aggregate,
+  and report the argmin-bin-center trough_u on the shifted grid. *Caveat:* the committed
+  partials store per-bin sums `num[c][b]`, not per-prime (A,B,p) data, so a true half-bin
+  re-bin requires the primes' u-values. If the committed partials do not carry enough
+  resolution to re-bin at Δu/2, this is reported as a limitation and the offset is instead
+  estimated by the parabolic-vertex shift; which path was taken is stated explicitly.
+- **Reported per rung:** argmin-bin trough_u, parabolic-vertex trough_u, and (where
+  available) the Δu/2-offset trough_u. No threshold.
+
+### B3 — bootstrap over curves (the exchangeable unit)
+
+For each rung with partials (2¹⁶, 2¹⁷, 2¹⁸):
+
+- Resample n curves with replacement from the n committed curves (n = 5042 / 9014 / 15936),
+  re-aggregate `density[b]`, extract the trough. **N_boot = 2000**, seed = **20260718**
+  (committed here). The reproduction gate above runs first.
+- **Reported per rung:** for the trough *position* — both the discrete argmin-bin-center
+  (bin-quantized at Δu = 0.025) and the parabolic-vertex position; mean and 2.5 / 97.5
+  percentile CI for each. For the trough *depth* (trough_v): mean and 2.5 / 97.5
+  percentile CI. The bin quantization of the discrete position is stated (its CI is
+  coarse by construction; the parabolic CI is the finer read). No threshold.
+
+**Pre-registration marker.** This section is committed before B1/B2/B3 are implemented or
+run; the results section below is a later commit. The git history is the audit trail
+(the #19/#26 remedy).
+
+---
+
+## Block B — results
+
+*(pending; appended after the runs — a separate commit from the specs above)*
