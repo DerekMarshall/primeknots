@@ -11,11 +11,12 @@ uniform B2/B3 run (`referee_b2b3.py`, seed 20260718).
 - **Corrected density targets** (stable over B∈[500,2000], `ss-density-scan`): hump **0.465**,
   zero **0.671**, trough **0.870**. (Superseded targets, from the swapped products: 0.475 /
   0.645 / 0.805.)
-- **Empirical, 2¹⁸ verdict rung** — binned / interpolated (B2) / bootstrap 95% CI (B3):
-  hump 0.4625 / 0.47064 / [0.46699, 0.47696]; zero (crossing) 0.671945 / 0.67194 /
-  [0.66567, 0.67715]; trough 0.8875 / 0.88216 / [0.87611, 0.88567].
+- **Empirical, 2¹⁸ verdict rung** — binned / interpolated (B2) / bootstrap 95% CI (B3), from the
+  box-regenerated partials (ERRATA #30 executed; the conductor-40 rebin moves the parabolic vertex
+  at the 4th–5th decimal only): hump 0.4625 / 0.47065 / [0.46699, 0.47696]; zero (crossing)
+  0.671945 / 0.67194 / [0.66567, 0.67715]; trough 0.8875 / 0.88214 / [0.87611, 0.88565].
 - **Deviations (interpolated column — residual claims ride this):** hump 0.0056, zero 0.0009,
-  trough 0.0122. All ≪ **τ = 0.06**.
+  trough 0.0121. All ≪ **τ = 0.06**.
 
 ## Canonical statements (propagate verbatim in substance)
 
