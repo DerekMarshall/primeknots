@@ -180,12 +180,40 @@ double ss_density_term(double u, long long q, long long m) {
 }
 
 double ss_density(double u, long long m_bound, long long q_bound) {
+    // Fast path: factor q ONCE per q (not per (q,m)). Inlines the same corrected products as
+    // ss_density_term (ℓ̂ on p|q, ℓ on p|m,p∤q, both 2v_p(m)); a twin test pins the two equal.
+    const double su = std::sqrt(u);
+    // Precompute prime_factors(m) once — the correct products (unlike the old truncated ones)
+    // reach the m-factor loop for most terms, so per-(q,m) factoring was the dominant cost.
+    std::vector<std::vector<long long>> mfac(static_cast<std::size_t>(m_bound) + 1);
+    for (long long m = 1; m <= m_bound; ++m) mfac[static_cast<std::size_t>(m)] = prime_factors(m);
     double sum = 0.0;
     for (long long q = 1; q <= q_bound; ++q) {
         if (!squarefree(q)) continue;
-        for (long long m = 1; m <= m_bound; ++m) sum += ss_density_term(u, q, m);
+        const std::vector<long long> qp = prime_factors(q);
+        for (long long m = 1; m <= m_bound; ++m) {
+            const long long g = gcd_(m, q);
+            const int mu = mobius(g);
+            if (mu == 0) continue;
+            // ℓ (p|m,p∤q) FIRST: it vanishes for p>3/p=2 with 2v_p(m)<10, so most terms skip
+            // here before the ℓ̂ product is touched (restores the sparse-fast path).
+            double prod = 1.0;
+            bool zero = false;
+            for (long long p : mfac[static_cast<std::size_t>(m)]) {        // ∏_{p|m,p∤q} ℓ_{p,2v_p(m)}
+                if (q % p == 0) continue;
+                const double e = ss_ell(p, 2 * v_p(m, p));
+                if (e == 0.0) { zero = true; break; }
+                prod *= e;
+            }
+            if (zero) continue;
+            for (long long p : qp) prod *= ss_ell_hat(p, 2 * v_p(m, p));   // ∏_{p|q} ℓ̂_{p,2v_p(m)} (survivors)
+            const double coef = static_cast<double>(mu) / (static_cast<double>(q)
+                * static_cast<double>(m) * static_cast<double>(euler_phi(q / g)));
+            sum += coef * prod
+                   * at::core::bessel_j1(4.0 * kPi * su * static_cast<double>(m) / static_cast<double>(q));
+        }
     }
-    return 2.0 * kPi * std::sqrt(u) * sum;
+    return 2.0 * kPi * su * sum;
 }
 
 SSShape extract_shape(const std::vector<double>& us, const std::vector<double>& ds) {

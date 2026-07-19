@@ -113,3 +113,17 @@ TEST_CASE("theorem_ss_density_shape") {
             << "), zero u=" << s.zero_u << ", trough u=" << s.trough_u << " (D=" << s.trough_v
             << ") — CORRECTED R2 targets {0.465,0.671,0.870}, reproduces SS Fig. 1");
 }
+
+TEST_CASE("twin_ss_density_vs_term_sum") {
+    // Rule 2: the fast ss_density loop (qp-precompute, used by the emitter) must equal the
+    // per-term ss_density_term (exercised by the term-level anchors) summed over the grid —
+    // so both share ONE corrected product assignment and cannot silently diverge.
+    const long long B = 60;
+    for (double u : {0.30, 0.47, 0.671, 0.87}) {
+        double s = 0.0;
+        for (long long q = 1; q <= B; ++q)
+            for (long long m = 1; m <= B; ++m) s += ss_density_term(u, q, m);
+        CHECK(std::abs(ss_density(u, B, B) - 2.0 * at::core::kPi * std::sqrt(u) * s) < 1e-12);
+    }
+    MESSAGE("twin_ss_density_vs_term_sum: ss_density == 2π√u·Σ ss_density_term (B=60)");
+}
