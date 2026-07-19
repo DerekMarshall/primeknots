@@ -12,6 +12,37 @@ recommendations. Sources of truth: `docs/ERRATA.md` (31 rows), `docs/preregister
 
 ---
 
+## 0. Pipeline topology
+
+Four-stage model pipeline (as described by the operator, Derek Marshall, 2026-07-19). The ERRATA
+ledger's "party" labels map onto these stages where recoverable.
+
+1. **Gemini Deep Research** — upstream research and scoping (the "roadmap generator" of ERRATA #1
+   sits at this stage).
+2. **Fable 5 (Claude web)** — web orchestration and referee-prompting: structured the review
+   rounds and generated the referee prompts relayed into the Code sessions.
+3. **Opus 4.8 xhigh (Claude Code)** — the coding agent. All `src/`, `verify/`, `docs/` authored
+   here; this is the "coding agent" of the ERRATA ledger and the measured token spend of
+   `methods-dossier-usage.md §1`. **The eq (2) algorithm transcription error (ERRATA #28) was made
+   here** (operator confirmation, 2026-07-19).
+4. **Gemini secondary review** — the "external (LLM) referee" of the ERRATA ledger.
+
+Errata-party → model, where recoverable:
+
+| ERRATA "party" | Model | Basis |
+|---|---|---|
+| coding agent | Opus 4.8 (Code sessions) | operator confirmation; ERRATA §"Tally by party" (Coding agent row); #28 algorithm transcription confirmed Opus (2026-07-19) |
+| external (LLM) referee | Gemini (secondary-review leg) | transcript 2026-07-08 names Gemini for the fabricated citation (#3); ERRATA tally binds "the same party" to the #2 catch and the #16/#17/#19 catches (and to #20, its own slip) |
+| human reviewer (riders / oracles) | Derek Marshall (operator) | ERRATA §"Tally by party" (Human reviewer row): #2 rider, #5, #9, #11, #26 (R0 directive) |
+| roadmap generator | Gemini Deep Research (stage 1) | this topology; ERRATA #1 |
+| spec author (RESEARCH.md/-M) | repo-authored across the pipeline; #28's `m4-pinning §P3` transcription = Opus (confirmed) | ERRATA #8/#10/#24/#27/#28; the model behind the #24/#27 spec prose is not separately documented |
+
+The #28 **detector** (below, §3) is the authors' published figure plus a blind re-transcription
+run in a **separate session whose model is not named** in the Code transcript ("a separate session
+that has not seen your reading or code").
+
+---
+
 ## 1. Mechanism inventory
 
 Each rule: documented catches; documented misses (an error of the type the rule targets that
@@ -218,12 +249,12 @@ column of `docs/ERRATA.md` and its tally-by-mechanism (§ "Tally by mechanism").
 |---|---|
 | internal test / property test | #4 (parity), #6 (associativity), #7 (genus sweep), #9 (witness), #11 (Stickelberger), #12 (mass formula + hand-referee), #20 (Hurwitz twin), #31 (drift guard) |
 | oracle cross-check | #5 (gp), #10 (PARI witness), #14 (PARI count) |
-| source reading / verbatim quote / citation trace | #2, #3, #8, #17, #24, #27, #30 |
+| source reading / verbatim quote / citation trace | #3 (Gemini-introduced fabrication; caught by the quote-verbatim protocol), #8, #24, #27, #30 |
 | second-compiler build | #15, #21 |
 | CI / freshness guard (second environment) | #18, #22, #23 |
-| external model review (LLM referee, from prose/citation) | #16, #19 |
+| external model review — **Gemini** (secondary-review leg; see §0) | #2 (Gemini flagged → local CFT re-derivation confirmed), #16 (deck review), #17 (deck review → citation trace), #19 (M1 review, from prose) |
 | human read (diff / prose) | #25, #26 |
-| published-figure comparison + external blind transcription | #28 |
+| published-figure comparison + external blind transcription | #28 (introduced by Opus, §0; caught by the authors' published figure + a blind re-transcription in a separate session, model not named) |
 | corrected-reading re-verification (after a fix) | #29 |
 | cold-clone gate | #31 (co-detector with the drift guard) |
 | coherence / scope pass | #1 |
@@ -232,6 +263,11 @@ column of `docs/ERRATA.md` and its tally-by-mechanism (§ "Tally by mechanism").
 Note: #28's detector is the pair (authors' published figure, digitized; independent blind
 transcription of the source PDF) — recorded in `docs/ERRATA.md` §"Tally by mechanism" as "the
 catch a twin-blind oracle could not make." #31 is the pair (test 123, clean-clone gate).
+Model attribution (§0): the external-model-review catches (#2, #16, #17, #19) are attributed to
+**Gemini** via the transcript (2026-07-08, which names Gemini for the #3 fabrication) and the
+`docs/ERRATA.md` tally ("the same party" made #2 and caught #16/#17/#19). #3 and #20 were
+Gemini-*introduced* but internally caught (quote-verbatim protocol; P4 Hurwitz twin). #28 was
+Opus-introduced (§0); its blind-transcription detector's model is not named in the transcript.
 
 ---
 
