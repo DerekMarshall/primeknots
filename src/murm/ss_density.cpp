@@ -6,6 +6,7 @@
 
 #include "core/bessel.h"
 #include "core/constants.h"
+#include "mform/hurwitz.h"   // M3 Hurwitz class numbers, for the Eichler–Selberg trace (M4→M3 allowed)
 
 namespace at::murm {
 
@@ -60,14 +61,52 @@ double cheb_U(int nu, double x) {
     return u;
 }
 
-long long level1_hecke_trace(int k, long long /*p*/) {
-    // Exact 0 where the space is zero-dimensional: odd weight, or even weight < 12.
-    // Weight ≥12 eigenvalue sums are TRUNCATED (returns 0) — the terms needing them are
-    // sparse and high-m (m divisible by p⁵); their bounded contribution is folded into
-    // the density-evaluation tolerance (m4-pinning §P3/R1). Faithful upgrade: a level-1
-    // Eichler–Selberg trace reusing M3's Hurwitz class numbers.
-    if (k < 12 || (k % 2) != 0) return 0;
-    return 0;   // TRUNCATED (documented)
+namespace {
+// dim_ℂ S_k(SL₂ℤ), even k ≥ 0 (level-1 closed form): 0 for k<12 or k=14; then the
+// standard ⌊k/12⌋ (or ⌊k/12⌋−1 when k≡2 mod 12). Used only to shortcut Tr = 0.
+long long dim_Sk_level1(int k) {
+    if (k < 4 || (k % 2) != 0) return 0;
+    const long long d = (k % 12 == 2) ? (k / 12 - 1) : (k / 12);
+    return d < 0 ? 0 : d;
+}
+// P_k(t,n): coefficient of x^{k−2} in 1/(1 − t·x + n·x²); recurrence c_j = t·c_{j−1} − n·c_{j−2}
+// (c_0=1, c_1=t), P_k = c_{k−2}. Exact integer. For k even, P_k(−t,n) = P_k(t,n).
+long long gegenbauer_P(int k, long long t, long long n) {
+    if (k <= 2) return 1;              // P_2 = c_0 = 1
+    long long cprev = 1, ccur = t;     // c_0, c_1
+    for (int j = 2; j <= k - 2; ++j) { const long long cj = t * ccur - n * cprev; cprev = ccur; ccur = cj; }
+    return ccur;                       // c_{k−2}
+}
+// 12·H(D) as an exact integer (Hurwitz denominators divide 12).
+long long twelve_hurwitz(long long D) {
+    const at::mform::Frac h = at::mform::hurwitz(D);
+    return h.num * (12 / h.den);
+}
+}  // namespace
+
+long long level1_hecke_trace(int k, long long n) {
+    // Tr(T_n | S_k(SL₂ℤ)) via the level-1 Eichler–Selberg trace formula, reusing M3's
+    // Hurwitz class numbers (m4-pinning §P3 upgrade; supersedes the earlier weight-≥12
+    // truncation, whose bound was certified only against the corrupted eq (2) products):
+    //   Tr = −½ Σ_{t²≤4n} P_k(t,n)·H(4n−t²) − ½ Σ_{d|n} min(d,n/d)^{k−1}.
+    // Exact integer arithmetic scaled by 12 (H's denominator). Tr is provably integral.
+    // `n` is the Hecke index (a prime p in the local factors); 0 where S_k = 0.
+    if (dim_Sk_level1(k) == 0) return 0;
+    long long T12 = 0;                                  // 12·Σ_t P_k(t,n)·H(4n−t²)
+    for (long long t = 0; t * t <= 4 * n; ++t) {
+        const long long contrib = gegenbauer_P(k, t, n) * twelve_hurwitz(4 * n - t * t);
+        T12 += (t == 0) ? contrib : 2 * contrib;        // ±t give equal terms (k even)
+    }
+    long long dsum = 0;                                 // Σ_{d|n} min(d,n/d)^{k−1}
+    for (long long d = 1; d <= n; ++d)
+        if (n % d == 0) {
+            const long long mn = (d < n / d) ? d : n / d;
+            long long pw = 1;
+            for (int i = 0; i < k - 1; ++i) pw *= mn;
+            dsum += pw;
+        }
+    const long long numer = T12 + 12 * dsum;            // Tr = −(T12 + 12·dsum)/24
+    return -(numer / 24);
 }
 
 double ss_ell_hat(long long p, int nu) {
@@ -128,17 +167,16 @@ double ss_density(double u, long long m_bound, long long q_bound) {
             const int mu = mobius(g);
             if (mu == 0) continue;
             double prod = 1.0;
+            for (long long p : qp)                         // ∏_{p|q} ℓ̂_{p,2v_p(m)}
+                prod *= ss_ell_hat(p, 2 * v_p(m, p));
             bool zero = false;
-            for (long long p : qp) {                       // ∏_{p|q} ℓ_{p,v_p(m)}
-                const double e = ss_ell(p, v_p(m, p));
-                if (e == 0.0) { zero = true; break; }
+            for (long long p : prime_factors(m)) {         // ∏_{p|m,p∤q} ℓ_{p,2v_p(m)}
+                if (q % p == 0) continue;
+                const double e = ss_ell(p, 2 * v_p(m, p));
+                if (e == 0.0) { zero = true; break; }      // ℓ vanishes for p>3, 2v_p(m)<10
                 prod *= e;
             }
             if (zero) continue;
-            for (long long p : prime_factors(m)) {         // ∏_{p|m,p∤q} ℓ̂_{p,2v_p(m)}
-                if (q % p == 0) continue;
-                prod *= ss_ell_hat(p, 2 * v_p(m, p));
-            }
             const double coef = static_cast<double>(mu) /
                 (static_cast<double>(q) * static_cast<double>(m)
                  * static_cast<double>(euler_phi(q / g)));

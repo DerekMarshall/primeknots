@@ -7,7 +7,13 @@
 //
 //   D(u) = 2π√u · Σ_{q squarefree} Σ_{m≥1}
 //              [ μ(gcd(m,q)) / (q·m·φ(q/gcd(m,q))) ] · J₁(4π√u·m/q)
-//              · ∏_{p|m, p∤q} ℓ̂_{p,2v_p(m)} · ∏_{p|q} ℓ_{p,v_p(m)}          (u = p/N)
+//              · ∏_{p|q} ℓ̂_{p,2v_p(m)} · ∏_{p|m, p∤q} ℓ_{p,2v_p(m)}          (u = p/N)
+//
+// CORRECTED 2026-07-18 (referee C): the earlier reading had the two products SWAPPED
+// (ℓ̂ on p|m,p∤q; ℓ on p|q) and the p|q exponent wrong — BOTH products carry 2v_p(m)
+// (only even ν appear, [SS25] p.9). The ν-domains force it: ℓ̂ takes nonnegative even ν
+// (Lemma 4; ν=0 for p|q,p∤m), ℓ takes positive ν (Lemma 3). This moved the density
+// trough from a spurious 0.805 to 0.870, matching the published figure (ERRATA #28).
 //
 // with the local factors ℓ_{p,ν}, ℓ̂_{p,ν} verbatim from Lemmas 3 & 4 ([SS25] pp.4–5):
 // rational in p, plus Chebyshev U_ν (second kind) at p=3, plus eigenvalue sums
@@ -15,10 +21,11 @@
 // value is built from IEEE ops + generated constants + the in-house J₁ (no libm), so
 // the emitted curve is byte-portable ([[cross-compiler-emit-determinism]]).
 //
-// The eigenvalue sums (needed only for p∈{2}∪{>3} at ν≥10, i.e. m divisible by p⁵ —
-// sparse, high-m, small) are supplied by `level1_hecke_trace`; the default returns 0
-// (the weight<12 exact value) and, above weight 12, a documented TRUNCATION whose
-// bounded contribution is folded into the density-evaluation tolerance (R1).
+// The eigenvalue sums are supplied by `level1_hecke_trace` via a from-scratch level-1
+// EICHLER–SELBERG trace reusing M3's Hurwitz class numbers (NOT truncated — the earlier
+// weight-≥12 truncation returned 0, harmless only under the corrupted products above but
+// load-bearing under the correct ones, since a surviving ℓ-term REQUIRES 2v_p(m)≥10; the
+// truncation's bound expired with the products it was certified against).
 namespace at::murm {
 
 // Chebyshev polynomial of the second kind U_ν(x) (U₀=1, U₁=2x, recurrence).
