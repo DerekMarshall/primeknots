@@ -331,3 +331,44 @@ investigation** — debug `ss_density` against [SS25] Lemmas 3/4 + Conjecture 1 
 published density trough (~0.87), then re-pin, re-emit, and **re-run this entire A/B comparison** on
 the corrected density. Only then does a Block-C reframe make sense — and it may be a different
 reframe (agreement, not deviation). Reported to Derek for direction.
+
+---
+
+## Step 1 (task #81) — independent oracle for eq (2). Truncation exonerated; the defect is a *shared reading error* the oracle cannot adjudicate
+
+**Built** `oracle/ss_density_oracle.gp`: a fresh PARI/GP implementation of eq (2) from Lemmas 3/4,
+written with no reference to `ss_density.cpp`. The Hecke eigenvalue sums Σ_{f∈S_{ν+2}(SL₂ℤ)} a_p(f)
+= Tr(T_p | S_{ν+2}) are computed **correctly** via PARI `mftraceform` (verified: Tr T₂|S₁₂ = −24 =
+τ(2); Tr T₂|S₂₄ = 1080) — not truncated, which is what Step 2 suspected.
+
+**Oracle (B = 300 and 800, matching):** D(0.45)=+2.30, D(0.65)=−0.60, **D(0.805)=−3.97**,
+D(0.87)=−1.30, **D(0.88)=+0.13**, D(0.95)=+1.15; fine-scan trough over [0.78,0.92] = **u=0.805**.
+The oracle **agrees with `ss_density` (0.805)**, not the digitization.
+
+Three consequences:
+1. **Truncation EXONERATED.** The oracle computes Tr T_p correctly (incl. the p=2 high-v₂(m) terms)
+   and still troughs at 0.805 with a *positive* bump at 0.88. Step 2's first suspect is not it.
+2. **Not convergence.** B=300→800 barely moves the tail (D(0.88): +0.24→+0.13); C++ flat to B=12000.
+3. **The oracle is not reading-*independent* (the ERRATA #25 trap).** PARI and C++ encode **my** same
+   reading of eq (2)/Lemmas 3/4 — independent code, not independent readings. Their agreement is
+   twin-blindness, **not** vindication; Step 1 cannot adjudicate a *reading* error.
+
+**True referee — the authors' figure — says our reading is wrong.** Digitizing Fig 1's green and
+purple curves *separately* (strict masks, hump-validated 0.466): **green (density) trough 0.871,
+purple (empirical) trough 0.872.** Not purple contamination — the density curve itself troughs at
+~0.87 and is deep-negative through 0.88 (where our reading is positive).
+
+**Conclusion.** `ss_density` **is** wrong at the trough — confirmed by the figure, not the oracle. A
+**shared misreading of eq (2)/Lemmas 3/4** in the tail (u ≳ 0.8), carried by both implementations.
+Not truncation, not convergence, not contamination.
+
+**Implication:** true density trough ~0.87 ≈ empirical trough ~0.88 → the "0.0825 displacement /
+open deviation" is an artifact of our misread density; corrected, it is a **successful replication
+at the trough**, not an anomaly.
+
+**Where Step 2 stands — needs direction.** Both referees Step 2 named are compromised: the oracle
+shares the reading, and tuning `ss_density` to the digitized figure is the rule-1 violation Step 2
+forbids. The defect must come from a genuinely reading-independent re-derivation of eq (2)/Lemmas
+3/4. First suspect (truncation) ruled out; remaining candidates — the product structure
+(∏_{p|m,p∤q} vs ∏_{p|m,p|q}; the ℓ↔ℓ̂ assignment), the J₁ argument/√u weight, a local-factor
+exponent. **Held for Derek before the formula-hunt.** Errata row pending the pinned defect.
