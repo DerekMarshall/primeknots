@@ -88,6 +88,11 @@ snapshots carry a `-dirty` `generated_by`: `dirichlet_murmuration.json` +
 (`749c900-dirty`). Freshness normalizes the stamp (not a test failure) — cosmetic provenance.
 **Fix:** (a) update the stale status/comments — commit `b835350`; (b) clean-re-emit the 3
 snapshots at a clean tree — commit `e09f2e7`.
+**Note (stamp provenance):** the 3 re-emitted snapshots carry `generated_by 9953a10`, which is the
+clean HEAD they were *emitted at* (a temp-dir emit kept the working tree clean, so `git describe`
+yielded a bare commit with no `-dirty`); `e09f2e7` is the follow-on commit that *lands* them. The
+stamp (emit-time HEAD) and the landing commit therefore differ by one commit — expected, not a
+discrepancy — and the freshness guard normalizes this field regardless (§ item 1 / data-note N5-1).
 
 ### 6. `.gitignore` exception — ckpt present + sha — **PASS**
 `data/m5/ss_partials_x131072.txt.ckpt` is present in the clean clone and its sha256 matches the

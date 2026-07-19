@@ -292,7 +292,10 @@ compilers and platforms. The density evaluator and its emitter (`src/murm/ss_den
 `src/emit/emit_sawin_sutherland.cpp`) are compiled with fused-multiply-add contraction disabled
 (`-ffp-contract=off`), so their IEEE operations round the same way under GCC and clang. A freshness
 check re-emits the snapshot at the current commit and requires byte-equality with the committed
-file, on CI's GCC as well as a local build. <!-- claim:N5-1 -->
+file, on CI's GCC as well as a local build. The comparison first normalizes one field — the
+`generated_by` provenance stamp, a `git describe` string that legitimately varies by checkout — and
+then requires every remaining byte to match exactly; "byte-identical" below means identical after
+that single-field normalization. <!-- claim:N5-1 -->
 
 **Integer $a_p$ is platform-independent.** A pre-registered, tail-weighted sample of 79,268
 (curve, prime) pairs, with primes up to about 4.15 million, was computed by the frozen referee
@@ -332,15 +335,33 @@ this note reports, from the tagged commit:
 
 ```
 cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j
-ctest --test-dir build -L m5                          # the M5 verification suites
+ctest --test-dir build -L m5 -LE heavy                # M5 suites, ~7 min on a laptop (excludes the heavy 2^18 gate)
 ./build/bin/at emit --stage m5      --out viz/data/   # empirical-vs-D(u) overlay JSON
 ./build/bin/at emit --stage m5split --out viz/data/   # rank-split overlay JSON
+python3 -m pip install matplotlib                     # figure prerequisite (use a venv; not needed for the suites)
 python3 docs/notes/data-note/figures/make_figures.py  # Fig. 1 and the rank-split figure
 ```
 
+**The heavy gate, run separately.** The `-LE heavy` above excludes one long check,
+`m5gate.twin_m0b_bruteforce_x18_tailweighted`, which recomputes on the order of $2.8\times10^7$
+$a_p$ to twin the $2^{18}$ tail-weighted sample against the frozen referee. It runs about one to two
+hours on the 48-core compute box (not on a laptop, not in CI) and is invoked explicitly with
+`ctest --test-dir build -L heavy`.
+
+**Regenerating the inputs, and the robustness grid.** The large $a_p$ caches regenerate with
+`at ap-cache --X <H> --cache <ne_cache> --out <bin> --checkpoint <ckpt>` (hours on the compute box
+for $2^{17}$/$2^{18}$; SHA-256 and byte counts pinned in `docs/notes/libm-partial-diff-spec.md`),
+and the run/partials files with `at ss-run`. The referee-round robustness studies are runnable from
+the committed data with no recompute: the density truncation scan (`at ss-density-scan`, seconds per
+cutoff, about nine seconds at $B=2000$) and the bootstrap/interpolation study
+(`python3 docs/notes/referee_b2b3.py`, under a second), both documented in
+`docs/notes/referee-round-2026-07.md`.
+
 The cross-platform `a_p` sample is reproduced by
-`./build/bin/at ap-sample --X 131072 --cache data/m5/ne_cache_x131072.txt` on two toolchains; its
-output SHA-256 is pinned in the reproducibility spec. <!-- claim:N5-5 -->
+`./build/bin/at ap-sample --X 131072 --cache data/m5/ne_cache_x131072.txt`; a single-platform run
+suffices to verify the committed sample against its pinned SHA-256, and it is the byte-identity of
+two such single-platform runs (laptop and compute box) that supplies the cross-platform evidence.
+The pin lives in the reproducibility spec. <!-- claim:N5-5 -->
 
 ## 6. Discussion
 
