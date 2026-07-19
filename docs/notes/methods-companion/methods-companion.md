@@ -3,7 +3,7 @@
 **Author:** Derek Marshall (ORCID 0009-0001-8101-3908).
 
 **Companion to:** *A pre-registered replication of the Sawin–Sutherland
-height-ordered murmuration*, DOI 10.5281/zenodo.21438901. The replication note
+height-ordered murmuration*, DOI 10.5281/zenodo.21443321. The replication note
 states the mathematics. This document states how the work was done, what it
 cost, where it failed, and what caught the failures. Every claim here cites a
 commit, an erratum row, a ledger entry, or a measured total in the repository's
