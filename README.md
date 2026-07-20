@@ -4,6 +4,12 @@
 &nbsp;·&nbsp; [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21438900.svg)](https://doi.org/10.5281/zenodo.21438900)
 &nbsp;·&nbsp; from-scratch C++20 &nbsp;·&nbsp; 125 verification tests, 0 failing &nbsp;·&nbsp; [MIT](LICENSE)
 
+**▶ Live site — [derekmarshall.github.io/primeknots](https://derekmarshall.github.io/primeknots/)** — interactive viewers, the write-ups, and the deck, all rendered.
+
+**Read the research (M5 track):**
+- **[A pre-registered replication of the Sawin–Sutherland height-ordered murmuration](https://derekmarshall.github.io/primeknots/docs/notes/data-note/data-note.html)** — the data note ([PDF](docs/notes/data-note/data-note.pdf))
+- **[What it took: methods, failures, and costs of an AI-driven replication](https://derekmarshall.github.io/primeknots/docs/notes/methods-companion/methods-companion.html)** — the methods companion, on how the work was done, what it cost, and what caught the failures ([PDF](docs/notes/methods-companion/methods-companion.pdf))
+
 **▶ [Explainer deck (live, with embedded viewers)](https://derekmarshall.github.io/primeknots/docs/deck/index.html)** · [PDF](docs/deck/deck.pdf) · [the error ledger](docs/ERRATA.md)
 
 **Arithmetic topology, executable.** A from-scratch, dependency-free C++ suite that
